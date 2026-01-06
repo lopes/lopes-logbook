@@ -1,0 +1,72 @@
+---
+title: "Review: Automating Security Detection Engineering"
+date: 2025-03-27
+description: "Review of Automating Security Detection Engineering book."
+categories: ["detection", "dev"]
+image: "og-review-automating-detection-engineering.webp"
+---
+
+After deprecating a **Detection-as-Code** implementation and contributing to a new one, I decided to gain formal insights into this field. I've always enjoyed programming and automation, but while there are plenty of resources on implementing CI/CD pipelines for software engineering (SWE), very few focus on Information Security use cases—more aligned with software reliability engineering (SRE).
+
+When I discovered a newly released book on this topic, I automatically (pun intended) added it to my reading list. After finishing [Automating Security Detection Engineering](https://www.amazon.com/Automating-Security-Detection-Engineering-hands/dp/1837636419), I'm sharing my honest review along with some insights. 💭
+
+
+## Overview
+**Automating Security Detection Engineering** is a highly specialized book focused on designing and implementing a Detection-as-Code program. It covers the technologies involved in such a project, with a strong emphasis on the *how* rather than just the *what*.
+
+The book is packed with examples and hands-on labs, all contributing to a broader goal: integrating tools to orchestrate the rule lifecycle—from creation to management. 🤖  Dennis Chow, the author, demonstrates a deep understanding of detection engineering and the many tools used in this field, including EDR, SIEM, IDS, and supporting technologies like GitHub and Terraform.
+
+Readers can expect insights into automating key aspects of a detection engineer's work and learning how to integrate various tools to achieve this. However, this is not an introductory book. The author assumes prior knowledge of detection engineering, IT infrastructure, and programming.
+
+Although completing the labs isn't mandatory, if you're not accustomed to integrating tools via APIs, I highly recommend following them step by step. Doing so can significantly enhance your skills, make you a better engineer, and allow you to implement these solutions in your own work—ultimately making your life easier and your boss happier. 😎
+
+This book, released in mid-2024, reflects the growing importance of automation in detection engineering. Reading it can help set your work apart.
+
+
+## Impressions
+This book explores two areas I've been deeply invested in over the past few years: automation and detection engineering. Perhaps because of this, my expectations were quite high going in, and I felt a bit underwhelmed by the end.
+
+Don't get me wrong—this is a good book. However, it reads more like a collection of use cases the author has implemented, organized into a book format. I felt it lacked sufficient context, theory, and insights to effectively tie everything together. Let me explain. 🗣️
+
+Dennis Chow's writing style is very direct. He jumps straight into the technical details without offering much in the way of contextualization, such as diagrams or examples that illustrate how different tools and concepts interconnect on a broader level. I also felt that the number of tools covered was excessive, making it difficult to focus on the core concepts. Sometimes, less is more.
+
+Had he spent more time refining the text—adding context, designing diagrams to illustrate the overarching system, and providing more didactic explanations for each lab—it would have elevated this book to an outstanding level.
+
+Despite its shortcomings, this book is a must-read for detection engineering teams seeking greater maturity and scalability. Security teams don't scale at the same rate as business growth or the expanding attack surface, making automation crucial. This book offers valuable scenarios and insights that can be adapted to your organization.
+
+Personally, I already have a Detection-as-Code implementation at work, and I was looking for ways to improve it—especially in the area of testing rules in a CI/CD pipeline. This book provided me with exactly that. The examples and ideas presented helped me rethink testing strategies, which will undoubtedly enhance our system.
+
+Since the book covers a wide range of tools and is relatively new, some bugs in the code are to be expected. However, I feel the book was rushed to publication. That wouldn't be a major issue, but some of the downsides (including a bug in an example from Chapter 2—see below) could have been caught with more time for writing and review.
+
+
+## Bottom Line
+**Automating Security Detection Engineering** is a must-read for detection engineers with at least a solid programming background. As the only book I'm aware of that specifically covers automation in this field, it's essential for teams looking to level up.
+
+While I've criticized the apparent rush to publish (resulting in a lack of context and use cases) and the excessive number of tools presented, I still found it to be a very good book. My high expectations may have influenced my view, but sometimes, instead of just showing *how* to do something (since the *how* depends on your tech stack), it's more valuable to discuss real-world scenarios with a few well-chosen examples and labs.
+
+Despite its flaws, the book's strengths outweigh them. The insights and inspiration it provides (especially in Part II) make it worth reading. It's a short, straightforward book that deserves your attention. ✌️
+
+
+## Bug
+In Lab 2.5, you'll find the following YARA-L code (see the full code [here](https://github.com/PacktPublishing/Automating-Security-Detection-Engineering/blob/main/chapter-02/lab-2.5/rule_multiple_connections_ru_cti.yar.yml)). According to the book:
+
+> "*...at least two distinct hostnames... [are required to make this rule trigger].*"
+
+However, this isn't accurate. Since the hostname is locked in the match section, `$hostname` remains the same within event aggregation. This causes the `count_distinct()` function to always return `1`, preventing the rule from triggering. A potential fix would be to use `count_distinct($e.metadata.id)`.
+
+I considered submitting a PR, but since many older PRs are still waiting for review and merge, I decided against it.
+
+```c
+rule rule_multiple_connections_ru_cti {
+  ...
+  $e.target.hostname = $hostname
+  ...
+  $ioc.graph.entity.hostname = $hostname
+match:
+  $hostname over 15m
+outcome:
+  $risk_score = 10
+  $event_count = count_distinct($hostname)
+condition:
+  ($ioc and $e) and $event_count >=2
+}

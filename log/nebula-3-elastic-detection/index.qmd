@@ -1,0 +1,371 @@
+---
+title: "Project Nebula: Detecting with Elastic"
+date: 2024-09-23
+description: "Elastic Stack deployment for log monitoring."
+categories: ["detection", "logging"]
+image: "og-nebula-3-elastic-detection.webp"
+---
+
+This is the third part of the Detection Engineering Lab series. In the [first post](/log/2024-nebula-1-detection-lab/), I defined the lab topology and created the workstations. In the [second post](/log/2024-nebula-2-wazuh/), I installed Wazuh to monitor the workstations. In this post, I'll shift focus from Wazuh and deploy the Elastic Stack to monitor the workstations. Let's get started! 🚀
+
+::: {.callout-note}
+1. [Detection Lab](/log/2024-nebula-1-detection-lab/)
+2. [Detecting with Wazuh](/log/2024-nebula-2-wazuh/)
+3. Detecting with Elastic (you are here)
+4. [Debriefing](/log/2024-nebula-4-debriefing/)
+:::
+
+
+## Elastic Stack
+Elastic is probably the most well-known open-source log management tool. It's made up of several components that work together to ingest, store, and analyze logs. The components I used are:
+
+- **Elasticsearch**: The database where logs are stored.
+- **Kibana**: The web interface used to visualize logs and manage the stack.
+- **Elastic Agent**: The endpoint monitoring agent.
+
+I used version 8.14.3 because, in more recent versions (8.15.*), Kibana doesn't allow changing the fleet output through the UI (more on this later). Since the process for changing it during container creation or via CLI isn't well-documented, it was simpler to avoid this version. Here's a quick summary of how I deployed the stack:
+
+1. Deploy a Docker network to accommodate the stack.
+2. Deploy a transient container to generate the certificates.
+3. Deploy the Elasticsearch and Kibana containers.
+4. Prepare Kibana for the Fleet server.
+5. Deploy the Fleet server—aka., an Elastic Agent managing other agents.
+
+I created two Docker Compose files, one to deploy Elasticsearch and the other for Kibana. The code is in the appendix, and in the next lines, I'll explain how to use them:
+
+1. Create a directory, like `elastic`.
+2. Inside this directory, copy and paste the content of the three files in the appendix into files named `.env`, `docker-compose-elk.yml`, and `docker-compose-fleet.yml`, respectively—the three files must be in the same directory.
+3. Update the `.env` file to set stronger passwords and encryption keys—optional for testing purposes.
+
+::: {.callout-tip}
+Use `openssl rand -hex 16` to generate a 32-character random string to be used as an encryption key.
+:::
+
+Inside the `elastic` directory, deploy the ELK stack with the following command:
+
+```sh
+docker-compose -f docker-compose-elk.yml up -d
+```
+
+::: {.callout-caution}
+I encountered a strange error while generating certificates. After some research, I discovered it's a bug in Docker Compose, easily fixed by removing the `.*credsStore.*` line from `~/.docker/config.json`.
+:::
+
+Once Kibana is ready, I accessed it at `http://localhost:5601` using the credentials defined in the `.env` file (user: `elastic`, password: `changeme`). Then, I navigated to the hamburger menu in the top-left corner (all options cascade down from it) > Management > Fleet, clicked on Settings, and edited the default output as follows, where `<HOST_IP>` is the IP address of the host running the stack (macOS in my case):
+
+- Host: `https://<HOST_IP>:9200`
+- Advanced YAML config: `ssl.verification_mode: none`
+
+::: {.callout-note}
+This step is necessary because the default output is set to `http://localhost:9200`, which would cause agents to fail when they try to connect, as there won't be any Elasticsearch instance running on `localhost` from the VMs' perspective. Also, since the host's IP address isn't included in the certificate's SAN, I had to disable verification mode to allow the agents to connect to the server.
+:::
+
+::: {.callout-tip}
+You can check the certificate data by running `openssl x509 -noout -text -in certs/es01/es01.crt`.
+:::
+
+After saving the changes, I went to Agents and clicked on Add Fleet Server. I added the following details:
+
+- Name: `fs01`
+- URL: `https://<HOST_IP>:8220`
+
+I clicked "Generate Fleet Server policy" and waited. Once the policy was generated, I copied the `fleet-server-service-token` because it's needed to enroll the Fleet Server. I updated the `FLEET_SERVER_SERVICE_TOKEN` in the `.env` file with this token and then deployed the Fleet server with the following command:
+
+```sh
+docker-compose -f docker-compose-fleet.yml up -d
+```
+
+Once the container was ready, I returned to the browser, and the "Continue enrolling Elastic Agent" button was enabled. I clicked on it, and the Fleet Server was listed as an agent. Clicking on its ID, I saw CPU and memory usage, confirming that the Fleet Server was working properly.
+
+Before installing agents, I created policies for Windows and Ubuntu. I clicked on "Agent policies" and then "Create agent policy."  I created two policies: one for Windows and another for Ubuntu, named `windows` and `ubuntu`, respectively.
+
+Next, under "Agents", I clicked on "Add agent" and selected the appropriate policy for each OS. I copied the installation commands for both Windows and Ubuntu. Note that each agent policy has a different enrollment token, but the installation commands are pretty much interchangeable.
+
+
+## Agents
+Work on the agents began by reverting to the snapshots taken after each VM installation to remove any traces of Wazuh. Now, it's time to install the Elastic agents. Starting with Windows (`apollo`), I logged in as user `neil`, opened PowerShell as Administrator, and ran the following lines to:
+
+1. Navigate to the user's Downloads folder.
+2. Download and install the Sysmon agent.
+3. Download and install the Elastic agent using the script generated by Elastic's UI.
+  - If using this, replace `<HOST_IP>` with the host's IP address.
+  - Note that I added the `--insecure` parameter to the `elastic-agent install` command to disable certificate verification, since the host's IP address isn't included in the certificate's SAN.
+
+```ps1
+cd $HOME/Downloads
+
+Invoke-WebRequest -Uri https://download.sysinternals.com/files/Sysmon.zip -OutFile .\Sysmon.zip
+Expand-Archive -Path .\Sysmon.zip -DestinationPath .
+cd Sysmon
+.\Sysmon64a.exe -i -accepteula
+cd ..
+
+Invoke-WebRequest -Uri https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.14.3-windows-x86_64.zip -OutFile elastic-agent-8.14.3-windows-x86_64.zip
+Expand-Archive .\elastic-agent-8.14.3-windows-x86_64.zip -DestinationPath .
+cd elastic-agent-8.14.3-windows-x86_64
+.\elastic-agent.exe install --url=https://<HOST_IP>:8220 --enrollment-token=SVlsYUFaSUJPb0lXQzZzSlZGLXg6dER6WFFLTGtTRkM5b0hTem13dmtIUQ== --insecure
+```
+
+::: {.callout-note}
+The Apple M2 chip is ARM-based, so I had to use the ARM version of Windows and Sysmon (`Sysmon64a.exe`). However, the Elastic agent runs via emulation, so I used the x86_64 version.
+:::
+
+For Ubuntu (`gemini` VM), the process was similar but simpler since I only installed the Elastic agent. I used the tarball version instead of the DEB package, as the UI recommended it for Linux. I also switched the agent version from `linux-x86_64` to `linux-arm64` because I'm using an ARM64 Ubuntu VM. After logging in as `carl`, I ran the following commands—remember that the enrollment token changes due to the different policy for Ubuntu:
+
+```sh
+cd $HOME
+curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.14.3-linux-arm64.tar.gz
+tar xzvf elastic-agent-8.14.3-linux-arm64.tar.gz
+cd elastic-agent-8.14.3-linux-arm64
+sudo ./elastic-agent install --url=https://<HOST_IP>:8220 --enrollment-token=d2lOaENwSUJ0X3BLT19kcDdvM206RjdYQTJwa2tRbGFyYi10WEtnamJjUQ== --insecure
+sudo systemctl enable elastic-agent
+sudo systemctl start elastic-agent
+```
+
+Back in Elastic, I verified that both agents were listed under Management > Fleet > Agents. Under the "Agent policies" tab, I clicked on Windows > Add integration and added the "Windows" integration. The "System" integration, added by default, only handles Windows Event Logs, but I needed Sysmon support as well. The default Windows integration settings were sufficient for this, so I didn't need to change anything else.
+
+With the agents up, it was time for some detection fun!
+
+
+## Threat Detection
+I started working on detection engineering in Elastic under Security > Rules > Detection rules (SIEM). There were no rules installed, but I had the option to create a new rule or select from a collection of over 1,200 rules. I decided to start with a preset rule, so I installed and enabled the "Windows Event Logs Cleared" rule—you can use the search bar to find it. This rule detects when a Windows event log is cleared, which is a common tactic used by attackers to hide their tracks.
+
+In Windows PowerShell (as Administrator), I used [wevtutil](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/wevtutil) to list the available log files and clear a random one:
+
+```ps1
+wevtutil el
+wevtutil cl Microsoft-Windows-Wordpad/Admin
+```
+
+A few seconds later, back in Elastic, I navigated to Security > Alerts and saw my first alert. Clicking "View details" on the left and then "Table" in the "Expand details" pane, I could see the alert details. Interestingly, I expected a [1102(S)](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-1102) event, but it logged as Event ID 104 (fields `event.code` and `winlog.event_id`). After some digging, I learned that 1102(S) is reserved for audit logs and 104 for ordinary logs—clearly, I'm not a Windows expert. 🤷🏻‍♂️  +1 for Elastic for the correct rule trigger, -1 for Microsoft for the confusion. 👀
+
+I also noted how well-documented the rule was, including MITRE ATT&CK data and notes for triage and analysis. The UI's "Event details" pane allowed easy field searches, making event investigation straightforward. I appreciated features like adding the alert to a case and highlighting host and user information.
+
+Next, I wanted to create a rule. To be fair, I recreated the same dummy rule I tested in Wazuh: Detect when MS Paint is launched. Under Security > Rules > Detection rules (SIEM), I clicked on "Create new rule". I kept the KQL selected and wrote the following query:
+
+```sql
+host.os.platform:"windows" and event.code:1 and process.name:"mspaint.exe"
+```
+
+::: {.callout-note}
+SIEM rules are like filters, so to make it more efficient, I used the host.os.platform field to filter only Windows hosts. This way, instead of searching all events for MS Paint, it only looks for the process on Windows machines. In this example, I could have been even more specific, like using `agent.name:"apollo"` to narrow the search to only that host.
+:::
+
+I clicked "Continue" and used the following settings:
+
+- Name: Test MS Paint Launched
+- Description: TEST Sysmon: MS Paint process created.
+- Tags: windows, sysmon, test
+
+I clicked "Continue", set the rule to run every minute, and left all actions blank. After clicking "Create & enable rule", I opened MS Paint on Windows, and a few seconds later, the alert successfully triggered in Elastic. 🎯
+
+
+## To Be Continued
+In this post, I installed and configured Elastic Stack to receive data from endpoints and created a simple detection rule to validate the setup. In the next and final post, I'll summarize my thoughts on the entire process, the tools used, challenges faced, and share some ideas for the future of this lab.
+
+I'll drop some references if you want to learn more about Elastic, and I myself will keep exploring this SIEM. See ya! 🚀
+
+
+## References
+- [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
+- [Getting started with the Elastic Stack and Docker Compose: Part 1](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose)
+- [Getting started with the Elastic Stack and Docker Compose: Part 2](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose-part-2)
+- [Practical Threat Detectino Engineering](/log/2024-book-practical-threat-de/)
+
+
+## Appendix: Docker Compose Files
+### .env
+```sh
+# elastic stack - docker-compose environment variables
+
+STACK_VERSION=8.14.3
+ELASTIC_PASSWORD=changeme
+KIBANA_PASSWORD=changeme
+
+COMPOSE_PROJECT_NAME=nebula
+CLUSTER_NAME=nebula
+NETWORK_NAME=nebula
+
+LICENSE=basic
+
+ES_PORT=9200
+KIBANA_PORT=5601
+FS_PORT=8220
+MEM_LIMIT=1073741824
+
+XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=d07ff50f5e1a69f0d1551327d28ecb1f
+XPACK_SECURITY_ENCRYPTIONKEY=d308152525befa4bd5e937ab84629b19
+XPACK_REPORTING_ENCRYPTIONKEY=3ae3190feafd4c49104bc92e36e1b211
+
+FLEET_SERVER_SERVICE_TOKEN=AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE3MjYwODUzNTg5MDQ6MjN5MmgxdFBTM3VPX29ocGJGOVNvUQ
+```
+
+### docker-compose-elk.yml
+```yml
+# elastic stack's docker-compose file
+
+name: ${COMPOSE_PROJECT_NAME}
+
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+volumes:
+  certs:
+    driver: local
+  esdata:
+    driver: local
+  kndata:
+    driver: local
+
+services:
+  setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - ./certs:/usr/share/elasticsearch/config/certs
+    user: "0"
+    command: >
+      bash -c '
+        if [ x${ELASTIC_PASSWORD} == x ]; then
+          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
+          exit 1;
+        elif [ x${KIBANA_PASSWORD} == x ]; then
+          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
+          exit 1;
+        fi;
+        if [ ! -f config/certs/ca.zip ]; then
+          echo "Creating CA";
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+        if [ ! -f config/certs/certs.zip ]; then
+          echo "Creating certs";
+          echo -ne \
+          "instances:\n"\
+          "  - name: es01\n"\
+          "    dns:\n"\
+          "      - es01\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          > config/certs/instances.yml;
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi;
+        echo "Setting file permissions"
+        chown -R root:root config/certs;
+        find . -type d -exec chmod 750 \{\} \;;
+        find . -type f -exec chmod 640 \{\} \;;
+        echo "Waiting for Elasticsearch availability";
+        until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+        echo "Setting kibana_system password";
+        until curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:${ELASTIC_PASSWORD} -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "All done!";
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+  es01:
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - ./certs:/usr/share/elasticsearch/config/certs
+    ports:
+      - ${ES_PORT}:9200
+    environment:
+      - node.name=es01
+      - cluster.name=${CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.http.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  kn01:
+    depends_on:
+      es01:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    volumes:
+      - ./certs:/usr/share/kibana/config/certs
+    ports:
+      - ${KIBANA_PORT}:5601
+    environment:
+      - SERVERNAME=kn01
+      - ELASTICSEARCH_HOSTS=https://es01:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY}
+      - XPACK_SECURITY_ENCRYPTIONKEY=${XPACK_SECURITY_ENCRYPTIONKEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${XPACK_REPORTING_ENCRYPTIONKEY}
+    mem_limit: ${MEM_LIMIT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+```
+
+### docker-compose-fleet.yml
+```yml
+# fleet server's docker-compose file
+
+name: ${COMPOSE_PROJECT_NAME}
+
+networks:
+  default:
+    name: ${NETWORK_NAME}
+    external: true
+
+services:
+  fs01:
+    image: docker.elastic.co/beats/elastic-agent:${STACK_VERSION}
+    container_name: fs01
+    restart: always
+    volumes:
+      - ./certs:/certs
+    ports:
+      - ${FS_PORT}:8220
+    user: root
+    environment:
+      - FLEET_SERVER_ENABLE=true
+      - FLEET_SERVER_POLICY_NAME=fleet-server-policy
+      - FLEET_SERVER_ELASTICSEARCH_HOST=https://es01:9200
+      - FLEET_SERVER_SERVICE_TOKEN=${FLEET_SERVER_SERVICE_TOKEN}
+      - FLEET_SERVER_ELASTICSEARCH_CA=/certs/ca/ca.crt
+      - FLEET_INSECURE=true
+```

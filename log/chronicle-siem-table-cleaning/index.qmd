@@ -1,0 +1,78 @@
+---
+title: "Auto-Cleaning Data Tables in Chronicle SIEM"
+date: 2025-11-19
+description: "Automate Chronicle SIEM Data Tables cleanup for expired rows."
+categories: ["logging", "cloud", "dev", "detection"]
+image: "og-chronicle-siem-table-cleaning.webp"
+---
+
+Last year, I shared [the approach](/log/2024-chronicle-autocleaning-lists/) 🔗 I developed to keep **Reference Lists** sanitized in **Chronicle SIEM** (currently **Google SecOps**). That script helped my team keep our detection rules under management by simply adding an expiration date to certain rows. However, due to recent changes, Google is in the process of deprecating Reference Lists in favor of **Data Tables**.
+
+In this post, I'll share my approach to add the "expiration rows" feature to Data Tables. Here, I'll share some **pain points** and **insights** regarding its implementation.
+
+
+## Data Tables: A More Robust Approach
+Data Tables are a more robust approach to listing items in Chronicle but naturally have different means of interaction. **API-wise**, there's a new set of endpoints, all of them in `v1alpha`, that we can leverage to systematically interact with these tables.
+
+Data Tables allow users to manage a list of entities that can be reused across different detection rules and can also be used to **enrich logs**, providing more context about them.
+
+Under the hood, a Data Table looks like the next code listing.
+
+```json
+{
+  "dataTableRows": [
+    {
+      "name": "projects/<PROJECT_ID>/locations/<LOCATION_CODE>/instances/<INSTANCE_ID>/dataTables/<TABLE_NAME>/dataTableRows/<HASH>",
+      "values": ["col1-val", "col2-val", "col3-val"],
+      "createTime": "2025-11-01T10:08:13.302177Z",
+      "updateTime": "2025-11-11T19:37:09.219255Z"
+    }
+  ]
+}
+```
+
+### Key Technical Aspects
+- **Beyond CSV:** Data Tables are far beyond simple CSV files, as each line has a **hash** associated with it, like a **Hashset**.
+- **Granularity:** This hash-line ID allows us to reference single lines directly from the API, providing an extra level of granularity.
+- **Duplicate Immunity:** Due to this nature, Data Tables are immune to duplicated rows. In fact, if you try to create a duplicate line, Chronicle won't raise an error, and you'll be able to see the duplicated row in the UI for a short period. However, after any refresh, that line will vanish.
+
+### Challenges and Limitations
+- **API Version:** Data Tables are currently only accessible via API through the `v1alpha` endpoint. This means Google will change it sometime in a new version. However, "life happens now," and I can't wait for Google to stabilize this API before I start using it.
+- **TTL Feature:** Data Tables have a built-in **Time to Live (TTL)** feature, which allows us to set a default expiration time for *each row* in that table. Once the TTL reaches zero, the row is automatically deleted by Chronicle.
+  - **The Problem:** It's an **all-or-nothing** solution; you can't mark some rows as "non-expirable."
+  - **The Consequence:** Because of this, we'd have to create two Data Tables for some scenarios, one with TTL on and the other with TTL off, which is not desirable.
+
+That's why I decided to re-implement the expiration feature I had created for Reference Lists, now for Data Tables. The approach is similar:
+
+1. Add an **"expiration"** column to the relevant tables.
+2. Fill the rows I want to expire with a date in the format `YYYY-MM-DD`.
+3. The script will look for these rows and, based on the current date, decide whether to keep that row or not.
+
+
+## Coding the Script
+I started this script on top of the [previous one](https://gist.github.com/lopes/51ff4951c988c5d63f96384c7aef43fe) to avoid starting from scratch. The previous script used to remove duplicated lines and sort the lines alphabetically. That functionality doesn't make sense for Data Tables because, as explained, they're much like **Hashsets** and not simply usual CSV files.
+
+You can find the new script 👉 [**HERE**](https://gist.github.com/lopes/ff5c6882460deabb2e43c8fb38d3eeee) 🔗📍 Although it's self-documented, I'll briefly explain what it does.
+
+### Script Execution and Setup
+This script is expected to be run as a **GCP Cloud Run Function** and requires some environment variables to be set. This approach separates sensitive internal data from the code, providing more security.
+
+1. **Initialization:** It starts by setting up variables and checking if the necessary data is available. If any of them is missing, it will break and log the problem.
+2. **Optional Monitoring:** This script optionally sends errors via **Slack** using a webhook for better monitoring.
+3. **Core Logic:** Once everything is set, it grabs the list of Data Tables and iterates over the ones that have the "expiration" column set.
+4. **Logging:** Errors are collected and sent only once via Slack, but all important actions, including errors, are properly logged for trackability.
+
+### The Problem with Documentation and API Usability
+It took me less than five business days to come up with this solution, but it could have been much less if Google had better documentation and an easier API. 🚨
+
+- **Base URL Issue:** Using the [current documentation](https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.dataTables.dataTableRows), I encountered many errors and was never able to successfully interact with Chronicle. Only after I looked at a code example a colleague—who works at Google—shared with me did I figure out that the **base URL was different** from the official documentation. After changing it, everything worked fine. ⚠️
+- **Bulk Archiving:** Besides that, I really wanted to archive rows in bulk, but the approach in the documentation was unclear using `:bulkCreate`/`:bulkCreateAsync`, forcing me to archive **row by row**. Fun fact: that's why I implemented a function to archive rows (`log_to_archive`) that receives a *list* of rows instead of single rows!
+- **Complexity:** Regarding the ease of using the API, Chronicle involves: a base URL, parameters that include instance ID and location, different endpoints, authorization scopes, and keys. When combined with the poor documentation, this looks more like a blocker to users. While I understand some of these features are security-related, I think Google could make it safe *and* easier, like other vendors do. 🔒✅ Please, Google! 🙏
+
+
+## Bottom Line
+Despite the struggle to understand how to use the API, the final solution looks stable and quite usable. Data Tables are indeed a better and more robust approach to implementing lists, and I see why Google is deprecating Reference Lists.
+
+The API is very responsive, and the data structures it uses are well-designed and allow for the development of good automations; something essential to keeping lists live, safe, and sanitized, which is vital for any good SIEM. 💡
+
+Although I'm a bit concerned about the deprecation of `v1alpha`, I hope Google moves to a better solution in terms of both usability and documentation. If that comes true, I'll happily update this script. 🙂

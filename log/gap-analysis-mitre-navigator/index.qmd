@@ -1,0 +1,193 @@
+---
+title: "Gap Analysis with MITRE Navigator"
+date: 2025-12-10
+description: "Automate MITRE ATT&CK gap analysis combining Navigator layers."
+categories: ["intel", "detection"]
+image: "og-gap-analysis-mitre-navigator.webp"
+---
+
+**MITRE ATT&CK** is a common reference for classifying detection rules. But mapping rules to ATT&CK techniques only provides real value when we go beyond taxonomy and actually use the data to drive action. **Context is key**: an ATT&CK map without interpretation is just a colored matrix. That's where **automation**, **enrichment**, and tools like **MITRE Navigator** come in. Navigator lets you visualize your ATT&CK coverage, compare multiple rules, and spot detection gaps at a glance.
+
+This post breaks down how to programmatically generate Navigator layers, explains their JSON structure, and shows how to combine them for a richer, more actionable gap analysis.
+
+
+## What is MITRE Navigator?
+[MITRE Navigator](https://mitre-attack.github.io/attack-navigator/) 🧭 is a web-based tool for annotating and exploring ATT&CK matrices. It allows you to:
+
+- Group technique mappings into **layers**, then overlay them for comparative analysis.
+- Visualize **strengths and weaknesses** in your detection landscape.
+- Compare **defensive coverage** (e.g., from your SIEM or EDR) against **adversary behavior** (e.g., from CTI reports).
+
+A classic use case is to generate one layer for your SIEM detections and another for the techniques used by a tracked APT. Overlaying them immediately reveals where the adversary operates and how your defenses stack up.
+
+
+## Understanding Navigator Layers
+In MITRE Navigator, layers are **JSON documents** that follow a specific schema—see [Navigator's repository](https://github.com/mitre-attack/attack-navigator/tree/master/layers) on GitHub. Their behavior depends on three versioning components:
+
+- **ATT&CK version**: The [matrix](https://github.com/mitre-attack/attack-stix-data/tree/master/enterprise-attack) to plot (e.g., `18.1`).
+- **Navigator version**: The [software](https://github.com/mitre-attack/attack-navigator/releases) that will render the layer (e.g., `5.2.0`).
+- **Layer version**: The JSON [schema](https://github.com/mitre-attack/attack-navigator/tree/master/layers/spec) itself (e.g., `4.5`).
+
+A layer has two main parts:
+1. **Root-level configuration**: Defines the layer's appearance and behavior, like name, description, filters, layout, color gradients.
+2. **Technique entries**: An array of objects, each defining per-technique attributes like `score`, `metadata`, `links`, and an optional `tactic`.
+
+### Quirks and Gotchas
+- Techniques are declared by **ID** (e.g., `T1078`).
+- Tactics are declared by **shortname** (e.g., `initial-access`), **not** by tactic ID. 👀 This is a common source of confusion.
+- Technique entries can be repeated if you want the same technique to appear tied to different tactics—useful when a detection only applies in specific tactics.
+- If a technique entry omits `tactic`, Navigator marks that technique across all tactics where it appears—this behavior is controlled by the `selectTechniquesAcrossTactics` setting.
+
+### Mapping Tactic IDs to Shortnames
+To build layers programmatically, you'll likely need to map ATT&CK Tactic IDs to their required shortnames. You can extract this from the official [ATT&CK STIX data](https://github.com/mitre-attack/attack-stix-data). For example, this `jq` command parses the Enterprise STIX file to produce a list of active tactics and their shortnames:
+
+```sh
+jq -r '
+  .objects[] |
+  select(
+    .type == "x-mitre-tactic"
+    and .x_mitre_deprecated == false
+  ) |
+  (
+    .external_references[0].external_id
+    + ": "
+    + .x_mitre_shortname
+  )
+' enterprise-attack-18.1.json |\
+sort
+```
+
+The output helps you build a dictionary from tactic **ID** to **shortname**. Your automation will likely start with IDs and must translate them to shortnames for the `tactic` field in a technique entry.
+
+::: {.callout-note}
+The following sections will describe important sections and fields in a MITRE Navigator layer structure. If you're anxious, find a full example of it in the [Automation](#automation-a-base-layer-template) section.
+:::
+
+
+## Layer Configuration (The Root Object)
+This is where you control the layer's look and feel: header visibility, UI layout, sub-technique expansion, color gradients, and platform filters. Common options include:
+
+- `versions`: Specifies the ATT&CK, Navigator, and layer schema versions the file targets.
+- `filters.platforms`: Narrows the layer to specific platforms (e.g., Windows, Linux, SaaS).
+- `layout`: Controls the layout style, visibility of names/IDs, and score aggregation.
+- `gradient`: Defines the color stops and the `minValue`/`maxValue` that the score maps to.
+
+Consistent root-level settings are key to making your exported layers readable and uniform.
+
+
+## Technique Configuration (The Heart of the Data)
+The `techniques` array is what turns raw data into actionable intelligence. Each object in the array corresponds to a specific detection-to-technique mapping and should include enough context to be useful, like rule name, maturity score, description, a link to the detection-as-code, owner, and test status.
+
+If a single detection rule maps to multiple techniques, create a distinct technique object in this array for each one. This pattern keeps traceability clear: from any cell in Navigator, an analyst can click through to the detection’s code, review its maturity, see the owner, and prioritize engineering work accordingly.
+
+### Key Technique Fields
+These fields add context to the matrix, fostering better analysis. It's worth the effort to populate them with rich information.
+
+- `techniqueID` (string): The ATT&CK ID, e.g., `T1078`.
+- `tactic` (string, optional): The tactic shortname (e.g., `initial-access`) if the detection is tactic-specific.
+- `score` (integer): A value representing detection maturity or confidence, which maps to the layer's gradient. I recommend a consistent scale like `1-5` or `1-100`.
+- `comment` (string): A short label, typically the rule name.
+- `metadata` (array): Custom key-value fields for structured data like `context`, `test_coverage`, or `false_positive_rate`.
+- `links` (array): URLs to detection-as-code, playbooks, or other resources.
+- `enabled`, `showSubtechniques` (booleans): Control the display behavior in Navigator.
+
+For example, you could map your internal rule maturity scale to a `1-5` score and use the gradient to highlight low-maturity areas in red and high-maturity areas in green. 💡
+
+
+## Automation: A Base Layer Template
+Automating layer generation allows any automation pipeline to emit a consistent JSON artifact for specific rulesets. A minimal template for the root object looks like the next listing—note that the `techniques` array is empty here:
+
+```json
+{
+  "name": "Logs",
+  "versions": { "attack": "18.1", "navigator": "5.2.0", "layer": "4.5" },
+  "domain": "enterprise-attack",
+  "description": "Example layer for SIEM detections.",
+  "filters": { "platforms": ["Windows","Linux","macOS","Network Devices","ESXi","PRE","Containers","IaaS","SaaS","Office Suite","Identity Provider"] },
+  "layout": { "layout": "side", "showName": true, "showID": true, "showAggregateScores": true, "countUnscored": false, "aggregateFunction": "average", "expandedSubtechniques": "annotated" },
+  "showTacticRowBackground": true,
+  "tacticRowBackground": "#2f0549",
+  "gradient": { "colors": ["#D62D20", "#FFA700", "#008744"], "minValue": 1, "maxValue": 5 },
+  "techniques": [],
+  "links": [],
+  "legendItems": [],
+  "metadata": [],
+  "selectTechniquesAcrossTactics": true,
+  "selectSubtechniquesWithParent": false,
+  "selectVisibleTechniques": false
+}
+```
+
+::: {.callout-tip}
+Focus on programmatically populating the `techniques` array. This is what turns your detection list into a visualization-ready artifact.
+:::
+
+
+## Example Technique Object
+The next listing has a concrete example of a single technique object you would append to the `techniques` array in the base JSON.
+
+```json
+{
+  "techniqueID": "T1078",
+  "tactic": "initial-access",
+  "score": 2,
+  "comment": "Rule: aws_cloudtrail_trail_stopped",
+  "metadata": [
+    { "name": "aws_cloudtrail_trail_stopped", "value": "Maturity: 2\nDescription: A CloudTrail audit trail was stopped" }
+  ],
+  "links": [
+    { "label": "Source Code", "url": "https://github.com/lopes/detections/blob/main/rules/aws_cloudtrail_trail_stopped.yaml" }
+  ],
+  "enabled": true,
+  "showSubtechniques": false
+}
+```
+
+Notes:
+
+- If a rule applies to multiple techniques, create one object per technique.
+- If a detection for a technique is only relevant in a specific tactic, set the `tactic` field.
+- Keep `metadata` structured for easier filtering and automation later.
+
+
+## Combining Layers with Expressions
+Export defensive layers per engine (e.g., SIEM, EDR) and offensive layers per adversary or CTI feed. Load them into Navigator and use the **Create Layer from Other Layers** feature to compute a composite heatmap.
+
+::: {.callout-tip}
+All layers being combined must target the same ATT&CK version and domain.
+:::
+
+Navigator assigns letters (`a`, `b`, `c`, …) to each loaded layer, which you can use in a scoring expression. The goal is to create a formula that highlights the most critical gaps. A simple mental model is:
+* **High Risk (Red):** A technique is used by adversaries, but your detection for it is weak or non-existent.
+* **Low Risk (Green):** A technique is well-covered by your detections, or it is not used by relevant adversaries.
+
+The following expression calculates a risk score from 1 (high risk) to 5 (low risk), assuming your input layers also use a `1-5` scale (1 = weak/low, 5 = strong/high). It considers two defense layers (`a`, `b`) and two offense layers (`c`, `d`).
+
+```js
+1 + 4 * (1 - (max((c - 1)/4, (d - 1)/4) * (1 - min((a - 1)/4, (b - 1)/4))))
+```
+
+This formula is designed to be conservative:
+
+- It takes the **highest** threat score (`max(c, d)`), representing the most capable adversary.
+- It takes the **lowest** defense score (`min(a, b)`), representing your weakest link.
+- It avoids extreme highs and lows, centering most results in the `2-4` "warning" range. This creates a heatmap that flags areas for review without causing undue alarm, signaling *"work to be done"* rather than *"everything is on fire."*
+
+A notable limitation in Navigator is that while scores can be combined, metadata from the source layers (like comments and links) cannot be merged. You must choose one of the base layers to provide the context for the new composite layer.
+
+
+## Practical Recommendations
+- **Enrich every technique entry** with structured metadata (`rule_name`, `adversary`, `description`) so the Navigator matrix becomes a live engineering backlog.
+- **Version your layers** and store them in a repository alongside your detection-as-code to enable historical comparisons.
+- **Treat ATT&CK layers as decision support**, not absolute truth. Combine Navigator outputs with telemetry-based risk scoring and business impact to prioritize work.
+- **Automate testing** and include outcomes (e.g., pass/fail, false positive rate) in technique metadata. This lets you filter for untested or failing detections directly in Navigator.
+
+::: {.callout-tip}
+If you have a **good** Detection-as-Code system in place, you're using a YAML-like format to describe your rules, and all of them are mapped with MITRE ATT&CK. In this case, you can quite easily write a script to plot a MITRE Navigator layer based on your rules.
+:::
+
+
+## Conclusion
+**MITRE ATT&CK** only becomes truly valuable when it informs decisions. By programmatically generating **MITRE Navigator** layers based on your rules and your adversaries, with enriched, actionable metadata, you can turn a simple taxonomy into a prioritized action plan for your security program.
+
+Navigator is simple and flexible, but it expects you to provide the context, as with any MITRE ATT&CK-based analysis. That's where automation and thoughtful metadata design make all the difference. 🧭🚀

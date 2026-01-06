@@ -1,0 +1,86 @@
+---
+title: "Project Nebula: Debriefing"
+date: 2024-09-25
+description: "Final thoughts and improvements for the Nebula detection lab."
+categories: ["detection", "logging"]
+image: "og-nebula-4-debriefing.webp"
+---
+
+This is the last post of the Nebula series. Previously, I set up the [lab topology](/log/2024-nebula-1-detection-lab/) and installed the VMs, then I installed and configured both [Wazuh](/log/2024-nebula-2-wazuh/) and [Elastic](/log/2024-nebula-3-elastic/) for detecting stuff. Now, I'll share my thoughts on both tools and the lab environment. I'll also add some ideas on how to use and improve the lab.
+
+In this post, I'll start by sharing my impressions of Wazuh and Elastic. Next, I'll share thoughts on the lab environment, how it can be improved, and offer some insights. Let's get started!
+
+::: {.callout-note}
+1. [Detection Lab](/log/2024-nebula-1-detection-lab/)
+2. [Detecting with Wazuh](/log/2024-nebula-2-wazuh/)
+3. [Detecting with Elastic](/log/2024-nebula-3-elastic/)
+4. Debriefing (you are here)
+:::
+
+::: {.callout-warning}
+This post is based on my **limited experience** with Wazuh and Elastic. While I've supplemented it with research, it's not a comprehensive review. If you find any mistakes or have suggestions, please let me know. Ultimately, both are excellent tools, and I highly recommend trying them out.
+:::
+
+
+## Wazuh
+Wazuh's installation was straightforward, thanks to the [wazuh-docker](https://github.com/wazuh/wazuh-docker) initiative. It simplifies the process to the point where you might feel like you're installing an all-in-one server, even though it's actually setting up three. This is great because struggling to install a tool is usually a bad sign. I prefer an easy installation so I can spend more time exploring and using the tool.
+
+Wazuh's interface is clean and intuitive. I had no trouble finding what I needed without reading the documentation. The problem started when I realized that Wazuh doesn't store all logs by default—only those related to alerts. For a tool that's supposed to be a SIEM, this is a significant issue. I understand the idea of storing only relevant logs, but I'd rather have Wazuh collect all logs and then let me decide which ones to drop.
+
+Another challenge I faced was with Wazuh's rules. Writing rules in XML is a big no-no for me. Coming from a background in [AQL (QRadar)](https://www.ibm.com/docs/en/qradar-on-cloud?topic=aql-ariel-query-language), [SPL (Splunk)](https://docs.splunk.com/Documentation/Splunk/latest/Search/Aboutthesearchlanguage) and [YARA-L (Google SecOps/Chronicle)](https://cloud.google.com/chronicle/docs/detection/yara-l-2-0-overview), even SQL or [DQL](https://opensearch.org/docs/latest/dashboards/dql/) would be preferable. XML adds unnecessary complexity, making the rules harder to write, read, and maintain. Hopefully the developers will consider moving to a more user-friendly language in the future.
+
+Wazuh also comes with many rules enabled by default, but I noticed a lot of false positives. I suspect this is because the tool is designed to store only logs related to alerts, so the more alerts, the more logs get stored. However, in a production environment, this would lead to alert fatigue. I understand it's difficult to develop rules that work well in every environment (see [Sigma rules](https://github.com/SigmaHQ/sigma)), but there are use cases (like TTP-oriented rules) where it could work better. Other rules could either be disabled or come with easier ways to reduce false positives, such as setting thresholds or exceptions.
+
+### The Good
+- Installation is a breeze.
+- The UI is friendly and intuitive.
+- Querying data with DQL is nice.
+
+### The Bad
+- Doesn't store all logs by default.
+- To disable a rule, you have to edit the XML file and set the alert level to `0` ([reference](https://groups.google.com/g/wazuh/c/xLPksuXnKqc)). It seems the rule is still processed, just not triggered and this is not ideal.
+- Default rules trigger too many false positives.
+
+### The Ugly
+- Rules are written in XML. 😱
+- You need to edit some XML files to configure the tool, such as setting it to store all logs or managing rules.
+
+
+## Elastic
+Elastic doesn't make it easy to install and configure the stack, and this frustrated me to the point of almost giving up on testing the tool. The documentation typically focuses on individual tools rather than the stack as a whole. Since the true value of Elastic comes from using the tools together for observability or security, there's a lot of room for improvement here.
+
+However, once you get past the installation, the tools show why they are so popular. The UI is friendly and intuitive. Querying and writing rules in Elastic feels like working with a top-tier SIEM. The ability to set specific actions when writing a rule is something I miss in proprietary tools, like ~~Chronicle~~ Google SecOps. My brief experience with Elastic's default rules was very positive—the rules were well-crafted and precise. The feature to aggregate alerts into cases also seems very useful for incident responders.
+
+Elastic is packed with features, and even more if you have a platinum license. They seem to understand common pain points and provide solutions. For example, alert suppression is something I miss in other tools, and in Elastic, it seems very straightforward. Along with custom actions and alert highlights (like user and host details), Elastic offers a powerful tool for the whole SOC.
+
+One odd thing I noticed was the size of the agent: while Sysmon and Wazuh agents are around 5MB, Elastic's agent is over 170MB—and more than 300MB on Ubuntu! I'm curious to know what's inside.
+
+### The Good
+- Querying and writing rules in Elastic is top-notch.
+- The rules are well-documented, including MITRE ATT&CK data and notes for triage and analysis.
+- Support for KQL and ES|QL in rule definitions.
+- With a platinum license, you can suppress alerts using specific parameters (fields and time), which is something even Google SecOps lacks. You can also create custom actions per rule, offering flexibility—e.g., sending alerts to a SOAR or IM tool like Slack.
+
+### The Bad
+- The documentation focuses on individual tools, lacking guidance on integrating them for specific use cases.
+- The latest version doesn't allow setting the Output via the UI, and there's no clear documentation on how to achieve this via CLI or during deployment.
+- Despite its large user base, the forums are not very active, and the Elastic employees who provide effective support are usually busy.
+
+### The Ugly
+- It's difficult to get Elastic up and running, even with official documentation and blog posts. 🫤
+
+
+## Takeaways
+Given the pros and cons of each detection tool, I decided to go with Elastic primarily because it's stronger in the detection engineering field, which is the focus of this lab. Nevertheless, I'll keep an eye on Wazuh and hope it improves its rule management and language.
+
+Regarding the lab, I still need to explore some interactions between Kali and the other VMs to see how they behave in terms of telemetry. My plan is to select some use cases and run tests, like [Atomic Red Team](https://atomicredteam.io/), to develop effective detections. Linux monitoring is another area I want to enhance by testing [Auditd](https://github.com/Neo23x0/auditd) and [Sysmon for Linux](https://github.com/Sysinternals/SysmonForLinux). This is important because much is said about Windows monitoring, while Linux is often overlooked, as if it's unhackable. Although both areas are currently in scope, I'll save them for the future.
+
+So far, I'm really enjoying the flexibility of performing tests and seeing the results in real time with this detection lab. With it, I don't need to ask for permissions or worry about breaking something. Every test is a learning opportunity, and they're easy to execute in this environment.
+
+
+## What's Next
+This lab will probably be an eternal work in progress. I envision adding more tools, like a [PfSense](https://www.pfsense.org/) firewall for network monitoring/filtering, a [Caldera](https://caldera.mitre.org/) instance for testing automations, and a vulnerable machine like [WebGoat](https://owasp.org/www-project-webgoat/) for testing telemetry. But that's another story for another time.
+
+I hope you enjoyed this series and that it helps you in your journey. 🙏🏻  If you have any questions or suggestions, feel free to reach out to me on LinkedIn or Bluesky—links on the [homepage](https://lopes.id).
+
+See you in the next adventure! 🚀

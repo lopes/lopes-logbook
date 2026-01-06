@@ -1,0 +1,76 @@
+---
+title: "Endpoint Security Reflections feat. EDR"
+date: 2024-07-08
+description: "Comparing EDR with alternative endpoint solutions."
+categories: ["detection"]
+image: "og-endpoint-security-edr-reflections.webp"
+---
+
+Recently, I stumbled upon a great blog post by Alex Teixeira about using Sysmon as an alternative to EDR ([link here](https://detect.fyi/sysmon-a-viable-alternative-to-edr-44d4fbe5735a)). It got me thinking about the points he made, and I decided to write a post with my own thoughts on the subject.
+
+Follow me as I explore the differences between EDR and EDR-like tools, the challenges of managing your fleet, and the importance of using the data you collect. I'll also discuss the detection standpoint and how EDR-like tools can complement EDR in **certain** scenarios.
+
+
+## EDR and EDR-like Tools
+First, it's important to understand the concepts. EDR stands for Endpoint Detection and Response. These tools reside on endpoints, monitoring them (detection) and sometimes taking action (prenvention). Essentially, they collect various event types on the endpoint and feed the local engine to detect suspicious activities. Unlike antivirus software, EDR technology is behavior-based rather than signature-based, making it smarter. Well-known EDRs include [Crowdstrike](https://www.crowdstrike.com), [Microsoft Defender](https://www.microsoft.com/en-us/security/business/endpoint-security/microsoft-defender-endpoint), and [Cortex](https://www.paloaltonetworks.com/cortex/cortex-xdr).
+
+On the other hand, *EDR-like* tools only monitor events on the endpoint, doing only part of the EDR's job. You'll need to export these events to a SIEM for further correlation and detection. These tools aren't as smart and can't take preventative actions, like blocking anything. The most famous tools in this field are [Sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon) and [osquery](https://www.osquery.io/).
+
+For a fair comparison, Alex considers only the detective part of EDRs, and that's what I'm doing here too.
+
+::: {.callout-note}
+The term *EDR-like* is not widely used. I created it within the scope of this article to group security endpoint tools that are only capable of detecting activities, not responding to them.
+:::
+
+
+## Managing Your Fleet
+Endpoint-based tools in **larger environments**, which is the focus of the original article, will be installed on tens of thousands of machines. Their agents **must** be updated, not only the agent itself but also the policies applied to them. On the EDR side, vendors provide a central console where you can manage your fleet, knowing exactly which endpoints are non-compliant and taking action on them.
+
+For EDR-like tools, there's no such management console. It's up to your team to install and update them. Of course, you can use tools like [Ansible](https://www.ansible.com/) and internal development tools to help manage your fleet, but this adds another burden to your team. Additionally, your team might need to track certain events that aren't logged by these tools by default (Syslog and its XML files), and replicating this configuration across your entire environment will be another infrastructure challenge.
+
+
+## Collecting Data is Not Using Data
+Recently, [I showed how to integrate MISP and Chronicle](/log/2024-misp-chronicle-integration/), highlighting the importance of **using the collected data**, and the scenario here is the same.
+
+EDR tools start monitoring your endpoint right after installation. They collect data, and since their engine resides on the agent, the telemetry is used immediately. However, the action depends on the EDR's state. EDRs have different operational states: some just monitor the environment (learning), while others take action effectively, but all are capable of generating alerts. Usually, you set your EDR to only alert during deployment, and after some fine-tuning, you switch it to block mode and don't look back.
+
+In contrast, EDR-like tools only operate in a monitoring state, and their events must be forwarded somewhere for use (like a SIEM). You'll have to implement the detection rules yourself to get alerts. Here, it's important to highlight the difference between alerts and raw telemetry. Quoting Alex, *"an alert carries a clear alert signal, while regular events carry usual messages that must be analyzed."*  This is crucial, and it's important to understand the difference between the two. Alerts are the result of a detection rule, while regular events are just raw telemetry. You can't just forward all telemetry to your SIEM and expect it to generate alerts. You'll need to implement detection rules to generate alerts from the telemetry you collect.
+
+Even if you're a seasoned practitioner and start from a known repository like [Sigma](https://github.com/SigmaHQ/sigma) or [Elastic](https://github.com/elastic/detection-rules), the process of crafting **good** detections is hard. I won't dive deep into this here, but reading chapter 2 of the excellent [Practical Detection Engineering book](https://www.packtpub.com/en-us/product/practical-threat-detection-engineering-9781801076715) will give you a glimpse of this process. It takes time, requires a lot of expertise, and many tests to get a rule that fits your environment. And even after all this, you'll need to keep an eye on the rule to ensure it's still effective.
+
+
+## EDR and SIEM
+If you have an EDR, make the most of it; don't try to be overly clever by mixing it with EDR-like tools in complicated scenarios. Also, avoid sending EDR telemetry to SIEM because it might increase your SIEM budget without improving security. The EDR is already doing the job of monitoring the endpoint, and sending its telemetry to SIEM is redundant.
+
+The only good reason to do this is to centralize your detections and investigations, but centralizing alerts and pivoting between tools is a better approach (and you might also [leverage SOAR](/log/2024-secops-beyond-tuning-analytics/) to centralize investigations).
+
+I envision only certain scenarios where sending EDR data to SIEM is okay, such as:
+
+1. Only sending EDR **alerts** to SIEM
+2. Forwarding **specific** telemetry to implement new rules, considering you can't do this on the EDR itself
+3. Sending **specific** telemetry to correlate with other sources to generate or filter alerts
+
+I don't like blindly trusting any vendors, so I think you'll need some experts on your team to continually manage and evaluate the tool. This team can handle purple team exercises and testing tools like [Atomic Red Team](https://atomicredteam.io/) and [Caldera](https://caldera.mitre.org/). Gaps found can be addressed either with the vendor or internally, possibly by implementing new detections directly on the EDR or tailoring existing ones to better fit your scenario.
+
+
+
+## EDR-like as a Complement to EDR
+Just like Alex, I prefer EDR over EDR-like, but that doesn't mean I should **never** consider using EDR-like. EDR-like tools might help in certain scenarios. EDR vendors don't let you export all telemetry the agent generates to other tools. Also, no software is perfect, so no matter which EDR you choose, it will have gaps and problems. This [EDR benchmark](https://github.com/tsale/EDR-Telemetry) demonstrates this point.
+
+In the Industrial Control System (ICS) world, it's common to have legacy hosts running software that controls PLCs, relays, or circuit breakers. Some of these machines might be so outdated that your EDR vendor no longer supports them, or their requirements prevent you from installing the EDR. In such cases, you might use EDR-like tools to send telemetry for detecting malicious activity. This is a specific scenario, and you'll likely have tools in place like firewalls, IDS, or virtual patching. However, none of these tools provide the same endpoint visibility as EDR-like.
+
+
+## The Detection Standpoint
+If you're not convinced that EDR is superior, consider having a top-notch team that quickly implements new rules in your SIEM for EDR-like telemetry. As we all know, real-time for SIEM is "real-time". You'll lose crucial time moving alerts to be parsed and processed elsewhere for further detection.
+
+EDRs, on the other hand, implement detections right on the endpoint, drastically reducing the Mean Time to Detect. Even if you forward such alerts to SIEM, the detection was already done, and in SIEM, it'll be a simpler and faster rule to sound the alarm for CSIRT. Moving detection closer to the asset (endpoint) is much better than centralizing it and flooding your network with telemetry packets.
+
+
+## Takeaways
+I don't see why a team with a proper budget would choose EDR-like over EDR—students and testing laboratories are out of scope naturally. Big corporations have bigger budgets and can afford the price of purchasing EDR tools, which is the scope Alex set for his article.
+
+Talking about money, while EDR has higher Capex, it would be naive to think a Sysmon or osquery deployment is free. These tools also add a significant infrastructure burden to the team that won't be easily absorbed. In other words, despite EDR's high Capex, its Opex is lower than EDR-like tools, which have low Capex but high Opex (the larger the environment, the higher the Opex).
+
+Set your strategy and make the best of the tools you have. If you mix things up, ensure they're exceptions for specific scenarios and be certain of the results you're pursuing. **EDR tools are better than EDR-like**, but you will need an internal team not just to keep the lights on but to constantly evaluate and tune the tool.
+
+Happy detecting!

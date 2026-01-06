@@ -1,0 +1,52 @@
+---
+title: "To Detect or Not to Detect"
+date: 2024-12-31
+description: "Guidelines for evaluating effective SOC detections."
+categories: ["detection", "dfir"]
+image: "og-detect-or-not-strategy.webp"
+---
+
+As a Detection Engineer, I analyze requests for new detections and decide whether they are worth implementing. While this decision is not always straightforward, I follow a set of guidelines to help determine if a detection is justified. In this post, I aim to shed light on this topic.
+
+
+## What is a Detection?
+A detection is a rule that triggers an alert 🚨 when specific conditions are met. These conditions can include a single event, a sequence of events, or a combination of events. In a SOC, detections are designed to identify and respond to malicious or unauthorized activities in real-time or near real-time. Such activities often fall into the following categories:
+
+1. **Adversarial behavior**: Use cases aligned with known tactics, techniques, and procedures (TTPs) of threat actors, such as lateral movement, privilege escalation, or data exfiltration. Frameworks like MITRE ATT&CK are often referenced.
+2. **Indicators of Compromise (IOCs)**: Specific artifacts or evidence of malicious activity, such as malware hashes, IP addresses, or domains. Here, there's an intersection with threat intelligence.
+
+As discussed [here](/log/2024-towards-actionable-detection/), **detections should lead to actionable steps that mitigate risk**. Effective detections require input data, usually logs from the monitored environment, and must provide enough context to be actionable for analysts.
+
+
+## What is NOT a Detection?
+When implementing new security tools or addressing vulnerabilities, it's common to see requests for new detections. Similarly, compliance with regulations or incidents often prompts such requests. However, are detections always the right response? Not necessarily. Two other areas often overlap with detections but are distinct:
+
+- **Vulnerability management**: Responsible for identifying, assessing, and remediating vulnerabilities to reduce risk as a proactive approach to minimizing the attack surface.
+- **Governance, Risk, and Compliance (GRC)**: Responsible for ensuring adherence to organizational policies, standards, and regulatory requirements.
+
+For example, consider a tool that monitors systems for configuration drift, like [AWS Config](https://aws.amazon.com/config/). If it generates alerts about an S3 bucket lacking server-side encryption or an unencrypted EBS volume, how should the SOC respond? Often, the SOC ends up acting as a helpdesk, forwarding the alert to the system owner or cloud team. Meanwhile, the SOC could be investigating a ransomware incident or handling a flood of phishing emails. Should the SOC be responsible for these alerts? No 👎.
+
+**There's a timing issue at play.**  SOC alerts are treated as ongoing incidents requiring immediate attention, while vulnerabilities and compliance issues may take longer to address due to the need for updates or bug fixes. It leads to different approaches. Detections are designed to trigger alerts in real-time, while vulnerability management and GRC are more about risk management and compliance over time.
+
+
+## Decision Framework
+When evaluating a new detection request, I begin by understanding the use case. Key questions include:
+
+- What threat actors are we trying to detect?
+- What TTPs are we targeting (e.g., MITRE ATT&CK, Kill Chain)?
+- Are there any IOCs that can aid detection?
+- Have we implemented preventative measures to mitigate this risk?
+
+These questions clarify the context and delineate the use case. If the request is unrelated to malicious behavior or adversarial tactics, it **often** pertains to a vulnerability or compliance issue. In such cases, I consider whether IOCs or data sources can enrich the SOC's context.
+
+For instance, vulnerability scanners are not ideal for creating detection alerts, but they are valuable for enrichment. They provide insights into internal assets, configurations, and vulnerabilities, which can enhance the SOC's detection capabilities by improving risk assessment and understanding the environment. Therefore, it is worth ingesting their logs into the SIEM for context 👀.
+
+Finally, I document my findings and discuss them with the team. Together, we evaluate the request and decide whether to proceed. If the detection is approved, we define requirements and priorities. If not, we document the rationale and provide feedback to the requester. In some cases, we may decide not to implement a detection but still ingest relevant logs for added context, like vulnerability scanners.
+
+
+## Bottom Line
+To decide if a detection is worth implementing, it's essential to understand the context and use case. Detections should focus on identifying and responding to malicious activities in real-time—they're not the right solution for vulnerabilities or compliance issues. Other teams may intersect with Detection Engineering in similar ways, even if they weren't mentioned here. Take the time to understand your InfoSec structure and build strong alliances with other teams to seamlessly route requests to the right place 💡.
+
+As a Detection Engineer, you are responsible for your detection rules. Each new detection and data source consumes resources and can impact SOC performance. Implementing detections outside the SOC's scope risks causing alert fatigue 😫, reducing team efficiency 📉, and misusing resources 💸.
+
+By following a structured decision framework, you can ensure that implemented detections align with the organization's security strategy and provide value to the SOC. Remember to document your decisions, seek peer feedback, and maintain clear communication with requesters. This approach helps the SOC stay focused on its primary mission: detecting and responding to malicious activities. ✌️

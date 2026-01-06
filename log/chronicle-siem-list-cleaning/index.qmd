@@ -1,0 +1,180 @@
+---
+title: "Auto-Cleaning Lists in Chronicle SIEM"
+date: 2024-07-18
+description: "Automate Chronicle SIEM list cleanup for expired items."
+categories: ["logging", "cloud", "dev", "detection"]
+image: "og-chronicle-siem-list-cleaning.webp"
+---
+
+Lists are a fundamental component of any SIEM, providing more context to the rules for detecting particular assets or avoiding false positives. When working with these lists, it's common to add items that will be there for a certain period and then must be removed. However, I have yet to find a SIEM that lets me set a date to remove any item, making list maintenance challenging.
+
+In this post, I'll present a solution I developed using Chronicle SIEM and a pair of Google Cloud Platform services to remove expired entries automatically and keep my Reference Lists sanitized.
+
+
+## The Challenge
+An enterprise environment is like a living creature, with many things happening that might negatively affect Security Operations (SecOps). In some situations, we must create exceptions in our detections to avoid false positives or to make a rule work properly. Some examples include:
+
+- Adding pentesters' addresses to allowlists
+- Adding a test user to a denylist
+- Adding an audit account to a rule exception
+- Adding a temporary domain to a denylist
+
+In all these cases, we must remember to remove these items after a certain period; otherwise, we might allow a potential attacker to bypass our detections or keep a **backdoor** 🦹🏻‍♂️ open in our environment. But how can we remember to remove these items? 🤔  I used to mark my calendar to remind me to remove these items, but it's not a scalable solution and is prone to human error. Sometimes, I acknowledged the reminder, but while working on the list update, a more urgent task appeared, and I forgot to remove the item. Sad, but true. 😱
+
+Since it's a simple task, I designed a solution to automate it some time ago but only now had the opportunity to implement it. 🤖🚀
+
+
+## The Solution
+I designed **a simple database-less** solution, leveraging Chronicle SIEM's ability to allow comments in the lists. The big picture can be found in the next diagram:
+
+```{mermaid}
+sequenceDiagram
+  Cloud Scheduler->>+Cloud Function: Triggers function
+  Cloud Function->>+Chronicle: Requests all/some lists
+  Chronicle-->>-Cloud Function: Returns the lists
+  loop Lists Update
+    Cloud Function->>+Chronicle: Requests all lines from list
+    Chronicle-->>-Cloud Function: Returns the lines
+    Cloud Function->>Cloud Function: Process all lines
+    Cloud Function->>Chronicle: Updated list without expired lines
+  end
+```
+
+The central point of this solution is the function triggered by a scheduled job. This function will request all lists from Chronicle SIEM and then iterate over all lines of each list, removing (commenting) the expired ones. The updated lists will be uploaded back to Chronicle SIEM, keeping them sanitized.
+
+You can find the [code of this function here](https://gist.github.com/lopes/51ff4951c988c5d63f96384c7aef43fe) 👾🔗, but I'll explain some parts of it in the next section.
+
+### Python Code
+This function 🐍 handles all Reference Lists in Chronicle SIEM and acts only on lines with the following format: `<value>  // expires:YYYY-MM-DD`. The regular expression ensures that the line is not commented yet and that the expiration date is present. Extra spaces and appended information are allowed:
+
+```python
+r'^[\w\:\-\?\!\@].*//\s*expires:\s*(?P<expiration>\d{4}-\d{2}-\d{2})'
+```
+
+After getting the expiration date, the function will compare it with the current date and comment the line if the expiration date is in the past.
+
+::: {.callout-note}
+The date is truncated to 0h each day, so it will remove items that expired on the same day it is running. If you want to keep the items until the end of the day, set the expiration date to the next day because they will expire at 0h of the next day. 💡
+:::
+
+This function establishes an authenticated connection to Chronicle using the Google API and reuses it through the `client` object, so every subsequent request uses the same session.
+
+With the connection established, it uses the `cleanup_all_lists` function to iterate over all lists. This function calls the `cleanup_list` function for each list, which comments the expired items from the list and updates it in Chronicle SIEM. Before uploading the updated list to Chronicle, this function also orders the lines alphabetically for a better organization. 🔤
+
+::: {.callout-warning}
+The `set()` function is used to remove duplicates, so **the order of the lines in the list will be changed!**  That's the main reason why I used `sorted()` before uploading the new list to SIEM. If you want to keep the order, remove the `set()` and `sorted()` and use a different approach to remove duplicates.
+:::
+
+`main` is the **entry point** of the function and receives the payload from the cron job (Cloud Scheduler) through [a Flask decorator](https://flask.palletsprojects.com/en/1.1.x/api/#flask.Request.get_json). This payload must be a JSON object with the following structure:
+
+```json
+{
+  "command": "cleanup",
+  "list_name": "ALL__LISTS",
+  "list_type": ""
+}
+```
+
+The `command` key must be `cleanup` and the `list` key must be the name of the list to be cleaned up. To clean up all lists, set `ALL__LISTS` as the value of the `list` key.
+
+::: {.callout-note}
+Check [this documentation](https://cloud.google.com/chronicle/docs/reference/reference-lists-api) to learn about Reference Lists and their types in Chronicle SIEM: `CONTENT_TYPE_DEFAULT_STRING`, `REGEX`, and `CIDR`.
+:::
+
+
+## The Deployment
+To deploy this solution, you must have a [Google Cloud Platform (GCP)](https://console.cloud.google.com) account and a project with the necessary permissions to create and manage Cloud Functions, Cloud Scheduler, and the necessary APIs. You'll also need a service account with the necessary permissions to access Chronicle SIEM.
+
+### Chronicle SIEM Service Account
+I won't cover the details of creating a service account and granting the necessary permissions, but you can find more information in the [official documentation](https://cloud.google.com/iam/docs/service-account-overview). After creating the service account and granting the necessary permissions, create a key for it and download it in JSON format. This key will be used to authenticate the function to access Chronicle SIEM and will look like this:
+
+```json
+{
+  "type": "service_account",
+  "project_id": "project-id-here",
+  "private_key_id": "private-key-id-here",
+  "private_key": "a-very-long-private-key-here",
+  "client_email": "client@mail.domain",
+  "client_id": "client-id",
+  "auth_uri": "https://accounts.google.com/...",
+  "token_uri": "https://oauth2.googleapis.com/...",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/...",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/...",
+  "universe_domain": "googleapis.com"
+}
+```
+
+### Google Cloud Function
+After downloading the key (a JSON file), keep it safe locally until you finish the deployment. ⚠️  Now, go to Google Cloud Console and create a new Cloud Function with the following settings:
+
+1. Environment: `2nd gen`
+2. Function name: `chronicle-list-cleaner`
+3. Region: `us-central1` (or another of your preference)
+4. Trigger type: `HTTPS` (will setup Cloud Scheduler later but copy the URL now)
+5. Set the runtime environment with the following minimum requirements:
+  - Memory: `256` MiB
+  - CPU: `1`
+  - Timeout: `300` seconds
+  - Add the `CHRONICLE_KEY` environment variable with the JSON access key
+6. Click `Next`
+
+::: {.callout-caution}
+Failing to meet the minimum requirements for the runtime environment may lead to **timeout errors** during function execution.
+:::
+
+::: {.callout-note}
+I built this script using the default region but with slight modifications, you can deploy it to any region supported by Chronicle SIEM and Cloud Functions.
+:::
+
+In the code section, set the Python runtime (tested in 3.12) and set the entry point to `main`. Paste [the code](https://gist.github.com/lopes/51ff4951c988c5d63f96384c7aef43fe) 👾 into the `main.py` file using the inline editor. In the `requirements.txt` file, paste the following:
+
+```
+functions-framework==3.*
+google-auth
+requests
+```
+
+Finish the Cloud Function creation and copy the URL 🔗 of the function. You'll need it to create the Cloud Scheduler job.
+
+::: {.callout-tip}
+At this point, you can delete the Chronicle key from your local machine. The key is already stored in the Cloud Function, and you don't need it anymore.
+:::
+
+### Google Cloud Scheduler
+In GCP, go to Cloud Scheduler and create a new job with the following parameters:
+
+1. Name: `chronicle-list-cleaner`
+2. Region: According to your environment
+3. Description: `Runs chronicle-list-cleaner daily to remove expired lines`
+4. Frequency: Select the desired frequency, like `10 5 * * *` for daily at 0510
+5. Timezone: According to your preference
+6. Click to proceed and select `HTTP` for the target type
+7. URL: Paste the URL 🔗 from the Cloud Function created before
+8. HTTP method: `POST`
+9. Add an HTTP header to identify the request and its content:
+  - `Content-Type`: `application/json`
+  - `User-Agent`: `Google Cloud Scheduler`
+10. Add the following body:
+```json
+{
+  "command": "cleanup",
+  "list_name": "ALL__LISTS",
+  "list_type":  ""
+}
+```
+11. Configure the authentication method according to your environment
+12. Click to proceed and finish the job creation
+
+::: {.callout-tip}
+Before running the function against all lists, test it with a single list to avoid any issues. ⚠️
+:::
+
+If everything is correct, the job will run daily at the specified time and clean up the lists with lines set to expire. ⏰  Check the **logs in the Cloud Function** to see the execution details and any errors that may occur. 👉🏻 I added `print` statements in the code to help you debug any issues in the crucial parts. You can find this information in the Cloud Function logs. 🐞
+
+
+## The Conclusion
+If you did everything correctly, you'll have a daily job that cleans up all lists in Chronicle SIEM with expired lines. This solution can be improved in many ways, such as adding more options to the payload, like a list of lists to clean up or a list of lists to ignore. You can also add more logging and error handling to the function to make it more robust.
+
+Keeping your lists sanitized is a good security practice 🔒 to avoid false positives and false negatives in your detections. If you have any questions or suggestions, please let me know in the comments below. Also, if you improve this solution in any way, let me know so I can update the code here. 👊🏻
+
+Happy detecting! 🕵️‍♂️🔍👨‍💻

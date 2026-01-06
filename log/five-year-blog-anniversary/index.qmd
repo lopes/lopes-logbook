@@ -1,0 +1,60 @@
+---
+title: "Five-Year Blog Anniversary"
+date: 2025-04-27
+description: "Reflections on blogging, ownership, and growth."
+categories: ["random"]
+image: "og-five-year-blog-anniversary.webp"
+---
+
+Five years ago, during the COVID-19 pandemic, I decided to start a new blog to share some thoughts and tutorials. As a dissident from the open-source community, I see knowledge sharing as a great way to contribute to others. Also, since I was starting my [CISSP journey](/log/2020-cissp-certification/), maintaining a blog would help document my achievements for CPE purposes.
+
+I had other blogs in the past (now deprecated), but this one is the most long-lived. So I decided to share some reflections on this journey. 💭
+
+
+## Ownership and Stack
+One of the main reasons I started this blog was to work with different technologies and experiment with new things. Beyond the technical aspects, this decision also had a philosophical reason: **I want to be the owner of my data**.
+
+When you rely on platforms like Medium or LinkedIn, you abstract away the infrastructure, but it comes at the cost of not fully owning your content—and eventually, you might lose it. Keeping ownership of the content I create gives me peace of mind that it will always be available on my own terms.
+
+This idea aligns with the [**POSSE** concept](https://www.theverge.com/2023/10/23/23928550/posse-posting-activitypub-standard-twitter-tumblr-mastodon)—Publish (on your) Own Site, Syndicate Elsewhere. The core idea is to keep your content on infrastructure you control, using a dedicated domain that you can reference from any platform.
+
+Of course, this adds the burden of maintaining a stack that includes a domain, DNS, WAF, version control, CI/CD, and content creation tools—some optional, but all useful for automating and securing the process. Although it's more complex, this "**Blogging as Code**" approach is a fun excuse to use some of the tools we (IT and security folks) study.
+
+In a nutshell, my current stack includes:
+
+- a custom domain—`lopes.id`;
+- DNS, web analytics, and WAF via [Cloudflare](https://www.cloudflare.com/);
+- version control and CI/CD with Git, [GitHub](https://github.com/lopes/), and [GitHub Actions](https://github.com/features/actions); and
+- a static site generator: [Zola](https://www.getzola.org/).
+
+I intentionally avoided complex blogging platforms like WordPress to make the final product safer and easier to maintain. With a static site, I can publish content similarly to how I used to work with [LaTeX](https://www.latex-project.org/) 🦖: write in Markdown and let the site generator handle the formatting based on the theme. Simple and effective.
+
+
+## Reflections
+Over the years, this blog has helped me improve my writing skills, including writing in English, since my native language is Brazilian Portuguese. 🇧🇷 Writing is a skill that must be practiced, and I remember how difficult it was to write down a thought when I started compared to now—just check the older posts. I'm far from perfect, but today it's much easier for me to express myself in English. 🇺🇸
+
+Writing is something you improve through consistent reading and practice. At work, when I have to write reports or guidelines, my writing is often praised by teammates for its clarity. Thanks to this blog, I've learned to summarize content, impressions, and ideas into concise texts that communicate effectively.
+
+On the technical side, it's been a lot of fun putting the tools together to deliver the content. I had to learn some CI/CD techniques to automate deployments from merges. I also adapted the [Git Flow](https://www.gitkraken.com/learn/git/git-flow) workflow to manage branches, parallelize work, and protect the mainline. Working with Cloudflare's DNS and WAF gave me a taste of what it's like for SREs to keep systems running smoothly. As an Infosec engineer, this insight has improved how I interact with those teams.
+
+At one point, I even [assessed my site with BURP Suite](/log/2024-burp-website-hardening/) to find and fix vulnerabilities. This kind of "full stack" exercise is great because you have a grasp on how to test, fix, and make strategic decisions while considering the side effects of each change.
+
+Content-wise, I started with simple tutorials pulled directly from my personal notes. That worked well, and some of those posts (especially the Arch Linux 🐧 ones) are still among the most visited. However, I eventually realized that writing a new post takes time, and as a new father, I didn't have much of that. So I decided to focus my efforts on my main field: **Information Security**.
+
+::: {.callout-note}
+Since the AI/LLM 🤖 hype began, [I've been experimenting with this technology](/log/2023-gpt35-seo-advice/). From my very first tests back in 2023, I reached the same conclusion as some of the AI experts I follow: LLMs are great assistants, but their output always requires review. Since then, I've been using LLMs to help me review my texts for grammatical errors and to improve my written English.
+
+That said, all posts here are written by me, reviewed with the help of an LLM, and then re-reviewed by me. As I'm using this technology to enhance my skills, it wouldn't make sense to let it write content on my behalf. So rest assured—all the content here is human-made. 🙋🏻
+:::
+
+
+## Future
+Blogging is a solitary and arguably old-school activity in a world dominated by streamers. 📺  I didn't start this blog to become famous—my experience has shown that I'm often the most frequent reader of my own posts. Still, once in a while, a post I wrote long ago ends up being helpful to someone else, and that's a nice **bonus**.
+
+Sharing my perspective (whether technical or philosophical) forces me to organize my thoughts. Since I mostly write for my future self, I aim to be direct and as clear as possible.
+
+Because I fully own my content (POSSE), I decide how it's made available and use other platforms purely for distribution.
+
+Despite the time and effort a blog requires to maintain, it's absolutely worth it. Sharing knowledge is a meaningful way to contribute to others, and ultimately, it serves as a time capsule for yourself. Like a photo album, it's nice to look back and remember what you were thinking at different points in time. It's also great to compare who you are now to your past self and see how much you've grown.
+
+**To my past self**: thank you for your time! You saved me a lot of effort today, and I've learned a ton thanks to your dedication. **To my future self**: I hope I can keep doing this work to help you grow even more—to boldly go wherever I want to go. 🚀

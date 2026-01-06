@@ -1,0 +1,163 @@
+---
+title: "Project Nebula: Detecting with Wazuh"
+date: 2024-09-20
+description: "Setting up Wazuh for log collection and detection rules."
+categories: ["detection", "logging"]
+image: "og-nebula-2-wazuh-detection.webp"
+---
+
+This is the second part of the DE Lab series, aka Project Nebula. 🌌  In the [previous post](/log/2024-nebula-1-detection-lab/), I covered motivations, topology, tools, and set up the VMs. Now, I'll walk through setting up Wazuh, configuring Windows and Ubuntu VMs to send logs, and creating a simple detection rule in Wazuh. Let's get started! 🚀
+
+::: {.callout-note}
+1. [Detection Lab](/log/2024-nebula-1-detection-lab/)
+2. Detecting with Wazuh (you are here)
+3. [Detecting with Elastic](/log/2024-nebula-3-elastic/)
+4. [Debriefing](/log/2024-nebula-4-debriefing/)
+:::
+
+
+## Wazuh
+Wazuh is [described by its creators](https://github.com/wazuh/wazuh-documentation) as *"a free, open source, and enterprise-ready security monitoring solution for threat detection, integrity monitoring, incident response, and compliance."*  I decided to try it out because it's gaining popularity and seems to have a solid foundation.
+
+Wazuh is built on the Elastic Stack, but it does an excellent job of abstracting the complexity of the stack through projects like [wazuh-docker](https://github.com/wazuh/wazuh-docker), a set of Docker Compose files and related documentation that make deploying Wazuh as simple as running a few commands. This is great because it allows me to focus on the lab, rather than the infrastructure.
+
+I followed the [official installation guide](https://documentation.wazuh.com/current/deployment-options/docker/wazuh-container.html) for version 4.8.2. Below, I show the first steps to deploy a single-node instance. I started downloading the code, and generating the digital certificates that will be used by the application for encrypted communication.
+
+```sh
+git clone https://github.com/wazuh/wazuh-docker.git -b v4.8.2
+cd wazuh-docker/single-node/
+docker-compose -f generate-indexer-certs.yml run --rm generator
+```
+
+::: {.callout-caution}
+I encountered a strange error when trying to generate the certificates. After some research, I found out that it's a known bug in Docker Compose. I resolved it by removing the `.*credsStore.*` line from `~/.docker/config.json`.
+:::
+
+Once the certificates were generated, I built the containers using `docker-compose up`, as I wanted to view the deployment logs. After a few moments, the containers were up, and I was able to access the Wazuh dashboard by typing `https://localhost` in my browser—Wazuh's port 5601 was mapped to port 443. The default credentials are:
+
+- User: `admin`
+- Password: `SecretPassword`
+
+By default, Wazuh doesn't store all the logs it receives, only those that match detection rules (alerts). This is problematic in my point of view because when investigating incidents, you need to analyze logs—no logs, no crime. According to the [official documentation](https://documentation.wazuh.com/current/user-manual/manager/event-logging.html), setting `logall` and `logall_json` to `yes` should make it store all logs. But even after following the full procedure from the documentation, it still didn't work for me. It's probably something I've missed but I didn't want to spend more time on this issue, so I decided to move on. Not the best start.
+
+I wanted to separate Windows and Ubuntu scopes for better management in Wazuh. Here's how I did it:
+
+1. Open the hamburger menu in the top-left corner  (all options cascade down from it) > Server Management > Endpoint Groups and add two new groups: `windows` and `ubuntu`.
+2. Edit the `windows` group configuration by replacing the `agent.conf` content with the code below to ensure the Windows agent pushes Sysmon logs to Wazuh:
+
+```xml
+<agent_config>
+  <!-- Sysmon -->
+  <localfile>
+    <location>Microsoft-Windows-Sysmon/Operational</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+</agent_config>
+```
+
+Next, I used Wazuh's UI under Server Management > Endpoints Summary to create the installation scripts for the agents. I simply entered the host's IP address (step 2), selected Windows or Linux (DEB aarch64—remember: it's an ARM-based host) in step 1, and assigned the appropriate group (`windows` or `ubuntu`) in step 3. I copied each script and saved it in a text file for later use.
+
+::: {.callout-note}
+It's fine to use the x86_64 version of the agent for Windows (using an ARM-based version here, remember?) since it will run in compatibility mode. However, the Linux agent must match the host's architecture.
+:::
+
+
+## Agents
+The VMs were previously installed in [part 1](/log/2024-nebula-1-detection-lab/) of this series. Now it's time to set them up in Wazuh. Starting with Windows (`apollo`), I logged in as user `neil` (remember the naming convention?), opened PowerShell as Administrator, and ran the following commands to:
+
+1. Navigate to the user's Downloads folder.
+2. Download and install the Sysmon agent.
+3. Download and install the Wazuh agent using the script generated by Wazuh's UI.
+   - If you use this, replace `<HOST_IP>` with the host's IP address.
+
+```ps1
+cd $HOME/Downloads
+
+Invoke-WebRequest -Uri https://download.sysinternals.com/files/Sysmon.zip -OutFile .\sysmon.zip
+Expand-Archive -Path sysmon.zip -DestinationPath .\sysmon
+cd sysmon
+.\Sysmon64a.exe -i -accepteula
+cd ..
+
+Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.8.2-1.msi -OutFile ${env.tmp}\wazuh-agent
+msiexec.exe /i ${env.tmp}\wazuh-agent /q WAZUH_MANAGER='<HOST_IP>' WAZUH_AGENT_GROUP='windows'
+
+NET START WazuhSvc
+```
+
+Since I'm using an ARM-based system, I used `Sysmon64a.exe`. If you're using an x86 CPU, you should use `Sysmon64.exe` or `Sysmon.exe`. Similarly, the Wazuh agent may be installed in `Program Files`, `Program Files (x86)`, or `Program Files (Arm)` depending on the architecture you're using.
+
+::: {.callout-note}
+Sysmon logs can be viewed in Windows under Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational.
+:::
+
+Now for Ubuntu. Here, I decided to install only the Wazuh agent, leaving other monitoring tools like [Auditd](https://github.com/Neo23x0/auditd) and [Sysmon for Linux](https://github.com/Sysinternals/SysmonForLinux) for future additions. I logged into `gemini` and ran the following commands to download, install, and start the Wazuh agent—again, replace `<HOST_IP>` with the host's IP address:
+
+```sh
+wget https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent/wazuh-agent_4.8.2-1_arm64.deb && sudo WAZUH_MANAGER='<HOST_IP>' WAZUH_AGENT_GROUP='ubuntu' dpkg -i ./wazuh-agent_4.8.2-1_arm64.deb
+sudo systemctl daemon-reload
+sudo systemctl enable wazuh-agent
+sudo systemctl start wazuh-agent
+```
+
+::: {.callout-note}
+For information on troubleshooting Wazuh agent connections, refer to [this document](https://documentation.wazuh.com/4.4/user-manual/agents/agent-connection.html).
+:::
+
+After that, I logged into the Wazuh dashboard and found both hosts under Server Management > Endpoint Summary. With the agents now being monitored, it was time to have some fun.
+
+
+## Threat Detection
+I created a simple rule to test Wazuh's detection engine. The idea was to trigger an alert when a specific process was created, and I randomly chose MS Paint. 🎨  In Wazuh, I went to Server Management > Rules > Add new rules file. Named the new rule as `1234-sysmon-test-mspaint-monitor.xml` and added the following content:
+
+```xml
+<group name="windows, sysmon, test">
+  <rule id="123456" level="12">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.image">mspaint.exe</field>
+    <description>TEST Sysmon: MS Paint process created</description>
+  </rule>
+
+  <rule id="123457" level="12">
+    <if_group>sysmon_event5</if_group>
+    <field name="win.eventdata.image">mspaint.exe</field>
+    <description>TEST Sysmon: MS Paint process terminated</description>
+  </rule>
+</group>
+```
+
+After saving the file and restarting the engine, I opened MS Paint in Windows. Then, I went back to Wazuh under Explore > Discover, and saw the alert appear at the top of the list. I could have also searched for `rule.id:123456`.
+
+For a more thorough test, I used [Atomic Red Team](https://atomicredteam.io/) and ran the [T1654](https://atomicredteam.io/discovery/T1654/). After running the first two commands in Windows (next code listing), two rules were triggered in Wazuh: "Powershell process spawned powershell" and "Powershell.exe spawned a powershell process which executed a base64 encoded command"—yes, **Wazuh comes with several detection rules out of the box**, all installed and enabled. For the record, the third command did not trigger any rule.
+
+```ps1
+powershell -c {get-eventlog 'Security' | where {$_.Message -like '*SYSTEM*'} | export-csv $env:temp\T1654_events.txt}
+powershell -c "remove-item $env:temp\T1654_events.txt -ErrorAction Ignore"
+wevtutil enum-logs
+```
+
+The default detections failed for two reasons: (a) simply spawning a process via PowerShell is not inherently malicious and can generate many false positives, and (b) none of the three commands used Base64 encoding. To effectively detect this enumeration, I would monitor commands like `/wevtutil (el|enum-logs)/i` and `/get-eventlog/i`. Additionally, I'd implement a filter to suppress alerts triggered by trusted admins to reduce false positives. A complementary rule could also be created to monitor cleanup commands (such as `wevtutil cl`), which align with [T1070.001](https://attack.mitre.org/techniques/T1070/001/).
+
+::: {.callout-warning}
+VMs can be **suspended** due to inactivity or by the user. When this happens, the VM's OS loses track of elapsed time, causing the **clock** to go **out of sync** 🕘 even if you have NTP enabled. Have in mind that NTP must be forced to sync if the time difference is too large. ⚠️
+
+The time discrepancy between client (VMs) and server (SIEM) can prevent rules from triggering or even block log ingestion. As a rule of thumb, always check the VM's clock before starting a new round of tests to ensure logs have accurate timestamps and rules function as expected.
+
+Time 🕘 and timezones 🗺️ are crucial in Detection Engineering and Incident Response. Yet, they are often overlooked. Don't be that person. 🕵️‍♂️
+:::
+
+
+## To Be Continued
+Wazuh is a powerful tool, but it's hard to discuss open-source threat detection without mentioning Elastic. In the next post, I'll set up the Elastic Stack similarly to Wazuh, so I can compare both solutions and choose the one that best suits my needs.
+
+I'm dropping some references in the next section for fellow explorers. I'll keep exploring Wazuh's capabilities. See you in the next post! 🚀
+
+
+## References
+- [At Home Detection Engineering Lab for Beginners](https://www.blackhillsinfosec.com/at-home-detection-engineering-lab-for-beginners/)
+- [Configure and Deploy Wazuh SIEM with Docker Compose Container](https://thriveread.com/wazuh-docker-compose/)
+- [Wazuh | Part 2 : Installing Wazuh and Configuring the Server](https://medium.com/@huglertomgaw/wazuh-part-2-installing-wazuh-and-configuring-the-server-6d2061e8c70c)
+- [Hunting with Wazuh: Adding Context](https://benheater.com/hunting-with-wazuh-adding-context/)
+- [Wazuh: Mapping Sysmon Events to MITRE ATT&CK IDs](https://benheater.com/wazuh-mapping-sysmon-events-to-mitre-attck-ids/)
+- [Writing Custom Rules in Wazuh](https://nihatasadovv.medium.com/writing-custom-rules-in-wazuh-36a018860fce)
+- [Wazuh Rules Syntax](https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/rules.html)

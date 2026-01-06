@@ -1,0 +1,55 @@
+---
+title: "Review: Git for Teams"
+date: 2025-01-31
+description: "Best practices and workflow tips from Git for Teams."
+categories: ["career", "dev"]
+image: "og-review-git-for-teams.webp"
+---
+
+Git is a popular tool and the *de facto* version control system (VCS) in the market. It's used everywhere—from colleges to large corporations, and from beginners just learning to program to seasoned professionals. But does simply learning how to run a few commands make you good at Git? I don't think so. Git is a tool, and like any tool, it can be used in many ways. While each person or team can set their preferred way of managing version control, some best practices are universal. Having a deeper understanding of what Git can do for you can help you find better ways to accomplish your tasks.
+
+One of the sources mentioned in [The Missing Readme](/log/2024-book-missing-readme/) is [**Git for Teams**](https://www.amazon.com/Git-Teams-User-Centered-Efficient-Workflows/dp/1491911182/). As someone who never took the time to seriously learn Git, I decided to give this book a try to bridge some knowledge gaps and improve my daily workflow. In this post, I share my review of the book along with some insights for those who are new to Git or, like me, use it regularly but lack a deep understanding of the tool.
+
+
+## Git and the Book
+Git was developed by Linus Torvalds in 2005 to solve version control issues while maintaining Linux. It was designed as a set of small programs that work together to track changes in files. As the version control system for one of the most famous open-source projects, Git gained widespread adoption and grew in both quality and functionality to become the preferred VCS for many professionals today.
+
+Git's simplicity is one of its greatest strengths. As a distributed VCS, Git eliminates the complexity found in older tools like Subversion (SVN). I remember years ago using Microsoft SharePoint to manage team documentation, which had *a kind* of centralized VCS under the hood. Back then, before editing a file, I had to check it out, and after finishing, I had to check it back in to "release" it. If someone forgot to release a file, we either had to contact the SharePoint admin or wait for the person to become available. It was a huge waste of time.
+
+In **Git for Teams**, Emma Jane demonstrates a deep knowledge of Git and extensive experience using it with teams, particularly in open-source projects—arguably the most challenging environment for version control. She guides the reader from the basics of teamwork and version control processes to more advanced and complex Git commands. However, it's important to note that this book was released a decade ago (in 2015), and like any technical book tied to a tool, it has become somewhat outdated. The version control landscape has also evolved significantly since then, with Git and platforms like GitHub now being ubiquitous in both professional and academic settings.
+
+Git for Teams is divided into three parts. Part I provides an overview of teamwork and collaboration strategies. Part II delves into Git's technical aspects and concepts. Part III covers three code-sharing platforms: [GitHub](https://github.com/lopes/), [BitBucket](https://bitbucket.org/), and [GitLab](https://about.gitlab.com/). Despite Emma's suggestion that Part I might be less relevant for technical professionals, I found it valuable because it lays a solid foundation for understanding team dynamics, which is then applied in Part II through Git workflows . Part III, while lighter in content, provides guidance on using each platform.
+
+This book covers the basics of project management, teamwork, version control, and how to implement these practices using Git. You'll learn how to create repositories, commit changes, work with branches, merge, revert actions, and more. Beyond just explaining commands, Emma provides version control strategies from her experience as a seasoned professional. For instance, she emphasizes organizing work into tasks grouped by objectives, such as a new feature. Each objective should have its own branch, and commits within that branch should be atomic—focused on specific changes. This approach allows you to leverage Git's full potential, enabling you to modify or remove commits before merging the branch into the mainline or discarding it entirely.
+
+Concepts like branching, committing, and pull requests are explained with clear examples that help you truly understand their purpose. These explanations make best practices seem obvious. For example, she describes branching as a way to say, "Check this out!" to your teammates. Therefore, additions to the project should be in a new branch, allowing others to review, propose changes, and decide whether to merge or drop it.
+
+Overall, it's a straightforward yet comprehensive book, offering a fast and informative read.
+
+
+## Impressions
+Emma has a light and conversational writing style, making the book feel like a friendly discussion. She gets straight to the point, so don't expect extensive references or footnotes. The examples she uses are drawn from real-world scenarios she encountered during her career, many of which are based on open-source tool development. These cases are robust and relatable.
+
+::: {.callout-tip}
+Emma also includes a helpful diagram that illustrates the relationship between the repository, the working directory (your current work), and the staging area—a bridge between the two. For example, committing moves files from the staging area to the repository. Keep this diagram at hand for reference! 💡
+:::
+
+As someone who has been using open-source software for over 20 years 👴, I was familiar with terms like "fork" and "releases."  However, learning their significance from a developer's perspective—especially from someone who worked on projects I've used, like Drupal—was truly enlightening.
+
+Git is fundamentally about version control, so features like issue tracking, authentication, and access control are implemented by external tools. Today, GitHub is the most popular platform, with GitLab being the go-to open-source alternative. These tools **complement** Git and make teamwork more efficient. That said, I don't think Part III, which focuses on these platforms, adds much value. It feels like filler content, making the book longer and more dated than necessary.
+
+The book hasn't been updated since its release. As a result, some commands and terminology have changed, and many links are broken. Even the official website now consists of a single page with text about Git—many subpages referenced in the book no longer work. The author could have consolidated everything into a single repository instead of relying on a website, as the GitHub and GitLab repositories are still accessible.
+
+For me, the second half of Part II felt too command-heavy, focusing more on examples than best practices. I would have preferred more discussion on strategies, such as when to use rebase versus merge, rather than an exhaustive list of rebase examples. Defining general guidelines for such scenarios would have been more helpful.
+
+
+## Bottom-line
+I started using Git many years ago because I was tired of using suffixes like `_final`, `_reviewed`, and others in my filenames. Despite this, I never took the time to truly understand how Git works under the hood. This superficial knowledge limited my ability to use Git effectively. For example, I used to think that a commit should be as comprehensive as possible, often bundling an entire day's work into a single commit. When I needed to revert a change, I did it manually, which defeated the purpose of using Git. Additionally, because I didn't use branches effectively, I sometimes found myself deleting and recloning entire repositories when changes needed to be discarded.
+
+In contrast, last year I started using branches for [this blog](https://lopes.id) 🌲 after learning the practice at work. For every new post, I create a new branch and work on it independently. This allows me to parallelize my writing and keep drafts organized. For instance, when writing the [Project Nebula](/log/2024-nebula-1-detection-lab/) series 🚀, I created a branch for each post (four in total) and treated each as an individual feature. Publishing a post was as simple as merging the branch into the main branch.
+
+Git is a tool, and like any tool, it can be used in various ways—from basic operations like cloning, branching, committing, and pushing, to more advanced techniques like rebasing, reverting, and bisecting. The author covers all of these, but it's up to you to decide how to use them. Software engineers may need to master advanced techniques, while SREs (including information security professionals like myself) may find simpler workflows sufficient. Regardless of your approach, adhering to best practices is essential for making the most of Git. This book can certainly help, especially Parts I and II.
+
+For non-software engineers, this book might provide more information than necessary. That's okay—it's a testament to the author's expertise. My advice to readers is this: If you find yourself getting bored, skim through the content and take notes on the commands, their effects, and the contexts in which they should be used. Focus on the ones you think you'll use frequently, as you can always rely on Google or an LLM for rare scenarios. Create a cheat sheet for future reference and move on.
+
+Git is like a whiteboard—you need to set your own rules to keep your work organized. Decisions like defining the main repository, choosing a branching strategy, and establishing naming conventions for commits and branches are what bring order to chaos. This book will help you understand what works best for you and your team. You'll learn how to use Git beyond just clicking buttons on GitHub, giving you greater control over your work. 💪

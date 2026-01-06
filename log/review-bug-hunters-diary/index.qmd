@@ -1,0 +1,45 @@
+---
+title: "Review: A Bug Hunter's Diary"
+date: 2025-02-21
+description: "A deep dive into bug hunting with practical lessons."
+categories: ["career", "intel", "hardening", "unix"]
+image: "og-review-bug-hunters-diary.webp"
+---
+
+A [Bug Hunter's Diary](https://www.amazon.com/Bug-Hunters-Diary-Software-Security/dp/1593273851) is one of the most recommended books among Information Security professionals. As someone eager to learn more about this field and its intersection with Offensive Security, I decided to give it a read. Here, I share my thoughts on the book.
+
+
+## Plot
+**A Bug Hunter's Diary** is a compilation of bugs discovered by the author, Tobias Klein. Each chapter explains, in a light and engaging writing style, how Tobias discovered a vulnerability, created an exploit, remediated it, and the lessons he learned. He also includes final thoughts and references, which I found to be a great structure. Throughout the book, he shares code snippets and diagrams to help readers understand the technical details—helpful since he often works at the lower levels of computing, interacting with the kernel and CPU.
+
+By the end of the book, Tobias includes appendices that provide additional details on techniques and tools he used. One appendix even lists the commands he commonly uses in debuggers, which is incredibly helpful for beginners. As a nearly 15-year-old book, some tools and commands mentioned may have changed or become outdated. New tools, like [Ghidra](https://ghidra-sre.org/), have also emerged since its publication. However, the author does an excellent job of keeping the [BHD](https://www.trapkit.de/books/bhd/) page updated with additional content, such as videos and updates. This effort breathes fresh life into the book and enhances the learning experience.
+
+Overall, the book is straightforward and concise. It's a quick read, but if you want to dive deep into bug hunting, following the references mentioned by the author is essential.
+
+
+## Impressions
+While the book is highly technical, it has a storytelling quality thanks to the author's approach of presenting each case as it unfolded. Tobias's intention to make the content accessible is evident through his recaps and explanations. Reading this book gave me a glimpse into the bug hunting scene, and by the first chapter, I could clearly see the author's expertise in the field.
+
+Bug hunting can be divided into static and dynamic analysis (SAST and DAST) and categorized into low and high levels. Static analysis focuses on source code, while dynamic analysis examines processes running in memory. Low-level work involves direct manipulation of hardware resources, memory management, and system calls, whereas high-level work focuses on user-facing applications, managing complex software architectures, and leveraging APIs for increased abstraction from the underlying hardware.
+
+Tobias excels in low-level static analysis. As a result, the book is filled with C code, syscalls, CPU registers, and memory addresses. Readers with a background in programming and computer architecture will benefit the most from this book.
+
+I found it fascinating to learn more about the vulnerability disclosure process, especially after reading *[Countdown to Zero Day](/log/2024-book-countdown-zero-day/)* a few months ago. That book explored the vulnerability market (white, gray, and black) during the early 2000s, the era when Stuxnet and its variants were developed—the same time frame of the cases presented here. In this sense, the two books complement each other.
+
+For someone outside the bug hunting trenches, it's enlightening to understand attacks like buffer overflows and NULL pointer dereferences in greater detail. The references Tobias provides are particularly valuable. While some links are broken due to the book's age (published in 2011), the recommended books are gold ⭐ for anyone starting in this field. Despite the book's brevity and the author's ability to simplify complex topics, the subject matter is dense. Some references are lengthy and will require significant time to fully absorb.
+
+
+## Last Thoughts
+Beyond the technical details and the author's knack for simplifying complex concepts, what I appreciated most about this book was learning the bug hunter's mindset. Tobias doesn't explicitly state it, but if you pay close attention to each case, you'll notice his process. His extensive background helps him select targets and form hypotheses. He then enumerates entry points where users input data, tracks that data, and looks for validation gaps or logic errors that could allow crafted data to disrupt the process and gain control over the CPU. Once he develops a working exploit, he notifies the company or a bug bounty program, along with remediation suggestions. This was exactly what I was looking for. 👀
+
+Another valuable lesson is that it's okay to specialize within a field, such as low-level static analysis. However, adding complementary skills, like dynamic analysis, even if you don't master them, can be beneficial in certain scenarios. For example, while you might rarely use a hammer, having one can make the occasional task easier. Similarly, expanding your skill set can open up new opportunities and make your work more efficient.
+
+To answer my initial question, bug hunting is a precursor to Offensive Security. In bug hunting, researchers focus on finding and exploiting vulnerabilities (bugs). Once a vulnerability is discovered, it becomes a zero-day, and the researcher decides how to proceed. Eventually, the vulnerability may become public, allowing Offensive Security engineers to use it in their tests.
+
+Although this book serves as an entry point to bug hunting, it's not an entry-level book for IT professionals. Readers will benefit most if they have a background in C programming and computer architecture.
+
+After reading this book, you'll realize that bugs aren't monsters. They're often just a lack of user input validation or flawed logic. Fixing them can be as simple as adding an extra condition to an `if` statement or checking the size of a user-provided string. That said, while the bugs themselves may not be monstrous, the impact of their exploitation can certainly feel like a nightmare. ☠️
+
+::: {.callout-tip}
+For those adventurers who want to explore any new area, a last advice: There are multiple ways to accomplish a task in any field. Understanding the theory and basic tools allows you to do many things, but expanding your toolkit and techniques can make you more efficient and versatile. When starting in a new field, don't be intimidated by the variety of approaches (like SAST/DAST or low/high-level programming). Choose one method to begin with, and feel free to adapt as you progress. 👊
+:::
