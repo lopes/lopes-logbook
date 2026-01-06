@@ -72,7 +72,7 @@ gitGraph
 
 ---
 
-## Automation & Quality Gates
+## 🤖 Automation & Quality Gates
 This project enforces quality and SEO standards automatically through Git hooks and CI.
 
 ### Local Automation
@@ -110,7 +110,7 @@ No code reaches `main` unless both local and CI validation succeed.
 
 ---
 
-## Creating a New Post
+## 🆕 Creating a New Post
 1. Create branch:  
   ```bash
   git checkout -b post/my-new-article
@@ -123,5 +123,5 @@ No code reaches `main` unless both local and CI validation succeed.
 
 ---
 
-## License
+## 📃 License
 This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [LICENSE](LICENSE.md).
