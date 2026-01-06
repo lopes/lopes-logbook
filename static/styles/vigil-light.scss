@@ -1,0 +1,150 @@
+/*-- scss:defaults --*/
+
+// =============================================================================
+// 1. Theme Setup
+//
+// Defines the base Bootstrap theme.
+// =============================================================================
+$theme: "cosmo" !default;
+
+// =============================================================================
+// 2. Typography
+//
+// Imports fonts and defines the primary font stacks.
+// =============================================================================
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+
+// The sans-serif stack prioritizes high-readability fonts, falling back
+// through modern system UI fonts. This is a robust, deterministic stack.
+$font-family-sans-serif:
+  "Atkinson Hyperlegible",
+  // Modern system UI fonts as first fallbacks.
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  // Common, high-quality fallbacks.
+  "Helvetica Neue",
+  Arial,
+  // Generic catch-alls.
+  "Noto Sans",
+  sans-serif,
+  // Emoji support.
+  "Apple Color Emoji",
+  "Segoe UI Emoji",
+  "Segoe UI Symbol",
+  "Noto Color Emoji" !default;
+
+// The monospace stack prioritizes JetBrains Mono, with common developer
+// fonts as fallbacks. This ensures code blocks are consistent.
+$font-family-monospace:
+  "JetBrains Mono",
+  // Common monospace fonts on macOS and Windows.
+  "SF Mono",
+  "Consolas",
+  "Menlo",
+  // A final, high-quality fallback before the generic default.
+  "Fira Code",
+  monospace;
+
+// =============================================================================
+// 3. Color Palette
+//
+// Defines a systematic and cohesive color palette. This is the single
+// source of truth for colors, adapted for the light theme.
+// =============================================================================
+
+// A. Core Palette
+// Grays provide the neutral backbone of the theme.
+$gray-100: #f8f9fa;
+$gray-200: #f1f4f7;
+$gray-300: #dee2e6;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-900: #1f2933;
+$white: #ffffff;
+
+// Blue is the primary accent color for links and interactions.
+$blue-300: #4da3c7; // Lighter, for hover states
+$blue-500: #2f78a5; // Primary link color
+$blue-700: #2563eb; // High-contrast, for code
+
+// B. Semantic Palette
+// Used for callouts and alerts to convey meaning.
+$cyan: #3ba3c3; // Note
+$green: #3f9d52; // Tip
+$orange: #c05621; // Caution
+$yellow: #d69e2e; // Warning
+$red: #c53030; // Important
+
+// =============================================================================
+// 4. Quarto Variable Assignments
+//
+// Maps the color palette to Quarto's specific SCSS variables.
+// =============================================================================
+
+// Core Surfaces
+$navbar-bg: $gray-100;
+$body-bg: $white;
+$body-color: $gray-900;
+
+// Accent & Links
+$link-color: $blue-500;
+$link-hover-color: $blue-300;
+
+// Code
+$code-block-bg: $gray-200;
+$code-bg: $gray-200;
+$code-color: $blue-700;
+
+// Forms / Inputs
+$input-bg: $gray-200;
+
+// UI Interactions
+$nav-link-hover-color: $link-hover-color;
+$pagination-hover-color: $link-hover-color;
+$pagination-disabled-bg: $gray-300;
+$pagination-disabled-color: $gray-900;
+$pagination-disabled-border-color: $gray-300;
+
+// Callouts
+$callout-color-note: $cyan;
+$callout-color-tip: $green;
+$callout-color-caution: $orange;
+$callout-color-warning: $yellow;
+$callout-color-important: $red;
+
+/*-- scss:rules --*/
+
+// =============================================================================
+// 5. Custom Component Styling
+//
+// Custom rules to style specific components and elements.
+// =============================================================================
+
+// Ensure body text uses the primary sans-serif font.
+p {
+  font-family: $font-family-sans-serif;
+}
+
+// Style the title banner for a subtle, clean look.
+.quarto-title-block .quarto-title-banner {
+  background: $gray-100 !important;
+}
+
+// Figure and caption styling for readability.
+figcaption {
+  color: $gray-600;
+  font-style: italic;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+// Footer styling for a clear visual separation.
+footer {
+  font-size: 0.85rem;
+  color: $gray-700;
+  border-top: 1px solid $gray-300;
+  padding-top: 1rem;
+}
