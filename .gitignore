@@ -1,0 +1,9 @@
+# general exclusions
+.DS_Store
+.hooks
+
+# quarto exclusions
+/.quarto/
+**/*.quarto_ipynb
+_site
+*.html
