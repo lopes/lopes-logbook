@@ -1,0 +1,49 @@
+project:
+  type: website
+
+website:
+  title: "lopes.log"
+  description: "where others see logs, I see stories."
+  image: /static/images/og-home.webp
+  favicon: /static/images/favicon.ico
+  site-url: https://lopes.id
+  repo-url: https://github.com/lopes/lopes-logbook
+  repo-actions: [issue]
+  search: false
+  open-graph: true
+  twitter-card: true
+  navbar:
+    title: false
+    left:
+      - text: home
+        href: index.qmd
+      - text: about
+        href: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/lopes
+      - icon: linkedin
+        href: https://www.linkedin.com/in/jlopesjr
+      - icon: bluesky
+        href: https://bsky.app/profile/lopes.id
+      - icon: rss
+        href: index.xml
+  page-footer:
+    center:
+      - href: "https://lopes.id"
+        text: "© 2020—2026 Joe Lopes"
+
+format:
+  html:
+    respect-user-color-scheme: true
+    theme:
+      dark: "static/styles/vigil-dark.scss"
+      light: "static/styles/vigil-light.scss"
+    highlight-style:
+      dark: nord
+      light: github
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    toc-title: "Contents"
+    # number-sections: true

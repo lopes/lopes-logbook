@@ -1,0 +1,49 @@
+---
+title: "About"
+description: "Infosec engineer, threat detection, adversary engagement, and the story behind Vigil."
+image: /static/images/og-about.webp
+toc: false
+repo-actions: false
+---
+
+## 👋 Hi, I’m Joe Lopes
+I’m an **Information Security Engineer** focused on **threat detection, SIEM, logs, and adversary engagement**. My work lives at the intersection of systems, data, and behavior: observing signals, correlating events, and extracting meaning from noise.
+
+::: {.callout-note}
+I’m Brazilian (Portuguese is my native language) and my given name is **José** (pronounced *djo-zeh*).
+In English it’s often mispronounced *ho-zay*, which is the Spanish form.
+Since José maps naturally to **Joseph**, I go by **Joe**: it’s simpler, clearer, and travels better.
+:::
+
+This site, **lopes.log**, is my working notebook: a place where I document investigations, ideas, tools, and the occasional lesson learned the hard way.
+
+There are **no ads** ⛔ here. Just long-form thinking, written slowly and published with intent.
+
+This is a **human-driven space** 👤. All opinions are my own and do not reflect those of my employer. Your privacy is respected. 🫡
+
+![Joe Lopes](/static/images/photo-portrait-joe-lopes.webp "Joe Lopes in the field")
+
+
+## 🗣️ Talks
+- [Visibilidade de Rede](https://drive.google.com/file/d/1uSHQhehbeVP7ee8z2jSl479f08NL7jBA/view?usp=drive_link) (2021) Mind The Sec, remote `pt_BR`
+- [Práticas de NOC/SOC](https://drive.google.com/file/d/1tiuNM6K4HJ30icB9OtjQB79fE5F9W1qB/view?usp=drive_link) (2019) Itaipu, Paraná `pt_BR`
+- [Método para Uso do SIEM como Ferramenta de Inteligência e Automação](https://drive.google.com/file/d/1DBnrpqmzFqbnrTgSPOu6FUg0ADCYIZBx/view?usp=drive_link) (2019) CERT.br, São-Paulo `pt_BR`
+- [A Abordagem da Cemig na Segurança Cibernética](https://drive.google.com/file/d/1D554sRK0OTKq9UX860SOT78icQoRf4J8/view?usp=drive_link) (2018) CERT.br, São-Paulo `pt_BR`
+- [Blockchains: Muito Além do Bitcoin](https://drive.google.com/file/d/1KhE5Zktoz5dSdpKQxkzNJdv_0icShc_d/view?usp=drive_link) (2017) Cemig, Belo Horizonte `pt_BR`
+- [Estruturação de um Grupo de Resposta a Incidentes de Segurança Cibernética para o Contexto de Smart Grid na Cemig](https://drive.google.com/file/d/13Sfpsy2EhfUg4ku_iqCvl0RBgNrTwVZB/view?usp=drive_link) (2014) CERT.br, São-Paulo `pt_BR`
+
+
+## 🦫 Vigil
+![Vigil](/static/images/graphic-logo-vigil.png "Vigil, the engineer")
+
+**Vigil** is the beaver of *lopes.log*, and in many ways, my mirror.
+
+> Vigil is **not cute, not angry, not heroic**.
+> Vigil is **focused, neutral, and intelligent**.
+
+Like an engineer, Vigil works quietly: observing flows, reading structures, building meaning from fragments. Where others see raw logs, Vigil sees structures.
+
+Vigil represents the way I approach security and systems: with patience, precision, and respect for complexity.
+
+> *At lopes.log, I work with Vigil.*
+> *Where others see logs, we see stories.*
