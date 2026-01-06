@@ -58,14 +58,14 @@ While the SOAR is aimed at automation, one of its "side effects" is to substitut
 
 All this structure tends to improve the IR, but you need KPIs to properly measure it and present the results to senior management, thus justifying the investment. KPIs can be extracted from the incident process phases, like:
 
-- **Time to detect**: Tends to reduce with the deployment of SIEM and performance improvements in this tool.
-- **Time to engage**: A SIEM champion, trained personnel, and well-defined alerts tend to reduce it.
-- **Time to contain**: Usually automation in SOAR could help reduce it for many types of incidents.
-- **Time to respond**: Trained personnel with good SOAR are key for this.
+- **Time to detect:** Tends to reduce with the deployment of SIEM and performance improvements in this tool.
+- **Time to engage:** A SIEM champion, trained personnel, and well-defined alerts tend to reduce it.
+- **Time to contain:** Usually automation in SOAR could help reduce it for many types of incidents.
+- **Time to respond:** Trained personnel with good SOAR are key for this.
 
 Other KPIs are important and encompass many tools, like:
 
-- **True/False positive ratio**: When the SIEM is deployed this ratio tends to be high, but as the team adjusts rules and data feeds, properly filling deny and allow lists, this ratio tends to decrease to acceptable values.
-- **The number of incidents detected**: The more log sources and correlation rules, the more incidents tend to be found—as the team increases the network visibility, the minor changes made by other teams will raise as tickets and will require investigation.
+- **True/False positive ratio:** When the SIEM is deployed this ratio tends to be high, but as the team adjusts rules and data feeds, properly filling deny and allow lists, this ratio tends to decrease to acceptable values.
+- **The number of incidents detected:** The more log sources and correlation rules, the more incidents tend to be found—as the team increases the network visibility, the minor changes made by other teams will raise as tickets and will require investigation.
 
 At this point, the environment should be well monitored, gaps are known and addressed, the team knows how the company network behave and has the tools (SIEM, SOAR, playbooks) to investigate and respond to the issues identified. Also, when the environment evolve, the team will have a strong foundation to grow together without breaking anything or anyone. It's a matter of planning and following the plan.

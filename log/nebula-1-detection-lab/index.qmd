@@ -25,9 +25,9 @@ The lab consists of two main components: the client and the server. The client s
 
 For virtualization, I'll use VMware Fusion Pro, and for containerization, Docker. I built this lab under the following conditions, and it's important to note that different tools or versions may require different commands or approaches.
 
-- **Host**: Apple M2 (ARM 64) with macOS Sonoma 14.6
-- **Virtualization**: VMware Fusion Pro 13.5.2
-- **Containerization**: Docker 26.1.4, Docker Compose 2.29.3, and Docker Desktop 4.31.0 (life is short)
+- **Host:** Apple M2 (ARM 64) with macOS Sonoma 14.6
+- **Virtualization:** VMware Fusion Pro 13.5.2
+- **Containerization:** Docker 26.1.4, Docker Compose 2.29.3, and Docker Desktop 4.31.0 (life is short)
 
 ::: {.callout-warning}
 I'm running on an ARM-based machine. This is important because some software, like Ubuntu Desktop, does not have an ARM version. Others, like Windows and Sysmon, require specific versions to run on ARM.

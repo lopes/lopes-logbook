@@ -14,9 +14,9 @@ This text is based on my own experience and may not reflect the whole scenario o
 
 Analyzing past situations, I divide the RTs into three categories, based on the expertise of their members:
 
-- **Immature**: Composed of script kiddies in poorly established teams running random noisy tests over the network.
-- **Outsourced**: Experienced consultants quietly moving over the network exploring vulnerabilities, without a concise roadmap.
-- **Mature**: Well-established teams performing tests aligned with the security objectives with in-house or outsourced members (or a mix of them).
+- **Immature:** Composed of script kiddies in poorly established teams running random noisy tests over the network.
+- **Outsourced:** Experienced consultants quietly moving over the network exploring vulnerabilities, without a concise roadmap.
+- **Mature:** Well-established teams performing tests aligned with the security objectives with in-house or outsourced members (or a mix of them).
 
 In both scenarios, I, as part of the security team, had to deal with being advertised or not of such tests and this is the central point here.
 

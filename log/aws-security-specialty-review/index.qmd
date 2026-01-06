@@ -11,11 +11,11 @@ For the last few months I had been studying for the [AWS Certified Security - Sp
 The SCS (a.k.a. Security Engineering on AWS) is an advanced certification in AWS career that focuses on the security aspects of AWS environment. The test has 65 questions and the test taker must achieve at least 750 out of 1000 points to pass.
 The exam will test the knowledge in five different domains:
 
-1. **Incident Response**: How to use AWS tools and concepts to better respond to incidents.
-2. **Logging and Monitoring**: How to properly set up AWS to retain data for further analysis of the environment.
-3. **Infrastructure Security**: How to combine the different tools in AWS to provide the desired level of security.
-4. **Identity and Access Management**: How to use the different IAM solutions so the users could easily and securely access the system.
-5. **Data Protection**: How to grant the security of data against leak and tampering.
+1. **Incident Response:** How to use AWS tools and concepts to better respond to incidents.
+2. **Logging and Monitoring:** How to properly set up AWS to retain data for further analysis of the environment.
+3. **Infrastructure Security:** How to combine the different tools in AWS to provide the desired level of security.
+4. **Identity and Access Management:** How to use the different IAM solutions so the users could easily and securely access the system.
+5. **Data Protection:** How to grant the security of data against leak and tampering.
 
 Associated with each domain, a lot of AWS tools must be considered, and not only the tools directly related to security, but also those that support them or those that are protected by the security tools. For instance, one's should not only know that [WAF](https://aws.amazon.com/waf/) can be used to protect web applications, but he also should know about [EC2](https://aws.amazon.com/ec2/), [ELB](https://aws.amazon.com/elasticloadbalancing/), [CloudFront](https://aws.amazon.com/cloudfront/), and [VPC](https://aws.amazon.com/vpc/).
 

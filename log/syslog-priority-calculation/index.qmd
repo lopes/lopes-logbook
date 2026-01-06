@@ -21,7 +21,7 @@ That first number at the beginning of the line (`^<([0-9]*)>`) is the **priority
 - **facility** is the **process that created the message** and it varies between 0 and 23, where 0-15 are predefined and 16-23 are commonly used by networking equipment
 - **severity** values are **predefined** and they vary from 0 to 7
 
-The following equations show how to calculate the **prival** and how to get the **facility** and **severity** values from the **priority**:
+The following equations show how to calculate the **prival** and how to get the **facility** and **severity** values from the **priority:**
 
 $$
     prival = facility * 8 + severity

@@ -43,9 +43,9 @@ python src/extract_otp_secrets.py dump.txt
 
 If everything worked as expected, the account list will be shown on the screen, listing for each exported account:
 
-- **Name**: Account name as recorded in GAuth
-- **Secret**: The seed for the OTP algorithm
-- **Issuer**: The service provider
-- **Type**: Type of algorithm, usually TOTP
+- **Name:** Account name as recorded in GAuth
+- **Secret:** The seed for the OTP algorithm
+- **Issuer:** The service provider
+- **Type:** Type of algorithm, usually TOTP
 
 From now, just copy-and-paste the secrets in the new app, so it'll be able to generate the OTPs valid to each service. I highly recommend everyone to **test** all accounts before removing GAuth. Also, make sure to **delete** all evidences GAuth data in the machine, like the file with the QR code data and any picture of the QR code itself: Remember that if this data leaks, your security will be severely compromised.
