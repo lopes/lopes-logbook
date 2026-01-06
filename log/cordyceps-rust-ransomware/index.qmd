@@ -395,17 +395,17 @@ A recurring risk is *vibe coding* 🌈: using LLM-generated code without underst
 During development, several improvements were identified, also marked as `TODO` in the code:
 
 ### Performance
-- **Concurrent uploads**: `core::sporulate` uploads files sequentially. Using `tokio` tasks for concurrent uploads will reduce the total runtime.
-- **Parallel encryption/decryption**: Parallelize `sporulate`/`disinfect` to leverage multi-core systems.
-- **Streaming I/O**: Replace full-file reads in `crypto::encrypt`, `crypto::decrypt`, and `net::upload_file` with streaming to reduce memory usage and support large files.
+- **Concurrent uploads:** `core::sporulate` uploads files sequentially. Using `tokio` tasks for concurrent uploads will reduce the total runtime.
+- **Parallel encryption/decryption:** Parallelize `sporulate`/`disinfect` to leverage multi-core systems.
+- **Streaming I/O:** Replace full-file reads in `crypto::encrypt`, `crypto::decrypt`, and `net::upload_file` with streaming to reduce memory usage and support large files.
 
 ### Code Structure and Design
-- **Separation of concerns**: `crypto::encrypt` and `crypto::decrypt` mix crypto with file I/O. Splitting them improves testability.
-- **Generic key loading**: Replace `load_private_key` and `load_public_key` with a generic `load_key<K>(path: &Path)` to reduce code duplication.
-- **Key file format**: `germinate` writes raw Base64-encoded keys; adding contextual formatting (e.g., JSON) would make key files more robust.
+- **Separation of concerns:** `crypto::encrypt` and `crypto::decrypt` mix crypto with file I/O. Splitting them improves testability.
+- **Generic key loading:** Replace `load_private_key` and `load_public_key` with a generic `load_key<K>(path: &Path)` to reduce code duplication.
+- **Key file format:** `germinate` writes raw Base64-encoded keys; adding contextual formatting (e.g., JSON) would make key files more robust.
 
 ### Dependencies
-- **Deprecated crates**: This project uses some deprecated crates due to transitive dependencies—when a dependency of your dependency is outdated or has a conflict. Overcoming these issues is important to use the latest versions of these crates.
+- **Deprecated crates:** This project uses some deprecated crates due to transitive dependencies—when a dependency of your dependency is outdated or has a conflict. Overcoming these issues is important to use the latest versions of these crates.
 
 
 ## Conclusion

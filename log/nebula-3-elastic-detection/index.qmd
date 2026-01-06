@@ -19,9 +19,9 @@ This is the third part of the Detection Engineering Lab series. In the [first po
 ## Elastic Stack
 Elastic is probably the most well-known open-source log management tool. It's made up of several components that work together to ingest, store, and analyze logs. The components I used are:
 
-- **Elasticsearch**: The database where logs are stored.
-- **Kibana**: The web interface used to visualize logs and manage the stack.
-- **Elastic Agent**: The endpoint monitoring agent.
+- **Elasticsearch:** The database where logs are stored.
+- **Kibana:** The web interface used to visualize logs and manage the stack.
+- **Elastic Agent:** The endpoint monitoring agent.
 
 I used version 8.14.3 because, in more recent versions (8.15.*), Kibana doesn't allow changing the fleet output through the UI (more on this later). Since the process for changing it during container creation or via CLI isn't well-documented, it was simpler to avoid this version. Here's a quick summary of how I deployed the stack:
 

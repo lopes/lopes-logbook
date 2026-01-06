@@ -38,8 +38,8 @@ It is not allowed to have multiple SPF records as the receiving mail server won'
 ## DMARC
 Domain-based Message Authentication, Reporting, and Conformance (DMARC, [RFC 7489](https://datatracker.ietf.org/doc/html/rfc7489)) is an email authentication and validation system that aids in protecting against spam, phishing, and spoofing. DMARC provides two types of reports:
 
-- **RUA**: Reporting URIs for Aggregate Data—which consists of combined data in XML format without personally identifiable information
-- **RUF**: Reporting URIs for Failure Data—which contains details of individual emails in plain text, including personally identifiable information
+- **RUA:** Reporting URIs for Aggregate Data—which consists of combined data in XML format without personally identifiable information
+- **RUF:** Reporting URIs for Failure Data—which contains details of individual emails in plain text, including personally identifiable information
 
 DMARC is configured through a DNS TXT record with the name `_dmarc`. The content of this record comprises key-value pairs, such as:
 
@@ -51,8 +51,8 @@ By employing these three authentication methods together, organizations can effe
 
 While implementing DKIM, SPF, and DMARC is relatively straightforward, it is crucial to approach the configuration with caution to prevent disruption of user communication. It is advisable to start with more lenient policies initially and gradually transition to more secure configurations after successful testing. Here are some examples:
 
-- **SPF**: You can begin with `softfail` or even `neutral` policy, and then move to `fail` once you are more confident.
-- **DMARC**: Start with `none` policy, observe, and later change it to `quarantine` or `reject` as needed.
+- **SPF:** You can begin with `softfail` or even `neutral` policy, and then move to `fail` once you are more confident.
+- **DMARC:** Start with `none` policy, observe, and later change it to `quarantine` or `reject` as needed.
 
 Keep in mind that DNS changes take time to propagate correctly (depending on the DNS's TTL), and improper changes can have serious consequences. It is recommended to make these changes outside of business hours and conduct thorough testing before and after implementing any modifications. Also, it is essential to maintain a record of every change as you may need to revert it due to unforeseen issues.
 

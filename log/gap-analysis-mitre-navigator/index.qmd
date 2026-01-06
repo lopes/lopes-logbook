@@ -6,7 +6,7 @@ categories: ["intel", "detection"]
 image: "og-gap-analysis-mitre-navigator.webp"
 ---
 
-**MITRE ATT&CK** is a common reference for classifying detection rules. But mapping rules to ATT&CK techniques only provides real value when we go beyond taxonomy and actually use the data to drive action. **Context is key**: an ATT&CK map without interpretation is just a colored matrix. That's where **automation**, **enrichment**, and tools like **MITRE Navigator** come in. Navigator lets you visualize your ATT&CK coverage, compare multiple rules, and spot detection gaps at a glance.
+**MITRE ATT&CK** is a common reference for classifying detection rules. But mapping rules to ATT&CK techniques only provides real value when we go beyond taxonomy and actually use the data to drive action. **Context is key:** an ATT&CK map without interpretation is just a colored matrix. That's where **automation**, **enrichment**, and tools like **MITRE Navigator** come in. Navigator lets you visualize your ATT&CK coverage, compare multiple rules, and spot detection gaps at a glance.
 
 This post breaks down how to programmatically generate Navigator layers, explains their JSON structure, and shows how to combine them for a richer, more actionable gap analysis.
 
@@ -24,13 +24,13 @@ A classic use case is to generate one layer for your SIEM detections and another
 ## Understanding Navigator Layers
 In MITRE Navigator, layers are **JSON documents** that follow a specific schema—see [Navigator's repository](https://github.com/mitre-attack/attack-navigator/tree/master/layers) on GitHub. Their behavior depends on three versioning components:
 
-- **ATT&CK version**: The [matrix](https://github.com/mitre-attack/attack-stix-data/tree/master/enterprise-attack) to plot (e.g., `18.1`).
-- **Navigator version**: The [software](https://github.com/mitre-attack/attack-navigator/releases) that will render the layer (e.g., `5.2.0`).
-- **Layer version**: The JSON [schema](https://github.com/mitre-attack/attack-navigator/tree/master/layers/spec) itself (e.g., `4.5`).
+- **ATT&CK version:** The [matrix](https://github.com/mitre-attack/attack-stix-data/tree/master/enterprise-attack) to plot (e.g., `18.1`).
+- **Navigator version:** The [software](https://github.com/mitre-attack/attack-navigator/releases) that will render the layer (e.g., `5.2.0`).
+- **Layer version:** The JSON [schema](https://github.com/mitre-attack/attack-navigator/tree/master/layers/spec) itself (e.g., `4.5`).
 
 A layer has two main parts:
-1. **Root-level configuration**: Defines the layer's appearance and behavior, like name, description, filters, layout, color gradients.
-2. **Technique entries**: An array of objects, each defining per-technique attributes like `score`, `metadata`, `links`, and an optional `tactic`.
+1. **Root-level configuration:** Defines the layer's appearance and behavior, like name, description, filters, layout, color gradients.
+2. **Technique entries:** An array of objects, each defining per-technique attributes like `score`, `metadata`, `links`, and an optional `tactic`.
 
 ### Quirks and Gotchas
 - Techniques are declared by **ID** (e.g., `T1078`).

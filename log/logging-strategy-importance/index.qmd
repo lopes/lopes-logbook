@@ -12,10 +12,10 @@ Logs are a key part of successful security or IT plan because they are an outsta
 ## Planning
 A good practice would be grouping the systems and defining what each group can inform, like:
 
-- **Routers** and **L3 switches**: ARP and interface information, threshold, incoming/outcoming bytes. It'll use mostly for availability purposes, but such devices have the capability of using [network flows](https://en.wikipedia.org/wiki/NetFlow), a subject for other texts.
+- **Routers** and **L3 switches:** ARP and interface information, threshold, incoming/outcoming bytes. It'll use mostly for availability purposes, but such devices have the capability of using [network flows](https://en.wikipedia.org/wiki/NetFlow), a subject for other texts.
 - **Operating Systems** (OSes): Logged users, services running, L4+ connections, installed software, hardware profiling. Useful for IT infrastructure and forensics. Like network devices, some OSes can send *network flows* either.
-- **Services**: Allowed/blocked connections, file hashes, URLs. In general, these logs are deeply related to each service and greatly differ from each other.
-- **Applications**: Logged users, actions triggered... The developers will have to create the code to log actions.
+- **Services:** Allowed/blocked connections, file hashes, URLs. In general, these logs are deeply related to each service and greatly differ from each other.
+- **Applications:** Logged users, actions triggered... The developers will have to create the code to log actions.
 
 Since it's humanly impossible for someone to keep reading all these kinds of logs, they should be centralized in a specific tool. Security Information and Event Management (**SIEM**) are systems specifically designed for that purpose, but they're far from cheap. Even with open-source options, not every company can buy (or rent) servers with enough capacity to process billions of data per second.
 

@@ -20,7 +20,7 @@ This comprehensive knowledge is invaluable because it qualifies the professional
 ## Job Opportunities
 It's quite common for professionals to pursue certifications as a path to new job opportunities, and that is a perfectly rational goal. In fact, many job descriptions list the CISSP as a **desirable credential**. Yet, while it is often desired, I rarely recall seeing it explicitly *required*.
 
-In my personal experience, the CISSP was never the determinant factor that secured a position or guaranteed a promotion, and I genuinely don't find fault in that. Ultimately, the certification is just a **professional badge**. What truly drives success, in my estimation, remains **proven accomplishments**:
+In my personal experience, the CISSP was never the determinant factor that secured a position or guaranteed a promotion, and I genuinely don't find fault in that. Ultimately, the certification is just a **professional badge**. What truly drives success, in my estimation, remains **proven accomplishments:**
 
 - The quantifiable **impact** of your actions
 - The demonstrable **value** you add to the business
