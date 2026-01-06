@@ -1,6 +1,8 @@
 # general exclusions
 .DS_Store
 .hooks
+.venv
+venv
 
 # quarto exclusions
 /.quarto/
