@@ -1,0 +1,15 @@
+# options specified here will apply to all posts in this folder
+
+# freeze computed outputs
+freeze: true
+
+# enable banner style title blocks
+title-block-banner: "#eeeeee"
+
+# enable CC licence appendix
+license: "CC BY-SA 4.0"
+
+citation: true
+author:
+  - name: Joe Lopes
+    url: https://lopes.id
