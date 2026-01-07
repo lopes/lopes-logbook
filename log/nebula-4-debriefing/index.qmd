@@ -6,14 +6,14 @@ categories: ["detection", "logging"]
 image: "og-nebula-4-debriefing.webp"
 ---
 
-This is the last post of the Nebula series. Previously, I set up the [lab topology](/log/2024-nebula-1-detection-lab/) and installed the VMs, then I installed and configured both [Wazuh](/log/2024-nebula-2-wazuh/) and [Elastic](/log/2024-nebula-3-elastic/) for detecting stuff. Now, I'll share my thoughts on both tools and the lab environment. I'll also add some ideas on how to use and improve the lab.
+This is the last post of the Nebula series. Previously, I set up the [lab topology](/log/nebula-1-detection-lab/) and installed the VMs, then I installed and configured both [Wazuh](/log/nebula-2-wazuh-detection/) and [Elastic](/log/nebula-3-elastic-detection/) for detecting stuff. Now, I'll share my thoughts on both tools and the lab environment. I'll also add some ideas on how to use and improve the lab.
 
 In this post, I'll start by sharing my impressions of Wazuh and Elastic. Next, I'll share thoughts on the lab environment, how it can be improved, and offer some insights. Let's get started!
 
 ::: {.callout-note}
-1. [Detection Lab](/log/2024-nebula-1-detection-lab/)
-2. [Detecting with Wazuh](/log/2024-nebula-2-wazuh/)
-3. [Detecting with Elastic](/log/2024-nebula-3-elastic/)
+1. [Detection Lab](/log/nebula-1-detection-lab/)
+2. [Detecting with Wazuh](/log/nebula-2-wazuh-detection/)
+3. [Detecting with Elastic](/log/nebula-3-elastic-detection/)
 4. Debriefing (you are here)
 :::
 

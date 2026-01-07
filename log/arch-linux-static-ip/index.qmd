@@ -48,7 +48,7 @@ resolvectl status
 
 
 ## Permanent Installation
-During the installation process, when the time comes to [configure the network settings](/log/2020-arch-hardened/), create the file `/etc/systemd/network/20-wired.network` (assuming it is a wired or virtual interface) and fill it with the following content (change it according to your settings):
+During the installation process, when the time comes to [configure the network settings](/log/arch-linux-hardened-install/), create the file `/etc/systemd/network/20-wired.network` (assuming it is a wired or virtual interface) and fill it with the following content (change it according to your settings):
 
 ```
 [Match]

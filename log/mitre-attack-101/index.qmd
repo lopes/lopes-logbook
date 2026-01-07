@@ -10,7 +10,7 @@ Around six months ago, I transitioned from the Incident Response to the Threat D
 
 Our previous rules were all mapped to MITRE ATT&CK, and being a detail-oriented professional, I couldn't ignore the fact that some rules were linked with techniques not related to the actual objective. As a CSIRT Analyst, my knowledge about MITRE ATT&CK was limited to what was strictly necessary to read reports and rules. However, as a Threat Detection Analyst, I had to delve deeper into it to document rules and provide more context to others.
 
-Despite MITRE ATT&CK being a common topic in the Infosec world, surprisingly few sources provide real context about its history, building blocks, and practical use cases. Last month, I published [a post](/log/2023-mitre-attack-getting-real/) on this subject, but I felt it lacked an explanation of the basics. This post aims to fill that gap.
+Despite MITRE ATT&CK being a common topic in the Infosec world, surprisingly few sources provide real context about its history, building blocks, and practical use cases. Last month, I published [a post](/log/mitre-attack-reality/) on this subject, but I felt it lacked an explanation of the basics. This post aims to fill that gap.
 
 
 ## History
@@ -48,7 +48,7 @@ Now that you have a basic understanding of what MITRE ATT&CK is and how it's str
 The authors present ideas for using ATT&CK in these areas at three proficiency levels. The first level is designed for teams initiating their journey with ATT&CK, the second for mid-level teams seeking maturation, and the third for advanced teams. Each area has a dedicated chapter in the book, and I recommend reading them in the suggested sequence. The content is presented in a clear and straightforward manner, making it easy to comprehend without the need for summarization.
 
 ::: {.callout-note}
-In [the other post](/log/2023-mitre-attack-getting-real/), I share practical ideas for applying ATT&CK. Check it out!
+In [the other post](/log/mitre-attack-reality/), I share practical ideas for applying ATT&CK. Check it out!
 :::
 
 ### Bias

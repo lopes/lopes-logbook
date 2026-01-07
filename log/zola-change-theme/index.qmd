@@ -6,7 +6,7 @@ categories: ["dev"]
 image: "og-zola-change-theme.webp"
 ---
 
-I started this blog because [I believe in a decentralized web](/log/2020-blogging-freedom-web/), but along with this decision, comes a lot of administrative questions I had to deal with, and one of them if the theme. The theme tells much about a site, and the first theme for this one was specially crafted by me, [ZOLA.386](https://github.com/lopes/zola.386). Since I'm very proud for writing this theme even 2 years later, my desire to change it was increasing and when my professional and personal lives calmed down, I resurrected this question and ended up changing the theme.
+I started this blog because [I believe in a decentralized web](/log/blogging-freedom-web/), but along with this decision, comes a lot of administrative questions I had to deal with, and one of them if the theme. The theme tells much about a site, and the first theme for this one was specially crafted by me, [ZOLA.386](https://github.com/lopes/zola.386). Since I'm very proud for writing this theme even 2 years later, my desire to change it was increasing and when my professional and personal lives calmed down, I resurrected this question and ended up changing the theme.
 
 Unfortunately, changing a theme in Zola is not a simple task because each theme comes with so many specific configurations that when you migrate, you must drop the old ones and put the new ones, or your site will not even "compile". In this post I will bring some steps that others, like me, can take to change the visual identity of his page.
 

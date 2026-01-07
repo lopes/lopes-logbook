@@ -9,7 +9,7 @@ image: "og-cloudflare-web-protection-guide.webp"
 [CloudFlare](https://www.cloudflare.com/) is a great service for web protection and with its free plan, we're able to use many great features to improve the security of personal websites. In the following lines I'll describe how I got it working for me.
 
 ::: {.callout-note}
-Remember that my site is built upon Zola, deployed using Git/GitHub, and hosted in Netlify. [[1](/log/2020-zola-sites-estaticos/)][[2](/log/2022-zola-change-theme/)]
+Remember that my site is built upon Zola, deployed using Git/GitHub, and hosted in Netlify. [[1](/log/zola-static-sites-tutorial/)][[2](/log/zola-change-theme/)]
 :::
 
 

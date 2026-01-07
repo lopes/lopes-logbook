@@ -6,7 +6,7 @@ categories: ["unix"]
 image: "og-arch-linux-workstation-setup.webp"
 ---
 
-Now that the Arch Linux is [installed](/log/2020-arch-hardened/) and [hardened](/log/2020-arch-hardening-cis/), it is time to install a graphical environment to enable this system to be used as a workstation. This text will show how to setup the system, install the basic packages, and apply my personal configurations to build a system very close to mine.
+Now that the Arch Linux is [installed](/log/arch-linux-hardened-install/) and [hardened](/log/arch-linux-cis-hardening/), it is time to install a graphical environment to enable this system to be used as a workstation. This text will show how to setup the system, install the basic packages, and apply my personal configurations to build a system very close to mine.
 
 Before starting, make sure the system is up-to-date with the next command.
 
@@ -38,7 +38,7 @@ To see a list of GRUB's available resolution options, type `control-c` while in 
 
 To apply the desired resolution, open the file `/etc/defaut/grub`, locate the option `GRUB_GFXMODE` and insert the resolution there. In my case the result was: `GRUB_GFXMODE=1440x900x32`.
 
-Now, regenerate the GRUB configuration file and remember to edit it to add the `--unrestricted` option so [GRUB will not ask for password](/log/2020-arch-hardening-cis/) for default boot. Next listing shows the commands, including the necessary reboot.
+Now, regenerate the GRUB configuration file and remember to edit it to add the `--unrestricted` option so [GRUB will not ask for password](/log/arch-linux-cis-hardening/) for default boot. Next listing shows the commands, including the necessary reboot.
 
 ```sh
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -91,7 +91,7 @@ curl https://getmic.ro | bash
 ```
 
 ### Fonts
-You will need to install additional fonts to use my dotfiles and I recommend installing the Nerd Fonts collection. Follow [this link to read a step-by-step guide](/log/2020-arch-installing-nerd-fonts/) on how to install Nerd Fonts on Arch Linux.
+You will need to install additional fonts to use my dotfiles and I recommend installing the Nerd Fonts collection. Follow [this link to read a step-by-step guide](/log/arch-linux-nerd-fonts/) on how to install Nerd Fonts on Arch Linux.
 
 ```sh
 reboot

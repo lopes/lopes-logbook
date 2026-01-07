@@ -6,7 +6,7 @@ categories: ["career"]
 image: "og-cissp-year-5-reflection.webp"
 ---
 
-It's been **five cycles** since I first held the Certified Information Systems Security Professional (**CISSP**) credential, earning it back in November 2020. I've previously charted the demanding journey to obtaining the certification itself [here](/log/2020-cissp-certification/) 🔗. This time, however, I want to step back and reflect, not on the grueling process of *getting* the badge, but on the practical impact it has had on the subsequent half-decade of my career. What does it truly mean to be "certified" after five years in the ever-shifting landscape of Information Security? 🤔
+It's been **five cycles** since I first held the Certified Information Systems Security Professional (**CISSP**) credential, earning it back in November 2020. I've previously charted the demanding journey to obtaining the certification itself [here](/log/cissp-certification-journey/) 🔗. This time, however, I want to step back and reflect, not on the grueling process of *getting* the badge, but on the practical impact it has had on the subsequent half-decade of my career. What does it truly mean to be "certified" after five years in the ever-shifting landscape of Information Security? 🤔
 
 
 ## Beyond Certifications

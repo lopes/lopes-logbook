@@ -28,7 +28,7 @@ In my tenure with CSIRT, we exercised caution when generating alerts for blocked
 
 Moreover, [Ryan Stillions emphasizes](https://ryanstillions.blogspot.com/2014/04/the-dml-model_21.html), *"prevention eventually fails,"* highlighting the necessity of implementing safeguards to mitigate residual risks. Developing analytics that complement specific preventative controls instills confidence that critical events are not overlooked.
 
-For instance, suppose preventative controls (ACL and bucket permissions) are in place to restrict access to any AWS S3 bucket. In this case, complementary detective controls can monitor changes made to the ACL and bucket permissions, triggering "Informational" alerts. Utilizing automation, as discussed [here](/log/2024-secops-beyond-tuning-analytics/), notifications would be sent to the personnel responsible for the bucket to confirm or refute the action. If unacknowledged, the alert would escalate for further investigation.
+For instance, suppose preventative controls (ACL and bucket permissions) are in place to restrict access to any AWS S3 bucket. In this case, complementary detective controls can monitor changes made to the ACL and bucket permissions, triggering "Informational" alerts. Utilizing automation, as discussed [here](/log/secops-beyond-tuning/), notifications would be sent to the personnel responsible for the bucket to confirm or refute the action. If unacknowledged, the alert would escalate for further investigation.
 
 As mentioned, this approach applies to specific preventative alerts and is not universally applicable. Therefore, the Detection team must establish criteria to determine suitable cases. Additionally, CSIRT involvement is essential to configure tools effectively and mitigate alert fatigue.
 

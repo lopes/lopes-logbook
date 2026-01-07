@@ -6,12 +6,12 @@ categories: ["detection"]
 image: "og-mapping-detection-mitre-attack.webp"
 ---
 
-Recently, I [posted](/log/2025-engineering-detection-rules/) 🔗 on how a structured engineering approach to creating detection rules can benefit a Threat Detection Engineering (TDE) program. In that post, I showed how early engineering can bring benefits, including classifying new detection rules using **MITRE ATT&CK** terms.
+Recently, I [posted](/log/engineering-detection-rules/) 🔗 on how a structured engineering approach to creating detection rules can benefit a Threat Detection Engineering (TDE) program. In that post, I showed how early engineering can bring benefits, including classifying new detection rules using **MITRE ATT&CK** terms.
 
 While seemingly simple, this action involves a certain level of complexity due to the numerous techniques and inherent subjectivity involved. In this post, I will bridge that gap by outlining a process to perform this task.
 
 ::: {.callout-note}
-Following the process defined in the [previous post](/log/2025-engineering-detection-rules/), a request for new detections is made and then engineered to generate a list of requirements, which includes the rules that must be written. After scrutiny and selection for development, the **Rule Design and Documentation** phase begins. This involves thoroughly documenting the comprehensive context for each rule. In other words, defining the scenario. With this information, it's time to classify them using MITRE ATT&CK terms.
+Following the process defined in the [previous post](/log/engineering-detection-rules/), a request for new detections is made and then engineered to generate a list of requirements, which includes the rules that must be written. After scrutiny and selection for development, the **Rule Design and Documentation** phase begins. This involves thoroughly documenting the comprehensive context for each rule. In other words, defining the scenario. With this information, it's time to classify them using MITRE ATT&CK terms.
 :::
 
 

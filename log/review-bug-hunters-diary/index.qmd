@@ -24,7 +24,7 @@ Bug hunting can be divided into static and dynamic analysis (SAST and DAST) and 
 
 Tobias excels in low-level static analysis. As a result, the book is filled with C code, syscalls, CPU registers, and memory addresses. Readers with a background in programming and computer architecture will benefit the most from this book.
 
-I found it fascinating to learn more about the vulnerability disclosure process, especially after reading *[Countdown to Zero Day](/log/2024-book-countdown-zero-day/)* a few months ago. That book explored the vulnerability market (white, gray, and black) during the early 2000s, the era when Stuxnet and its variants were developed—the same time frame of the cases presented here. In this sense, the two books complement each other.
+I found it fascinating to learn more about the vulnerability disclosure process, especially after reading *[Countdown to Zero Day](/log/review-countdown-zero-day/)* a few months ago. That book explored the vulnerability market (white, gray, and black) during the early 2000s, the era when Stuxnet and its variants were developed—the same time frame of the cases presented here. In this sense, the two books complement each other.
 
 For someone outside the bug hunting trenches, it's enlightening to understand attacks like buffer overflows and NULL pointer dereferences in greater detail. The references Tobias provides are particularly valuable. While some links are broken due to the book's age (published in 2011), the recommended books are gold ⭐ for anyone starting in this field. Despite the book's brevity and the author's ability to simplify complex topics, the subject matter is dense. Some references are lengthy and will require significant time to fully absorb.
 

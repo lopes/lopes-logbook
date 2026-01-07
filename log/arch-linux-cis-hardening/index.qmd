@@ -6,13 +6,13 @@ categories: ["unix", "hardening"]
 image: "og-arch-linux-cis-hardening.webp"
 ---
 
-This is a direct sequence of [Installing Arch Linux](/log/2020-arch-hardened/), which already includes some hardening practices. This guide will go one step further because I am applying some [CIS](https://www.cisecurity.org/cis-benchmarks/) controls specific for Linux environments, obviously scoping and tailoring for my personal purposes.
+This is a direct sequence of [Installing Arch Linux](/log/arch-linux-hardened-install/), which already includes some hardening practices. This guide will go one step further because I am applying some [CIS](https://www.cisecurity.org/cis-benchmarks/) controls specific for Linux environments, obviously scoping and tailoring for my personal purposes.
 
 
 ## Security x Usability
 Before starting, just a disclaimer. Obviously many hardening techniques can be applied to improve a system's security, but typically security is inversely proportional to usability. That said, despite many configurations can be set to improve one's system, the purpose of this system must be well understood, so these controls will not make the system unusable.
 
-In this case, as explained in the [previous text](/log/2020-arch-hardened/), I am aiming to configuring an operating system to be installed in a laptop for personal usage. That's why I am not using the [`linux-hardened`](https://wiki.archlinux.org/index.php/Security#Kernel_hardening) kernel here for instance. All in all, always remember that even a well-hardened system can be owned simply because technology is just another aspect of security. To keep all systems safe, people who use them must be trained, and the processes also must be revised and in compliance with the best practices.
+In this case, as explained in the [previous text](/log/arch-linux-hardened-install/), I am aiming to configuring an operating system to be installed in a laptop for personal usage. That's why I am not using the [`linux-hardened`](https://wiki.archlinux.org/index.php/Security#Kernel_hardening) kernel here for instance. All in all, always remember that even a well-hardened system can be owned simply because technology is just another aspect of security. To keep all systems safe, people who use them must be trained, and the processes also must be revised and in compliance with the best practices.
 
 
 ## Basic System's Security
@@ -69,7 +69,7 @@ Find the menu entry for Arch Linux's default boot—`/boot/grub/grub.cfg`—and 
 
 
 ## Firewall
-Configure a firewall to control and log all access to the machine. Since [ufw is already installed](/log/2020-arch-hardened/) and it provides a friendly interface to iptables, we are going to use it. The next command listing shows how to enable ufw logs, set up the default policies, start and enable the service, test if it is active, and see the service's logs.
+Configure a firewall to control and log all access to the machine. Since [ufw is already installed](/log/arch-linux-hardened-install/) and it provides a friendly interface to iptables, we are going to use it. The next command listing shows how to enable ufw logs, set up the default policies, start and enable the service, test if it is active, and see the service's logs.
 
 ```sh
 ufw logging on
@@ -202,7 +202,7 @@ After rebooting your system you should be more secure and ready to rock!
 ## Bonus: Booting Arch in Rescue Mode
 Since Arch uses systemd, the equivalent to single-user mode is the rescue mode and to use it, in the GRUB menu select the appropriate kernel image—a.k.a. menu option—and press `e`. If you protected this menu as shown in this text—hope you did!—, you will have to type the user and password previously defined.
 
-In the next screen, find the kernel configuration line—the one that starts with `linux /vmlinuz-linux root=...`. Append the string in the next listing at the end of this line, then press `control-x` to boot the system. You will still have to type the password to decrypt the disk if using [full disk encryption](/log/2020-arch-hardened/) and the root password so the system will launch a shell for maintenance.
+In the next screen, find the kernel configuration line—the one that starts with `linux /vmlinuz-linux root=...`. Append the string in the next listing at the end of this line, then press `control-x` to boot the system. You will still have to type the password to decrypt the disk if using [full disk encryption](/log/arch-linux-hardened-install/) and the root password so the system will launch a shell for maintenance.
 
 ```sh
 systemd.unit=rescue.target

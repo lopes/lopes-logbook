@@ -8,7 +8,7 @@ image: "og-review-practical-threat-detection.webp"
 
 One year ago, I transitioned to the Detection Engineering team with an Incident Response background. At that moment, I began researching to learn more about the concepts I would need to tackle the challenges in my new role.
 
-In this sense, [Intelligence-Driven Incident Response (IDIR)](/log/2023-book-intel-driven-ir/) (O'Reilly, 1st edition) was an excellent source of information, but I needed something more focused on Threat Detection. I found what I was looking for in the book [Practical Threat Detection Engineering (Packt, 1st Edition)](https://amzn.to/3Zl2P2k) 🔗, and I decided to write a review about it.
+In this sense, [Intelligence-Driven Incident Response (IDIR)](/log/review-intelligence-driven-ir/) (O'Reilly, 1st edition) was an excellent source of information, but I needed something more focused on Threat Detection. I found what I was looking for in the book [Practical Threat Detection Engineering (Packt, 1st Edition)](https://amzn.to/3Zl2P2k) 🔗, and I decided to write a review about it.
 
 
 ## Format and Content

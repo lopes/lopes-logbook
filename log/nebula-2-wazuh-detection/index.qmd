@@ -6,13 +6,13 @@ categories: ["detection", "logging"]
 image: "og-nebula-2-wazuh-detection.webp"
 ---
 
-This is the second part of the DE Lab series, aka Project Nebula. 🌌  In the [previous post](/log/2024-nebula-1-detection-lab/), I covered motivations, topology, tools, and set up the VMs. Now, I'll walk through setting up Wazuh, configuring Windows and Ubuntu VMs to send logs, and creating a simple detection rule in Wazuh. Let's get started! 🚀
+This is the second part of the DE Lab series, aka Project Nebula. 🌌  In the [previous post](/log/nebula-1-detection-lab/), I covered motivations, topology, tools, and set up the VMs. Now, I'll walk through setting up Wazuh, configuring Windows and Ubuntu VMs to send logs, and creating a simple detection rule in Wazuh. Let's get started! 🚀
 
 ::: {.callout-note}
-1. [Detection Lab](/log/2024-nebula-1-detection-lab/)
+1. [Detection Lab](/log/nebula-1-detection-lab/)
 2. Detecting with Wazuh (you are here)
-3. [Detecting with Elastic](/log/2024-nebula-3-elastic/)
-4. [Debriefing](/log/2024-nebula-4-debriefing/)
+3. [Detecting with Elastic](/log/nebula-3-elastic-detection/)
+4. [Debriefing](/log/nebula-4-debriefing/)
 :::
 
 
@@ -63,7 +63,7 @@ It's fine to use the x86_64 version of the agent for Windows (using an ARM-based
 
 
 ## Agents
-The VMs were previously installed in [part 1](/log/2024-nebula-1-detection-lab/) of this series. Now it's time to set them up in Wazuh. Starting with Windows (`apollo`), I logged in as user `neil` (remember the naming convention?), opened PowerShell as Administrator, and ran the following commands to:
+The VMs were previously installed in [part 1](/log/nebula-1-detection-lab/) of this series. Now it's time to set them up in Wazuh. Starting with Windows (`apollo`), I logged in as user `neil` (remember the naming convention?), opened PowerShell as Administrator, and ran the following commands to:
 
 1. Navigate to the user's Downloads folder.
 2. Download and install the Sysmon agent.
