@@ -6,7 +6,7 @@ categories: ["random"]
 image: "og-five-year-blog-anniversary.webp"
 ---
 
-Five years ago, during the COVID-19 pandemic, I decided to start a new blog to share some thoughts and tutorials. As a dissident from the open-source community, I see knowledge sharing as a great way to contribute to others. Also, since I was starting my [CISSP journey](/log/2020-cissp-certification/), maintaining a blog would help document my achievements for CPE purposes.
+Five years ago, during the COVID-19 pandemic, I decided to start a new blog to share some thoughts and tutorials. As a dissident from the open-source community, I see knowledge sharing as a great way to contribute to others. Also, since I was starting my [CISSP journey](/log/cissp-certification-journey/), maintaining a blog would help document my achievements for CPE purposes.
 
 I had other blogs in the past (now deprecated), but this one is the most long-lived. So I decided to share some reflections on this journey. 💭
 
@@ -37,12 +37,12 @@ Writing is something you improve through consistent reading and practice. At wor
 
 On the technical side, it's been a lot of fun putting the tools together to deliver the content. I had to learn some CI/CD techniques to automate deployments from merges. I also adapted the [Git Flow](https://www.gitkraken.com/learn/git/git-flow) workflow to manage branches, parallelize work, and protect the mainline. Working with Cloudflare's DNS and WAF gave me a taste of what it's like for SREs to keep systems running smoothly. As an Infosec engineer, this insight has improved how I interact with those teams.
 
-At one point, I even [assessed my site with BURP Suite](/log/2024-burp-website-hardening/) to find and fix vulnerabilities. This kind of "full stack" exercise is great because you have a grasp on how to test, fix, and make strategic decisions while considering the side effects of each change.
+At one point, I even [assessed my site with BURP Suite](/log/burp-suite-website-hardening/) to find and fix vulnerabilities. This kind of "full stack" exercise is great because you have a grasp on how to test, fix, and make strategic decisions while considering the side effects of each change.
 
 Content-wise, I started with simple tutorials pulled directly from my personal notes. That worked well, and some of those posts (especially the Arch Linux 🐧 ones) are still among the most visited. However, I eventually realized that writing a new post takes time, and as a new father, I didn't have much of that. So I decided to focus my efforts on my main field: **Information Security**.
 
 ::: {.callout-note}
-Since the AI/LLM 🤖 hype began, [I've been experimenting with this technology](/log/2023-gpt35-seo-advice/). From my very first tests back in 2023, I reached the same conclusion as some of the AI experts I follow: LLMs are great assistants, but their output always requires review. Since then, I've been using LLMs to help me review my texts for grammatical errors and to improve my written English.
+Since the AI/LLM 🤖 hype began, [I've been experimenting with this technology](/log/ai-seo-advice-gpt/). From my very first tests back in 2023, I reached the same conclusion as some of the AI experts I follow: LLMs are great assistants, but their output always requires review. Since then, I've been using LLMs to help me review my texts for grammatical errors and to improve my written English.
 
 That said, all posts here are written by me, reviewed with the help of an LLM, and then re-reviewed by me. As I'm using this technology to enhance my skills, it wouldn't make sense to let it write content on my behalf. So rest assured—all the content here is human-made. 🙋🏻
 :::

@@ -6,7 +6,7 @@ categories: ["dfir", "detection"]
 image: "og-secops-beyond-tuning.webp"
 ---
 
-Last week, I published [a post about the Threat Detection Dilemma](/log/2024-threat-detection-dilemma/): there's no perfect analytic, and when you improve the Precision of a rule, the Recall gets worse, and vice versa. Indeed, fine-tuning rules is key for a sound Security Operations (SecOps), but this is not the only approach in this direction. After reading Coinbase's CSIRT blog posts ([1](https://www.coinbase.com/blog/scaling-detection-and-response-operations-at-coinbase), [2](https://www.coinbase.com/blog/scaling-detection-and-response-operations-at-coinbase-pt2), [3](https://www.coinbase.com/blog/scaling-detection-and-response-operations-at-coinbase-pt3)), I decided to compile their learnings with my own thoughts, and in this post, I'll show the result.
+Last week, I published [a post about the Threat Detection Dilemma](/log/threat-detection-dilemma/): there's no perfect analytic, and when you improve the Precision of a rule, the Recall gets worse, and vice versa. Indeed, fine-tuning rules is key for a sound Security Operations (SecOps), but this is not the only approach in this direction. After reading Coinbase's CSIRT blog posts ([1](https://www.coinbase.com/blog/scaling-detection-and-response-operations-at-coinbase), [2](https://www.coinbase.com/blog/scaling-detection-and-response-operations-at-coinbase-pt2), [3](https://www.coinbase.com/blog/scaling-detection-and-response-operations-at-coinbase-pt3)), I decided to compile their learnings with my own thoughts, and in this post, I'll show the result.
 
 
 ## The More Visibility, the More Workload
@@ -26,7 +26,7 @@ Now, if we onboard users to this triage process, automatically asking them to co
 ## Containment
 If we have metrics in place for our analytics, we know what are the low and high fidelity ones. Now, for the high fidelity rules, we can go a step further, flagging the alert as a True Positive and moving the Incident Response automatically to the Containment phase.
 
-In Containment, we can implement some routines to automate part of the tasks, depending on the workflow in place. We could disable and disconnect user sessions, isolate machines, and add firewall rules, for example. Quoting [Cliff Stoll](/log/2024-book-cuckoos-egg/), sometimes *“it's easier to give an apology than get permission.”*
+In Containment, we can implement some routines to automate part of the tasks, depending on the workflow in place. We could disable and disconnect user sessions, isolate machines, and add firewall rules, for example. Quoting [Cliff Stoll](/log/review-cuckoos-egg/), sometimes *“it's easier to give an apology than get permission.”*
 
 In cases like this, we're not only reducing the burden over the SecOps team, but we're also greatly improving metrics like MTTT and Mean Time to Respond. Ultimately, we're improving our company's security.
 

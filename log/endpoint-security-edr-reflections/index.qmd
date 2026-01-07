@@ -30,7 +30,7 @@ For EDR-like tools, there's no such management console. It's up to your team to 
 
 
 ## Collecting Data is Not Using Data
-Recently, [I showed how to integrate MISP and Chronicle](/log/2024-misp-chronicle-integration/), highlighting the importance of **using the collected data**, and the scenario here is the same.
+Recently, [I showed how to integrate MISP and Chronicle](/log/misp-chronicle-integration/), highlighting the importance of **using the collected data**, and the scenario here is the same.
 
 EDR tools start monitoring your endpoint right after installation. They collect data, and since their engine resides on the agent, the telemetry is used immediately. However, the action depends on the EDR's state. EDRs have different operational states: some just monitor the environment (learning), while others take action effectively, but all are capable of generating alerts. Usually, you set your EDR to only alert during deployment, and after some fine-tuning, you switch it to block mode and don't look back.
 
@@ -42,7 +42,7 @@ Even if you're a seasoned practitioner and start from a known repository like [S
 ## EDR and SIEM
 If you have an EDR, make the most of it; don't try to be overly clever by mixing it with EDR-like tools in complicated scenarios. Also, avoid sending EDR telemetry to SIEM because it might increase your SIEM budget without improving security. The EDR is already doing the job of monitoring the endpoint, and sending its telemetry to SIEM is redundant.
 
-The only good reason to do this is to centralize your detections and investigations, but centralizing alerts and pivoting between tools is a better approach (and you might also [leverage SOAR](/log/2024-secops-beyond-tuning-analytics/) to centralize investigations).
+The only good reason to do this is to centralize your detections and investigations, but centralizing alerts and pivoting between tools is a better approach (and you might also [leverage SOAR](/log/secops-beyond-tuning/) to centralize investigations).
 
 I envision only certain scenarios where sending EDR data to SIEM is okay, such as:
 

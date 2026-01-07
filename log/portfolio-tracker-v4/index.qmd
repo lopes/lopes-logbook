@@ -6,7 +6,7 @@ categories: ["random"]
 image: "og-portfolio-tracker-v4.webp"
 ---
 
-Last year I published my portfolio tracker spreadsheet along with [a blog post on how I built it](/log/2023-portfolio-tracker/). Over time, I noticed that I mixed some concepts in that spreadsheet as I transitioned my strategy from stock picking to core-satellite. So, I decided to revamp the spreadsheet to align it with the new strategy, dropping unnecessary features and adding new ones. In this post, I'll share how the new portfolio tracker works and how I built it.
+Last year I published my portfolio tracker spreadsheet along with [a blog post on how I built it](/log/finance-portfolio-tracker/). Over time, I noticed that I mixed some concepts in that spreadsheet as I transitioned my strategy from stock picking to core-satellite. So, I decided to revamp the spreadsheet to align it with the new strategy, dropping unnecessary features and adding new ones. In this post, I'll share how the new portfolio tracker works and how I built it.
 
 **tl;dr:** Link to the spreadsheet [here](https://docs.google.com/spreadsheets/d/1t74zQb31tufTZNpCdS2CkfEboHgqzjcXPSthOC8HA_M/edit?usp=sharing). Donation [here](https://www.paypal.com/donate/?hosted_button_id=2W2ALYSGHTDTU).
 
@@ -79,7 +79,7 @@ As previously mentioned, the weighted targets were a good challenge as I had to 
 One of the biggest changes in this version was the addition of automatic portfolio evolution by year. I've limited this to a five-year range to maintain performance and added new hidden columns as pivots to the end of the Allocation tab. Thanks to the limits, like the number of Assets and Wallets, and the time span, even though these formulas are complex, I've noticed no downgrade in overall performance.
 
 ### Crypto and Deprecated Assets
-As [I showed in another post](/log/2022-gsheets-crypto-prices/), Google Finance is able to fetch quotes for some major cryptocurrencies, but for most it just can't. It's possible to implement it using another source, but as I'm avoiding third-party scripts here, there's no easy way to implement fallbacks like *"if `GoogleFinance()` yields an error, try to get the quote here"*. This way, I leave it to the user's discretion to implement it or not if she's investing in such assets.
+As [I showed in another post](/log/google-sheets-crypto-prices/), Google Finance is able to fetch quotes for some major cryptocurrencies, but for most it just can't. It's possible to implement it using another source, but as I'm avoiding third-party scripts here, there's no easy way to implement fallbacks like *"if `GoogleFinance()` yields an error, try to get the quote here"*. This way, I leave it to the user's discretion to implement it or not if she's investing in such assets.
 
 The same concern applies to deprecated assets. As Google Finance terminates the asset/ticker when a security is no longer being traded, it'll yield an error. For one specific case, to get the normalized asset value on December 31st of a given year, if this function returns an error, the spreadsheet will consider the average price of that asset instead. The formula goes like this:
 

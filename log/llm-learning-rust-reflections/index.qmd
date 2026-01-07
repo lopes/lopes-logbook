@@ -6,7 +6,7 @@ categories: ["dev"]
 image: "og-llm-learning-rust-reflections.webp"
 ---
 
-A couple of months ago, I decided to learn Rust and started with *The Rust Programming Language*—more on this [here](/log/2025-rust-security-engineers/) 🦀. In today's world of ever-present LLMs, I found myself chatting with a few to help make sense of certain concepts. At the same time, I disabled LLM integration in my code editor while working through the exercises. That contrast got me thinking about how my learning process has changed, and how it compares to the way I used to study. This post is a reflection on that shift: its upsides, its drawbacks, and what it might mean for how we learn today.
+A couple of months ago, I decided to learn Rust and started with *The Rust Programming Language*—more on this [here](/log/rust-for-security-engineers/) 🦀. In today's world of ever-present LLMs, I found myself chatting with a few to help make sense of certain concepts. At the same time, I disabled LLM integration in my code editor while working through the exercises. That contrast got me thinking about how my learning process has changed, and how it compares to the way I used to study. This post is a reflection on that shift: its upsides, its drawbacks, and what it might mean for how we learn today.
 
 ::: {.callout-note}
 I'm not an AI expert, so these are just my impressions of **using** it.

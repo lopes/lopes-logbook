@@ -7,7 +7,7 @@ image: "og-finance-portfolio-tracker.webp"
 ---
 
 ::: {.callout-important}
-The Portfolio Tracker version showed here was deprecated in favor [of this one](https://docs.google.com/spreadsheets/d/1t74zQb31tufTZNpCdS2CkfEboHgqzjcXPSthOC8HA_M/edit?usp=sharing). Although many parts of this post are present in the new version, you can read the new post [here](/log/2024-portfolio-tracker-v4/).
+The Portfolio Tracker version showed here was deprecated in favor [of this one](https://docs.google.com/spreadsheets/d/1t74zQb31tufTZNpCdS2CkfEboHgqzjcXPSthOC8HA_M/edit?usp=sharing). Although many parts of this post are present in the new version, you can read the new post [here](/log/portfolio-tracker-v4/).
 :::
 
 Regrettably, from my experience with software, I discovered that there was no effective solution to assist me in managing my portfolio. This was due to either their high cost or their lack of utility. I'm not interested in applications that merely display obvious information, such as the number of shares I hold for an asset. I require more than that; I desire actionable information that can genuinely enhance my profits.

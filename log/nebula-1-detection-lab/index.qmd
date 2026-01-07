@@ -14,9 +14,9 @@ I decided to build my own lab with a focus on simplicity and resource efficiency
 
 ::: {.callout-note}
 1. Detection Lab (you are here)
-2. [Detecting with Wazuh](/log/2024-nebula-2-wazuh/)
-3. [Detecting with Elastic](/log/2024-nebula-3-elastic/)
-4. [Debriefing](/log/2024-nebula-4-debriefing/)
+2. [Detecting with Wazuh](/log/nebula-2-wazuh-detection/)
+3. [Detecting with Elastic](/log/nebula-3-elastic-detection/)
+4. [Debriefing](/log/nebula-4-debriefing/)
 :::
 
 

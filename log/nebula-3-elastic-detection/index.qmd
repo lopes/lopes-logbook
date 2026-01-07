@@ -6,13 +6,13 @@ categories: ["detection", "logging"]
 image: "og-nebula-3-elastic-detection.webp"
 ---
 
-This is the third part of the Detection Engineering Lab series. In the [first post](/log/2024-nebula-1-detection-lab/), I defined the lab topology and created the workstations. In the [second post](/log/2024-nebula-2-wazuh/), I installed Wazuh to monitor the workstations. In this post, I'll shift focus from Wazuh and deploy the Elastic Stack to monitor the workstations. Let's get started! 🚀
+This is the third part of the Detection Engineering Lab series. In the [first post](/log/nebula-1-detection-lab/), I defined the lab topology and created the workstations. In the [second post](/log/nebula-2-wazuh-detection/), I installed Wazuh to monitor the workstations. In this post, I'll shift focus from Wazuh and deploy the Elastic Stack to monitor the workstations. Let's get started! 🚀
 
 ::: {.callout-note}
-1. [Detection Lab](/log/2024-nebula-1-detection-lab/)
-2. [Detecting with Wazuh](/log/2024-nebula-2-wazuh/)
+1. [Detection Lab](/log/nebula-1-detection-lab/)
+2. [Detecting with Wazuh](/log/nebula-2-wazuh-detection/)
 3. Detecting with Elastic (you are here)
-4. [Debriefing](/log/2024-nebula-4-debriefing/)
+4. [Debriefing](/log/nebula-4-debriefing/)
 :::
 
 
@@ -170,7 +170,7 @@ I'll drop some references if you want to learn more about Elastic, and I myself 
 - [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
 - [Getting started with the Elastic Stack and Docker Compose: Part 1](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose)
 - [Getting started with the Elastic Stack and Docker Compose: Part 2](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose-part-2)
-- [Practical Threat Detectino Engineering](/log/2024-book-practical-threat-de/)
+- [Practical Threat Detectino Engineering](/log/review-practical-threat-detection/)
 
 
 ## Appendix: Docker Compose Files

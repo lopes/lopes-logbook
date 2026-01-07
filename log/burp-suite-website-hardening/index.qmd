@@ -16,7 +16,7 @@ After a few minutes, I turned off the proxy and analyzed the data within the Tar
 
 
 ## Strict Transport Security not Enforced
-HTTP Strict Transport Security (HSTS) is a crucial feature that prevents users from connecting to the website over unencrypted connections — [learn more here](https://www.cyberis.com/article/five-minute-fix-http-strict-transport-security-hsts-not-enforced). As [previously explained here](/log/2023-cloudflare-get-started/), this website's current architecture employs CloudFlare as a WAF, configured to enforce secure connections. However, for usability reasons, I initially allowed insecure connections without enabling the HSTS feature, fearing it might deter potential visitors.
+HTTP Strict Transport Security (HSTS) is a crucial feature that prevents users from connecting to the website over unencrypted connections — [learn more here](https://www.cyberis.com/article/five-minute-fix-http-strict-transport-security-hsts-not-enforced). As [previously explained here](/log/cloudflare-web-protection-guide/), this website's current architecture employs CloudFlare as a WAF, configured to enforce secure connections. However, for usability reasons, I initially allowed insecure connections without enabling the HSTS feature, fearing it might deter potential visitors.
 
 Things have changed. I not only enabled HSTS but also set the minimum TLS version to 1.2. Given that a significant aspect of this site revolves around Information Security, there's no better way to teach than by example. If you try accessing [lopes.id](http://lopes.id/) through a deprecated browser using insecure TLS versions, you won't be able to open it.
 

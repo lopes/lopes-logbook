@@ -15,7 +15,7 @@ A detection is a rule that triggers an alert 🚨 when specific conditions are m
 1. **Adversarial behavior:** Use cases aligned with known tactics, techniques, and procedures (TTPs) of threat actors, such as lateral movement, privilege escalation, or data exfiltration. Frameworks like MITRE ATT&CK are often referenced.
 2. **Indicators of Compromise (IOCs):** Specific artifacts or evidence of malicious activity, such as malware hashes, IP addresses, or domains. Here, there's an intersection with threat intelligence.
 
-As discussed [here](/log/2024-towards-actionable-detection/), **detections should lead to actionable steps that mitigate risk**. Effective detections require input data, usually logs from the monitored environment, and must provide enough context to be actionable for analysts.
+As discussed [here](/log/actionable-detection-strategy/), **detections should lead to actionable steps that mitigate risk**. Effective detections require input data, usually logs from the monitored environment, and must provide enough context to be actionable for analysts.
 
 
 ## What is NOT a Detection?

@@ -19,12 +19,20 @@ The first thing here is to create a directory to house your downloaded fonts and
 ```sh
 mkdir fonts; cd fonts
 
-## to install all fonts
-curl -sL https://github.com/ryanoasis/nerd-fonts/releases/latest | egrep -o "/ryanoasis/nerd-fonts/releases/download/.+\.zip" | sed 's/^/https:\/\/github.com/' | wget -i/dev/fd/0
+## a. to install all fonts
+curl -sL https://github.com/ryanoasis/nerd-fonts/releases/latest |\
+egrep -o "/ryanoasis/nerd-fonts/releases/download/.+\.zip" |\
+sed 's/^/https:\/\/github.com/' |\
 
-## to download a list and pick only the ones you like
-curl -sL https://github.com/ryanoasis/nerd-fonts/releases/latest | egrep -o "/ryanoasis/nerd-fonts/releases/download/.+\.zip" | sed 's/^/https:\/\/github.com/' > list.txt
+wget -i/dev/fd/0
+
+## b. to download a list and pick only the ones you like
+curl -sL https://github.com/ryanoasis/nerd-fonts/releases/latest |\
+egrep -o "/ryanoasis/nerd-fonts/releases/download/.+\.zip" |\
+sed 's/^/https:\/\/github.com/' > list.txt
+
 vim list.txt       # edit the list to remove undesired fonts
+
 wget -i list.txt
 ```
 

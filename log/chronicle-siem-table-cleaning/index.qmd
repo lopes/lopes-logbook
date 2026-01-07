@@ -6,7 +6,7 @@ categories: ["logging", "cloud", "dev", "detection"]
 image: "og-chronicle-siem-table-cleaning.webp"
 ---
 
-Last year, I shared [the approach](/log/2024-chronicle-autocleaning-lists/) 🔗 I developed to keep **Reference Lists** sanitized in **Chronicle SIEM** (currently **Google SecOps**). That script helped my team keep our detection rules under management by simply adding an expiration date to certain rows. However, due to recent changes, Google is in the process of deprecating Reference Lists in favor of **Data Tables**.
+Last year, I shared [the approach](/log/chronicle-siem-list-cleaning/) 🔗 I developed to keep **Reference Lists** sanitized in **Chronicle SIEM** (currently **Google SecOps**). That script helped my team keep our detection rules under management by simply adding an expiration date to certain rows. However, due to recent changes, Google is in the process of deprecating Reference Lists in favor of **Data Tables**.
 
 In this post, I'll share my approach to add the "expiration rows" feature to Data Tables. Here, I'll share some **pain points** and **insights** regarding its implementation.
 
