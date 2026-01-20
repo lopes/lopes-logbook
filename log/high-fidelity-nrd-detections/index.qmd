@@ -1,0 +1,147 @@
+---
+title: "High-Fidelity NRD Detections"
+date: 2026-01-20
+description: "Implementing high-fidelity detection rules for Newly Registered Domains (NRDs) in Google SecOps."
+categories: ["detection"]
+image: "og-high-fidelity-nrd-detections.webp"
+---
+
+As threat actors increasingly cycle through **Newly Registered Domains (NRDs)** for phishing and Command and Control (C2) operations, detecting activity tied to these short-lived domains remains a valuable defensive strategy. **Google SecOps SIEM** (formerly Chronicle) 🛡️ provides a powerful, native capability to leverage WHOIS data and domain reputation signals, allowing us to programmatically determine if a domain is newly created. However, relying on broad, generic rules is a fast track to alert fatigue. We need precision. 🎯
+
+After diving deep into Google Workspace logs to investigate stronger detection possibilities, I consolidated my thoughts and strategies into this post.
+
+
+## The Problem with Broad Strokes
+Google SecOps includes a detection rule in its public repository that serves as a prime example of this concept. The `whois_recently_created_domain_access` rule, available in [GitHub](https://github.com/chronicle/detection-rules/blob/main/rules/community/threat_intel/whois_recently_created_domain_access.yaral), checks for *any* network connection event where the target domain was created less than 30 days ago. While this serves as a **good starting point**, like many publicly shared detection rules, it lacks context and refinement. Without additional scoping, it is prone to false positives.
+
+As a threat hunting rule or an atomic/producer rule (signal generation), this logic is perfectly fine. However, adopting this approach as a detection rule lacks the necessary granularity because:
+
+1. **Context is missing:** Not all NRD activity is equal. A new vendor's SaaS API connection does not carry the same threat level as a targeted spear-phishing email.
+2. **Arbitrary thresholds:** A single, static threshold (e.g., *10 connections*) is simultaneously too low for legitimate bulk web traffic and too high for a "low-and-slow" spear-phishing attack. This guarantees an unmanageable false positive (FP) rate and significant false negatives (FN).
+
+> **The central engineering principle here is:** Breaking detection down by **use case** allows for superior granularity and precision.
+
+
+## Contextual Granularity: A Tiered Detection Model
+Working with Google Workspace logs opened my mind to a more granular solution. The most effective strategy for NRD detections is to implement a **tiered detection model** where the threshold and focus are dictated by the event type and the sensitivity of the target entity (e.g., VIP status)—in other words, the **use case**.
+
+This shifts the detection philosophy from simply observing *newness* to observing *suspicious behavior in high-risk contexts*, where *newness* is merely one of several contextual factors. 💡
+
+The next table outlines a few use cases with ideas for implementing scoped detections. These leverage NRD data to add critical context to otherwise standard connections.
+
+| Use Case | UDM Event Type | Detection Focus & Threshold | Risk Mapping |
+| :--- | :--- | :--- | :--- |
+| **NRD Phishing Volume** | `EMAIL_TRANSACTION` | ≥ 5 distinct internal recipients receive mail from the NRD domain within 1 hour. | Bulk Phishing/Spam |
+| **NRD Spear Phishing (VIP)** | `EMAIL_TRANSACTION` | > 1 VIP recipient receives mail from an NRD domain within 1 hour. | Targeted Initial Access/BEC |
+| **Malware Drop from NRD** | `NETWORK_CONNECTION` / `FILE_MODIFICATION` | ≥ 1 file download from NRD **AND** file size is > 1 KB. | Payload Delivery/Malware Stage |
+| **Bulk Exfiltration to NRD** | `NETWORK_CONNECTION` | ≥ 1 asset with `network.sent_bytes` > 10 MB to NRD domain within 1 hour. | Data Theft / C2 Exfil |
+| **NRD C2 High-Frequency Beacon** | `NETWORK_CONNECTION` | ≥ 10 connections from a single Internal Asset to the NRD domain within 5 minutes. | Low-Volume C2 Heartbeat |
+
+::: {.callout-note}
+This is not a silver bullet; use these examples as inspiration to create detection rules that fit your organization's specific threat landscape.
+:::
+
+
+## Leveraging NRD with Google Workspace
+As mentioned, I was analyzing Google Workspace events when I realized I could use NRD context to highlight suspicious email transactions. My first approach was to select all messages opened in Workspace, extract the domain from the sender address (excluding trusted domains), and trigger an alert if the domain was less than one week old.
+
+Why one week? In my testing, I noticed that shorter timeframes missed too many threats, while extending it to a month or more created a rule too broad for general monitoring. The resulting YARA-L rule looks like this:
+
+```c
+rule workspace_nrd_possible_phishing {
+  meta:
+    author = "Joe Lopes <lopes.id>"
+    description = "A user opened an email from a newly registered domain (created < 7 days ago), which may indicate a phishing attempt"
+    severity = "medium"
+    maturity = "initial"
+    mitre = "T1566:TA0001"
+    reference_1 = "https://github.com/chronicle/detection-rules/blob/main/rules/community/threat_intel/whois_recently_created_domain_access.yaral"
+    reference_2 = "https://support.google.com/a/answer/12384955"
+
+  events:
+    $mail.metadata.event_type = "EMAIL_TRANSACTION"
+    $mail.metadata.product_event_type = "2" // message was opened
+    strings.extract_domain($mail.network.email.from) = $domain
+    not $domain in %trusted_domains.domain
+
+    $whois.graph.entity.domain.name = $domain
+    $whois.graph.metadata.entity_type = "DOMAIN_NAME"
+    $whois.graph.metadata.vendor_name = "WHOIS"
+    $whois.graph.metadata.product_name = "WHOISXMLAPI Simple Whois"
+    $whois.graph.metadata.source_type = "GLOBAL_CONTEXT"
+    $whois.graph.entity.domain.creation_time.seconds > 0
+
+    // domain was created in the last 7 days: 7 * 24 * 60 * 60 = 604800 seconds
+    604800 > timestamp.current_seconds() - $whois.graph.entity.domain.creation_time.seconds
+
+  match:
+    $domain over 1h
+
+  outcome:
+    $risk_score = 25
+    $created_at = array_distinct(timestamp.get_date($whois.graph.entity.domain.creation_time.seconds))
+    $sender = array_distinct($mail.network.email.from)
+    $recipients = array_distinct($mail.network.email.to)
+    $num_messages = count($mail.network.email.mail_id)
+    $num_attachments = array_distinct($mail.additional.fields["num_message_attachments"])
+    $dkim = array_distinct($mail.additional.fields["dkim_pass"])
+    $spf = array_distinct($mail.additional.fields["spf_pass"])
+
+  condition:
+    $mail and $whois
+}
+```
+
+One concern I had was that "one week" might not cover all scenarios. However, as noted, simply increasing this window globally would lead to an unacceptable volume of alerts in production. A robust solution in these cases is to create a **fork** of the original rule that monitors a specific set of high-value assets.
+
+In this instance, I decided to monitor a list of **VIPs**. Since this greatly reduces the user count to only executives or people with elevated privileges, it allows us to safely increase the "newly registered" window to **180 days**. With this adjustment, the rule transforms into a specialized detector for targeted spear-phishing attempts:
+
+```c
+rule workspace_nrd_possible_spear_phishing {
+  meta:
+    author = "Joe Lopes <lopes.id>"
+    description = "A VIP user opened an email from a newly registered domain (created < 180 days ago), which may indicate a spear phishing attempt"
+    severity = "medium"
+    maturity = "initial"
+    mitre = "T1566:TA0001"
+    reference_1 = "https://github.com/chronicle/detection-rules/blob/main/rules/community/threat_intel/whois_recently_created_domain_access.yaral"
+    reference_2 = "https://support.google.com/a/answer/12384955"
+
+  events:
+    $mail.metadata.event_type = "EMAIL_TRANSACTION"
+    $mail.metadata.product_event_type = "2" // message was opened
+    strings.extract_domain($mail.network.email.from) = $domain
+    not $domain in %trusted_domains.domain
+    $mail.principal.user.userid in %vips.username
+
+    $whois.graph.entity.domain.name = $domain
+    $whois.graph.metadata.entity_type = "DOMAIN_NAME"
+    $whois.graph.metadata.vendor_name = "WHOIS"
+    $whois.graph.metadata.product_name = "WHOISXMLAPI Simple Whois"
+    $whois.graph.metadata.source_type = "GLOBAL_CONTEXT"
+    $whois.graph.entity.domain.creation_time.seconds > 0
+
+    // domain was created in the last 180 days: 180 * 24 * 60 * 60 = 15552000 seconds
+    15552000 > timestamp.current_seconds() - $whois.graph.entity.domain.creation_time.seconds
+
+  match:
+    $domain over 1h
+
+  outcome:
+    $risk_score = 50
+    $created_at = array_distinct(timestamp.get_date($whois.graph.entity.domain.creation_time.seconds))
+    $sender = array_distinct($mail.network.email.from)
+    $recipients = array_distinct($mail.network.email.to)
+    $num_messages = count($mail.network.email.mail_id)
+    $num_attachments = array_distinct($mail.additional.fields["num_message_attachments"])
+    $dkim = array_distinct($mail.additional.fields["dkim_pass"])
+    $spf = array_distinct($mail.additional.fields["spf_pass"])
+
+  condition:
+    $mail and $whois
+}
+```
+
+
+## Conclusion
+By applying this granular and contextual approach, your detection strategy moves past simply monitoring "newness" and focuses on **behavior in the most critical attack vectors**. This shift is essential for reducing analyst fatigue and ensuring that high-risk events (like spear-phishing against VIPs) trigger alerts immediately, regardless of organization-wide volume. Invest in granularity, and you will see a significant increase in your true positive rate. 🎯
