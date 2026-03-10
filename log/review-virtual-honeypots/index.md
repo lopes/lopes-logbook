@@ -1,6 +1,6 @@
 ---
 title: "Review: Virtual Honeypots"
-date: 2026-03-11
+date: 2026-03-10
 description: "A book review of the 2007 classic 'Virtual Honeypots.'"
 categories: ["deception"]
 image: "og-review-virtual-honeypots.webp"
@@ -8,7 +8,7 @@ image: "og-review-virtual-honeypots.webp"
 
 While working on a personal project involving honeypots, I decided to stop taking the foundational concepts for granted and dive into the literature. Surprisingly, there are only a handful of books dedicated to deception technologies, the most famous being **Virtual Honeypots** (Provos & Holz, 2007). 
 
-Despite it being nearly twenty years old with no subsequent editions or revisions, I decided to give it a try. After all, one of its authors is Niels Provos, the creator of Honeyd, one of the most famous honeypot daemons ever written.
+Despite it being nearly twenty years old with no subsequent editions or revisions, I decided to give it a try. After all, one of its authors is Niels Provos, the creator of Honeyd, one of the most famous honeypot frameworks ever written.
 
 Here is my review of the book after reading it cover-to-cover in 2026.
 
@@ -30,7 +30,7 @@ Most of Part II is dedicated to Honeyd, and it is clear that Provos was proud of
 
 Part III presents numerous use cases, covering everything from motivation and network topology to analysis and results. Unfortunately, the authors once again dedicated a large portion of these chapters to deep dives into tools that clearly haven't aged well. Had they focused more strictly on architectural topologies and breach analysis, this section would have remained highly relevant.
 
-This effectively summarizes my overall feeling about the book: a fantastic resource for its time, but one that is overly fixated on tooling that is now obsolete. While I understand the authors' desire to teach exactly how these tools worked and integrated under the hood, the lack of architectural abstraction makes the text less appealing to a modern audience. 
+This effectively summarizes my overall feeling about the book: a fantastic resource for its time, but one that is overly fixated on tooling that is now obsolete, like [UML](https://www.kernel.org/doc/html/v5.9/virt/uml/user_mode_linux.html), [DTK](https://www.all.net/dtk/), [LaBrea](https://labrea.sourceforge.io/labrea-info.html), [Sebek](https://honeynet.onofri.org/tools/sebek/), and [Nepenthes](https://github.com/honeypotarchive/nepenthes). While I understand the authors' desire to teach exactly how these tools worked and integrated under the hood, the lack of architectural abstraction makes the text less appealing to a modern audience. 
 
 Historically, a significant portion of deception software was linked to academic research, and even today, high-interaction deception technology isn't a mainstream enterprise staple. In the two decades since this book's release, entirely new paradigms like containerization and specialized honeypots have emerged, radically changing how we implement the scenarios the authors presented. Combining this evolution with the authors' choice to tightly couple their lessons to specific, now-deprecated tools creates the perfect storm: a large portion of this book is, unfortunately, forgettable.
 
