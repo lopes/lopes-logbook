@@ -1,6 +1,6 @@
 ---
 title: "AI-First Software Development"
-date: 2026-03-24
+date: 2026-03-22
 description: "Transitioning from ad-hoc scripting to an AI-first development workflow."
 categories: ["dev"]
 image: "og-ai-first-software-development.webp"
