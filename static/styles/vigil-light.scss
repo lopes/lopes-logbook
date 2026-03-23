@@ -15,36 +15,26 @@ $theme: "cosmo" !default;
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
-// The sans-serif stack prioritizes high-readability fonts, falling back
-// through modern system UI fonts. This is a robust, deterministic stack.
 $font-family-sans-serif:
   "Atkinson Hyperlegible",
-  // Modern system UI fonts as first fallbacks.
   -apple-system,
   BlinkMacSystemFont,
   "Segoe UI",
   Roboto,
-  // Common, high-quality fallbacks.
   "Helvetica Neue",
   Arial,
-  // Generic catch-alls.
   "Noto Sans",
   sans-serif,
-  // Emoji support.
   "Apple Color Emoji",
   "Segoe UI Emoji",
   "Segoe UI Symbol",
   "Noto Color Emoji" !default;
 
-// The monospace stack prioritizes JetBrains Mono, with common developer
-// fonts as fallbacks. This ensures code blocks are consistent.
 $font-family-monospace:
   "JetBrains Mono",
-  // Common monospace fonts on macOS and Windows.
   "SF Mono",
   "Consolas",
   "Menlo",
-  // A final, high-quality fallback before the generic default.
   "Fira Code",
   monospace;
 
@@ -52,31 +42,27 @@ $font-family-monospace:
 // 3. Color Palette
 //
 // Defines a systematic and cohesive color palette. This is the single
-// source of truth for colors, adapted for the light theme.
+// source of truth for colors, adapted for the GitHub Light theme.
 // =============================================================================
 
 // A. Core Palette
-// Grays provide the neutral backbone of the theme.
-$gray-100: #f8f9fa;
-$gray-200: #f1f4f7;
-$gray-300: #dee2e6;
-$gray-600: #6c757d;
-$gray-700: #495057;
-$gray-900: #1f2933;
-$white: #ffffff;
+$gh-bg: #ffffff; // Body background
+$gh-canvas: #f6f8fa; // Subtle backgrounds, code blocks, banners
+$gh-border: #d0d7de; // Borders
+$gh-text: #24292f; // Main text color
+$gh-muted: #57606a; // Lighter text, captions
 
 // Blue is the primary accent color for links and interactions.
-$blue-300: #4da3c7; // Lighter, for hover states
-$blue-500: #2f78a5; // Primary link color
-$blue-700: #2563eb; // High-contrast, for code
+$gh-blue-hover: #0366d6; // Lighter, for hover states
+$gh-blue: #0969da; // Primary link color
+$gh-blue-code: #0550ae; // High-contrast, for code
 
 // B. Semantic Palette
-// Used for callouts and alerts to convey meaning.
-$cyan: #3ba3c3; // Note
-$green: #3f9d52; // Tip
-$orange: #c05621; // Caution
-$yellow: #d69e2e; // Warning
-$red: #c53030; // Important
+$cyan: #0550ae; // Note (GitHub uses blue for notes)
+$green: #1a7f37; // Tip
+$orange: #bc4c00; // Caution
+$yellow: #bf8700; // Warning
+$red: #cf222e; // Important
 
 // =============================================================================
 // 4. Quarto Variable Assignments
@@ -85,28 +71,28 @@ $red: #c53030; // Important
 // =============================================================================
 
 // Core Surfaces
-$navbar-bg: $gray-100;
-$body-bg: $white;
-$body-color: $gray-900;
+$navbar-bg: $gh-bg;
+$body-bg: $gh-bg;
+$body-color: $gh-text;
 
 // Accent & Links
-$link-color: $blue-500;
-$link-hover-color: $blue-300;
+$link-color: $gh-blue;
+$link-hover-color: $gh-blue-hover;
 
 // Code
-$code-block-bg: $gray-200;
-$code-bg: $gray-200;
-$code-color: $blue-700;
+$code-block-bg: $gh-canvas;
+$code-bg: $gh-canvas;
+$code-color: $gh-blue-code;
 
 // Forms / Inputs
-$input-bg: $gray-200;
+$input-bg: $gh-canvas;
 
 // UI Interactions
 $nav-link-hover-color: $link-hover-color;
 $pagination-hover-color: $link-hover-color;
-$pagination-disabled-bg: $gray-300;
-$pagination-disabled-color: $gray-900;
-$pagination-disabled-border-color: $gray-300;
+$pagination-disabled-bg: $gh-canvas;
+$pagination-disabled-color: $gh-muted;
+$pagination-disabled-border-color: $gh-border;
 
 // Callouts
 $callout-color-note: $cyan;
@@ -130,12 +116,12 @@ p {
 
 // Style the title banner for a subtle, clean look.
 .quarto-title-block .quarto-title-banner {
-  background: $gray-100 !important;
+  background: $gh-canvas !important;
 }
 
 // Figure and caption styling for readability.
 figcaption {
-  color: $gray-600;
+  color: $gh-muted;
   font-style: italic;
   margin-top: 0.5rem;
   text-align: center;
@@ -144,7 +130,8 @@ figcaption {
 // Footer styling for a clear visual separation.
 footer {
   font-size: 0.85rem;
-  color: $gray-700;
-  border-top: 1px solid $gray-300;
+  color: $gh-muted;
+  border-top: 1px solid $gh-border;
   padding-top: 1rem;
 }
+

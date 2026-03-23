@@ -40,7 +40,7 @@ format:
       dark: "static/styles/vigil-dark.scss"
       light: "static/styles/vigil-light.scss"
     highlight-style:
-      dark: nord
+      dark: github
       light: github
     toc: true
     toc-depth: 3
