@@ -15,36 +15,26 @@ $theme: "cosmo" !default;
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
-// The sans-serif stack prioritizes high-readability fonts, falling back
-// through modern system UI fonts. This is a robust, deterministic stack.
 $font-family-sans-serif:
   "Atkinson Hyperlegible",
-  // Modern system UI fonts as first fallbacks.
   -apple-system,
   BlinkMacSystemFont,
   "Segoe UI",
   Roboto,
-  // Common, high-quality fallbacks.
   "Helvetica Neue",
   Arial,
-  // Generic catch-alls.
   "Noto Sans",
   sans-serif,
-  // Emoji support.
   "Apple Color Emoji",
   "Segoe UI Emoji",
   "Segoe UI Symbol",
   "Noto Color Emoji" !default;
 
-// The monospace stack prioritizes JetBrains Mono, with common developer
-// fonts as fallbacks. This ensures code blocks are consistent.
 $font-family-monospace:
   "JetBrains Mono",
-  // Common monospace fonts on macOS and Windows.
   "SF Mono",
   "Consolas",
   "Menlo",
-  // A final, high-quality fallback before the generic default.
   "Fira Code",
   monospace;
 
@@ -52,31 +42,28 @@ $font-family-monospace:
 // 3. Color Palette
 //
 // Defines a systematic and cohesive color palette. This is the single
-// source of truth for colors, adapted for the dark theme.
+// source of truth for colors, adapted for the GitHub Dark Dimmed theme.
 // =============================================================================
 
 // A. Core Palette
-// Grays provide the neutral backbone of the theme.
-$d-gray-100: #cfd6dd; // Main text color
-$d-gray-200: #aab1b8; // Lighter text
-$d-gray-400: #6c757d; // Subtle text, borders
-$d-gray-700: #3a3f46; // Component backgrounds
-$d-gray-800: #2b2e34; // Navbar, code blocks
-$d-gray-850: #26292e; // Darker component background
-$d-gray-900: #1f2227; // Body background
+$gh-text: #adbac7; // Main text color
+$gh-muted: #768390; // Subtle text, borders
+$gh-border: #444c56; // Borders
+$gh-surface: #2d333b; // Component backgrounds, code blocks
+$gh-canvas: #1c2128; // Navbar, darker component background
+$gh-bg: #22272e; // Body background
 
 // Blue is the primary accent color for links and interactions.
-$blue-100: #78c2e0; // Lighter, for hover states
-$blue-200: #4da3c7; // Primary link color
-$blue-300: #7fb6ff; // High-contrast, for code
+$gh-blue-hover: #79c0ff; // Lighter, for hover states
+$gh-blue: #539bf5; // Primary link color
+$gh-blue-code: #6cb6ff; // High-contrast, for code
 
 // B. Semantic Palette
-// Used for callouts and alerts to convey meaning. Brighter for dark background.
-$cyan: #5abddb; // Note
-$green: #5bb35b; // Tip
-$orange: #dc6724; // Caution
-$yellow: #ffbd17; // Warning
-$red: #d6514f; // Important
+$cyan: #39c5cf; // Note
+$green: #57ab5a; // Tip
+$orange: #daaa3f; // Caution
+$yellow: #c69026; // Warning
+$red: #f47067; // Important
 
 // =============================================================================
 // 4. Quarto Variable Assignments
@@ -85,27 +72,27 @@ $red: #d6514f; // Important
 // =============================================================================
 
 // Core Surfaces
-$navbar-bg: $d-gray-800;
-$body-bg: $d-gray-900;
-$body-color: $d-gray-100;
+$navbar-bg: $gh-canvas;
+$body-bg: $gh-bg;
+$body-color: $gh-text;
 
 // Accent & Links
-$link-color: $blue-200;
-$link-hover-color: $blue-100;
+$link-color: $gh-blue;
+$link-hover-color: $gh-blue-hover;
 
 // Code
-$code-block-bg: $d-gray-800;
-$code-bg: $d-gray-800;
-$code-color: $blue-300;
+$code-block-bg: $gh-surface;
+$code-bg: $gh-surface;
+$code-color: $gh-blue-code;
 
 // Forms / Inputs
-$input-bg: $d-gray-800;
+$input-bg: $gh-surface;
 
 // UI Interactions
 $nav-link-hover-color: $link-hover-color;
 $pagination-hover-color: $link-hover-color;
-$pagination-disabled-bg: $d-gray-850;
-$pagination-disabled-border-color: $d-gray-700;
+$pagination-disabled-bg: $gh-canvas;
+$pagination-disabled-border-color: $gh-border;
 
 // Callouts
 $callout-color-note: $cyan;
@@ -130,40 +117,40 @@ p {
 // Ensure code blocks use the monospace font and consistent colors.
 pre {
   background: $code-block-bg;
-  color: $d-gray-200;
+  color: $gh-text;
 }
 
 // Style the title banner for a subtle, clean look.
 .quarto-title-block .quarto-title-banner {
-  background: $d-gray-850 !important;
+  background: $gh-canvas !important;
 }
 
 // Listing cards (e.g., on index page).
 .listing-category {
-  background: $d-gray-700;
-  color: $d-gray-100 !important;
-  border-color: $d-gray-400 !important;
+  background: $gh-surface;
+  color: $gh-text !important;
+  border-color: $gh-border !important;
 }
 
 // Grid items (used for card layouts).
 .quarto-grid-item {
-  border-color: $d-gray-700 !important;
+  border-color: $gh-border !important;
 }
 
 // Active navigation link.
 .nav-link.active {
-  color: $d-gray-100 !important;
+  color: $gh-text !important;
 }
 
 // Subtitle links (e.g., author name).
 .subtitle > a {
-  color: $d-gray-400;
+  color: $gh-muted;
   font-weight: bold;
 }
 
 // Figure and caption styling for readability.
 figcaption {
-  color: $d-gray-400;
+  color: $gh-muted;
   font-style: italic;
   margin-top: 0.5rem;
   text-align: center;
@@ -172,7 +159,8 @@ figcaption {
 // Footer styling for a clear visual separation.
 footer {
   font-size: 0.85rem;
-  color: $d-gray-400;
-  border-top: 1px solid $d-gray-800;
+  color: $gh-muted;
+  border-top: 1px solid $gh-border;
   padding-top: 1rem;
 }
+
