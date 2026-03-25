@@ -1,4 +1,5 @@
 # Lopes Logbook
+
 **Lopes Logbook** is my professional website, currently published at [lopes.id](https://lopes.id). It is a long-term knowledge base and portfolio where I document my work, research, and ideas around information security, detection engineering, automation, and adjacent domains.
 
 The goals of this project are:
@@ -11,6 +12,7 @@ The goals of this project are:
 ---
 
 ## 📚 Stack
+
 - **Content & site generation:** Quarto  
 - **Version control:** Git + GitHub  
 - **Design & assets:** Figma  
@@ -21,13 +23,15 @@ The goals of this project are:
 ---
 
 ## 🔄 Workflow
+
 The workflow is designed to protect the `main` branch, preserve history, and keep publishing predictable and low-stress. The philosophy is *Write like a human. Publish like an engineer.*
 
 ### Branching Model (Tailored for a Publishing System)
+
 Branch names follow the pattern: `<namespace>/<short-description>`.
 
 | Namespace | Purpose | Examples |
-|---------|--------|---------|
+| ------- | ------ | ------- |
 | `post` | New articles | `post/gap-analysis-mitre`, `post/dfir-toolkit` |
 | `revise` | Significant updates to existing posts | `revise/mitre-intro-2025` |
 | `typo` | Minor textual fixes | `typo/fix-cloudflare-spelling` |
@@ -40,6 +44,7 @@ Branch names follow the pattern: `<namespace>/<short-description>`.
 This keeps intent obvious and keeps history meaningful.
 
 ### Visual Overview
+
 ```mermaid
 gitGraph
   commit
@@ -73,9 +78,11 @@ gitGraph
 ---
 
 ## 🤖 Automation & Quality Gates
+
 This project enforces quality and SEO standards automatically through Git hooks and CI.
 
 ### Local Automation
+
 Validation is enforced at commit time through a pre-commit hook:
 
 - post structure & SEO fields  
@@ -84,6 +91,7 @@ Validation is enforced at commit time through a pre-commit hook:
 - repository hygiene  
 
 To install automation after cloning:
+
 ```bash
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
@@ -95,6 +103,7 @@ This installs:
 - enforcement logic from `scripts/pre-commit.sh`
 
 ### Continuous Integration
+
 All pull requests to `main` are validated via GitHub Actions:
 
 - Quarto environment check  
@@ -103,6 +112,7 @@ All pull requests to `main` are validated via GitHub Actions:
 No code reaches `main` unless both local and CI validation succeed.
 
 ### Design Principles
+
 - Enforcement logic lives in `scripts/`  
 - Hook wiring is reproducible via `scripts/setup.sh`  
 - Local and CI checks are aligned  
@@ -111,7 +121,9 @@ No code reaches `main` unless both local and CI validation succeed.
 ---
 
 ## 🆕 Creating a New Post
+
 1. Create branch:  
+
   ```bash
   git checkout -b post/my-new-article
   ```
@@ -124,4 +136,5 @@ No code reaches `main` unless both local and CI validation succeed.
 ---
 
 ## 📃 License
+
 This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [LICENSE](LICENSE.md).

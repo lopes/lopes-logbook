@@ -7,6 +7,7 @@ repo-actions: false
 ---
 
 ## 👋 Hi, I’m Joe Lopes
+
 I’m an **Information Security Engineer** focused on **threat detection, SIEM, logs, and adversary engagement**. My work lives at the intersection of systems, data, and behavior: observing signals, correlating events, and extracting meaning from noise.
 
 ::: {.callout-note}
@@ -23,8 +24,8 @@ This is a **human-driven space** 👤. All opinions are my own and do not reflec
 
 ![Joe Lopes](/static/images/photo-portrait-joe-lopes.webp "Joe Lopes in the field")
 
-
 ## 🗣️ Talks
+
 - [Visibilidade de Rede](https://drive.google.com/file/d/1uSHQhehbeVP7ee8z2jSl479f08NL7jBA/view?usp=drive_link) (2021) Mind The Sec, remote `pt_BR`
 - [Práticas de NOC/SOC](https://drive.google.com/file/d/1tiuNM6K4HJ30icB9OtjQB79fE5F9W1qB/view?usp=drive_link) (2019) Itaipu, Paraná `pt_BR`
 - [Método para Uso do SIEM como Ferramenta de Inteligência e Automação](https://drive.google.com/file/d/1DBnrpqmzFqbnrTgSPOu6FUg0ADCYIZBx/view?usp=drive_link) (2019) CERT.br, São-Paulo `pt_BR`
@@ -32,8 +33,8 @@ This is a **human-driven space** 👤. All opinions are my own and do not reflec
 - [Blockchains: Muito Além do Bitcoin](https://drive.google.com/file/d/1KhE5Zktoz5dSdpKQxkzNJdv_0icShc_d/view?usp=drive_link) (2017) Cemig, Belo Horizonte `pt_BR`
 - [Estruturação de um Grupo de Resposta a Incidentes de Segurança Cibernética para o Contexto de Smart Grid na Cemig](https://drive.google.com/file/d/13Sfpsy2EhfUg4ku_iqCvl0RBgNrTwVZB/view?usp=drive_link) (2014) CERT.br, São-Paulo `pt_BR`
 
-
 ## 🦫 Vigil
+
 ![Vigil](/static/images/graphic-logo-vigil.png "Vigil, the engineer")
 
 **Vigil** is the beaver of *lopes.log*, and in many ways, my mirror.
