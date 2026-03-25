@@ -8,14 +8,14 @@ image: "og-arch-linux-cis-hardening.webp"
 
 This is a direct sequence of [Installing Arch Linux](/log/arch-linux-hardened-install/), which already includes some hardening practices. This guide will go one step further because I am applying some [CIS](https://www.cisecurity.org/cis-benchmarks/) controls specific for Linux environments, obviously scoping and tailoring for my personal purposes.
 
-
 ## Security x Usability
+
 Before starting, just a disclaimer. Obviously many hardening techniques can be applied to improve a system's security, but typically security is inversely proportional to usability. That said, despite many configurations can be set to improve one's system, the purpose of this system must be well understood, so these controls will not make the system unusable.
 
 In this case, as explained in the [previous text](/log/arch-linux-hardened-install/), I am aiming to configuring an operating system to be installed in a laptop for personal usage. That's why I am not using the [`linux-hardened`](https://wiki.archlinux.org/index.php/Security#Kernel_hardening) kernel here for instance. All in all, always remember that even a well-hardened system can be owned simply because technology is just another aspect of security. To keep all systems safe, people who use them must be trained, and the processes also must be revised and in compliance with the best practices.
 
-
 ## Basic System's Security
+
 This section aggregates general-purpose controls. The first one will set the message presented before logging into the system, to avoid expose any details on the system—helps preventing footprinting.
 
 ```sh
@@ -42,8 +42,8 @@ timedatectl show-timesync --all
 systemctl enable systemd-timesyncd.service
 ```
 
-
 ## GRUB Security
+
 All hardening techniques become useless if one can just boot the system in rescue mode, so properly configuring the boot loader is essential. Here, we are going to create a user and a password for every option in GRUB, except the default option to load the OS.
 
 Create a hashed password and put it into `/etc/grub.d/40_custom`. Since this hash is a long string and I am supposing you are in a pure text mode, the easiest way is to redirect the output of the GRUB's command to the file as shown in the next listing.
@@ -67,8 +67,8 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 Find the menu entry for Arch Linux's default boot—`/boot/grub/grub.cfg`—and insert the `--unrestricted` option right after the 'Arch Linux' string to avoid typing GRUB's user and password at every boot. This line will look like `menuentry 'Arch Linux' --unrestricted --class arch...`.
 
-
 ## Firewall
+
 Configure a firewall to control and log all access to the machine. Since [ufw is already installed](/log/arch-linux-hardened-install/) and it provides a friendly interface to iptables, we are going to use it. The next command listing shows how to enable ufw logs, set up the default policies, start and enable the service, test if it is active, and see the service's logs.
 
 ```sh
@@ -89,8 +89,8 @@ journalctl -o verbose | grep -i ufw  # to see ufw logs
 **2021-10-26: To see the firewall logs continuously as in `tail -f`, simply run `journalctl --follow | grep -i ufw`.
 :::
 
-
 ## PAM
+
 To avoid the temptation of creating weak passwords, [PAM](https://en.wikipedia.org/wiki/Linux_PAM) must be properly configured to implement a password policy, as well as securely control the login process. Here we are going to implement this password policy:
 
 - Minimum length: 14 characters.
@@ -128,6 +128,7 @@ auth required pam_wheel.so use_uid
 It worth saying that the file `/etc/login.defs` overrides any settings defined by PAM, but in my case, it is pretty well configured, so there was no need to change it. Also, remember that a time out must be set so the shell will log off when inactive. This configuration is implemented in my [dotfiles](https://github.com/lopes/dotfiles) for Bash and Zsh.
 
 ### PAM Troubleshooting
+
 Since PAM drastically changes the login process, any mistake can make the system useless. I recommend testing the system after making these changes because we are going to block root access in the next steps.
 
 To audit login errors from a given user, use the command below. If this user is blocked, you can release it by appending a `—reset` option in the same command.
@@ -144,8 +145,8 @@ pam_tally2 --user=root
 If everything goes wrong, you will want to boot your system in rescue mode to fix the things, so be sure you know how to do it.
 :::
 
-
 ## Sudo
+
 Since the root user will be disabled and the `su` command too, the only way to perform administrative tasks will be using Sudo, so it must be properly configured. It is highly recommended to use the command `visudo` to perform all changes and it requires that the environmental variable `EDITOR` is configured—see my [dotfiles](https://github.com/lopes/dotfiles) to learn how to do it.
 
 Having everything set, run the command `visudo` and start by locating the aliases section. Create aliases like those in the next listing, be known that these commands will be executed by all users in the `wheels` groups without having to type any passwords.
@@ -171,8 +172,8 @@ Finally, a couple of lines below the definitions for the `wheels` group are set.
 %wheel ALL=(ALL) NOPASSWD: UPDATE
 ```
 
-
 ## Update the System
+
 We are already at the final lap and now we want to guarantee that the packages are retrieved using a secure protocol—HTTPS. You can manually edit the file `/etc/pacman.d/mirrorlist` to achieve it or you can use [Arch's mirrorlist](https://www.archlinux.org/mirrorlist/all/https/) generator to create a list and then, edit it at your own will.
 
 Next, you should review all installed packages and remove unnecessary ones. Then just make sure your system is up-to-date. To learn more about `pacman`, read [its official guide](https://wiki.archlinux.org/index.php/pacman).
@@ -183,8 +184,8 @@ pacman -Rs    # removes the package and unused dependencies
 pacman -Syu   # upgrades all packages
 ```
 
-
 ## Finishing
+
 Now it is time to disable the root login—next command—and reboot the system. If you need to change this in the future, type the second command.
 
 ```sh
@@ -198,8 +199,8 @@ Finally, remember that security is made by many aspects and this guide covered o
 
 After rebooting your system you should be more secure and ready to rock!
 
-
 ## Bonus: Booting Arch in Rescue Mode
+
 Since Arch uses systemd, the equivalent to single-user mode is the rescue mode and to use it, in the GRUB menu select the appropriate kernel image—a.k.a. menu option—and press `e`. If you protected this menu as shown in this text—hope you did!—, you will have to type the user and password previously defined.
 
 In the next screen, find the kernel configuration line—the one that starts with `linux /vmlinuz-linux root=...`. Append the string in the next listing at the end of this line, then press `control-x` to boot the system. You will still have to type the password to decrypt the disk if using [full disk encryption](/log/arch-linux-hardened-install/) and the root password so the system will launch a shell for maintenance.
@@ -208,8 +209,8 @@ In the next screen, find the kernel configuration line—the one that starts wit
 systemd.unit=rescue.target
 ```
 
-
 ## References
+
 - [CIS](https://www.cisecurity.org/cis-benchmarks/) Distribution Independent Linux v2.0.0-07-16-2019
 - [Arch Linux's systemd-timesyncd](https://wiki.archlinux.org/index.php/systemd-timesyncd)
 - [Arch Linux's GRUB Tips and Tricks](https://wiki.archlinux.org/index.php/GRUB/Tips_and_tricks)

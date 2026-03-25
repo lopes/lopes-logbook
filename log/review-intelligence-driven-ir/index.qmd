@@ -8,8 +8,8 @@ image: "og-review-intelligence-driven-ir.webp"
 
 As I transitioned from Incident Response to Threat Detection, I felt the need to better understand how I could deliver more value to our CSIRT and address some of the problems I encountered while handling incidents. That's when a friend recommended the [Intelligence-Driven Incident Response (O'Reilly, 2nd Edition)](https://amzn.to/4gibauA) 🔗 (IDIR) book as a resource that would systematically present Cyber Threat Intelligence (CTI) terminology and illustrate how each piece of the puzzle fits together. Motivated by this, I began reading this (spoiler) excellent book, and here I'm sharing my impressions after finishing it.
 
-
 ## The Book
+
 In the context of this book, IDIR is a methodology that integrates CTI and Incident Response (IR). To achieve this, the book introduces the F3EAD Cycle, a military approach consisting of 6 phases:
 
 - **Find:** Identifies relevant adversaries for IR.
@@ -21,8 +21,8 @@ In the context of this book, IDIR is a methodology that integrates CTI and Incid
 
 Most of the book is dedicated to a deep dive into each of these phases, offering examples and numerous references to provide context for the reader. The authors also introduce relevant concepts to help put the cycle into action. For example, to facilitate better analysis (the “A” in F3EAD), they present concepts such as (a) fast/slow thinking, (b) deductive/inductive/abductive reasoning, and (c) various types of biases.
 
-
 ## Opinions
+
 In my opinion, this is an absolutely awesome book because it taught me how the many concepts of CTI fit together, like the Pyramid of Pain, Cyber Kill-chain, MITRE ATT&CK, and so on. Most importantly, I learned how CTI, Threat Detection, and CSIRT can better integrate to deliver improved results.
 
 I found some sections challenging to read, either because the authors presented too much non-technical content in a condensed manner or included too many examples. As a highly-technical professional, I sometimes found it tedious to read non-technical content, such as the strategies for analyzing and disseminating intelligence. However, even with that feeling, I recognize that many concepts presented there are vital, and as I'm not a CTI professional, it's acceptable for me to have a more superficial understanding of those parts.

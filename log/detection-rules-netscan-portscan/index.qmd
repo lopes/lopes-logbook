@@ -8,8 +8,8 @@ image: "og-detection-rules-netscan-portscan.webp"
 
 **Active scannings** are part of the initial phases of an attack, as defined by [MITRE](https://attack.mitre.org/tactics/TA0043/). Close monitoring of these scans can detect threat actors and prevent incidents from causing significant impact. Although relatively straightforward, implementing such alerts with a low rate of false positives is challenging. In this article, I will discuss the reasons behind this difficulty and present effective approaches to tackle the problem and create accurate detection rules.
 
-
 ## Scans
+
 It is important to keep in mind that there are at least three types of scans: **network scans**, **port scans**, and **vulnerability scans**. Network scans aim to identify active hosts within the network, while port scans attempt to determine open ports for each host, indicating the services running on those machines. Vulnerability scans can be used to discover the applications utilizing these ports and potentially identify vulnerabilities for further exploitation.
 
 Although other scans, such as SSH port scans, exist, they are highly specific and typically require particular monitoring rules. For the purpose of this discussion, the focus will be on **network and port scans**. Many people mistakenly mix them (network and port scans) in detection rules, leading to numerous false positives or, worse, false negatives.
@@ -21,14 +21,14 @@ Here are some key differences between them:
 - Although both scans can be executed simultaneously using tools like Nmap, port scans tend to take longer to complete, often prompting separate execution.
 - Even when both scans are executed within a single command, the typical approach involves initiating the network scan first to detect hosts and in parallel run port scans for each identified host.
 
-
 ## Strategy
+
 Quoting **Sun Tzu**, *"if you know the enemy and know yourself, you need not fear the result of a hundred battles."*  This quote perfectly applies to the context of network traffic, which behaves differently based on factors such as devices, protocols, applications, users, and asset usage. Understanding these nuances explains why directly implementing detection rules found on the internet into production tends to yield ineffective results.
 
 Creating effective rules for detecting network and port scans requires **extensive observation** of the network and leveraging expertise to identify patterns. Depending on the network's size, this can be a challenging task. In such cases, it is advisable to employ the **divide and conquer** approach: Rather than monitoring all internal networks (typically accomplished through a perimeter firewall), start by monitoring specific subnets, such as a VPN subnet or a DMZ. These subnets often exhibit more focused traffic, enabling easier identification of common protocols and applications.
 
-
 ## Implementation
+
 Ideally, a detection rule should be established per subnet. This approach allows for setting thresholds that closely align with common usage patterns, facilitating the detection of anomalous behavior at the earliest signs of deviation. However, managing a large number of rules can be challenging, particularly when network topology changes necessitate the deprecation or creation of new rules.
 
 From my experience, it is possible to develop rules with a higher level of abstraction across the network. These rules encompass multiple subnets but require clearly defining protocols, source and destination parameters, and balanced thresholds. Naturally, these thresholds will be more lenient compared to those employed in specific rules. However, there are no shortcuts when it comes to this process. Trial and error remains crucial:
@@ -40,16 +40,16 @@ From my experience, it is possible to develop rules with a higher level of abstr
 
 The testing process should continue until there are no **false negatives** and an acceptable number of false positives. It is worth noting that such rules often require a backdoor -—a list of intentionally allowlisted hosts that trigger the rule for valid reasons (e.g., vulnerability scanners used by the team and monitoring systems). To handle this, a mechanism must be developed to exclude these hosts (typically based on IP addresses) by employing an allowlist. Although allowlists are crucial for avoiding false positives, they should be used judiciously, as they can pose risks if a threat actor obtains an IP address within that range, rendering the system blind to their activities.
 
-
 ## Wrap-up
+
 You can implement as many scanner rules as necessary, but it is important to ensure they complement the overall set of rules. This approach avoids overlapping rules that monitor the same assets in the same manner, simplifying maintenance, and optimizing resource utilization.
 
 When referring to complementary rules, consider (for instance) having network and port scanner rules to monitor the internal network, along with additional rules that monitor allowlisted hosts. These additional rules can detect abnormal behavior associated with the allowlisted hosts, such as logins at different times, root logins, and other suspicious activities. This assumes that preventive controls are already in place for these hosts.
 
 Always remember that there is no one-size-fits-all solution and no perfect security. Our goal is to create controls that protect against most attacks and rely on **other layers** of security to complement them. However, even with these measures in place, incidents can still occur, and it is crucial to be prepared to respond to them.
 
-
 ## Rules
+
 Here are some examples of rules I implemented as **[Sigma rules](https://github.com/SigmaHQ/sigma)**.
 
 ### Network Scan

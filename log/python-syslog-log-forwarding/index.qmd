@@ -20,8 +20,8 @@ In this script I used the [Duck Typing](https://en.wikipedia.org/wiki/Duck_typin
 
 So, now I have logs for every minute instead of every day, which is great.  In the new script I also used the [configparser](https://docs.python.org/3/library/configparser.html) module for Python that allowed me to decouple the configuration data from the source code.
 
-
 ## Deploying
+
 This code was deployed in an OpenBSD server and the first thing I did was to create a user to run the code: `teslacoil`. Since the log files had reading permissions from everyone in the system, this user would be able to process them with no prior configurations.
 
 Next, I made three directories in the user's home (`mkdir {bin,etc,tmp}`):
@@ -32,7 +32,7 @@ Next, I made three directories in the user's home (`mkdir {bin,etc,tmp}`):
 
 Put the `.py` and `.conf` files in their directories and granted the script execution permissions. Then, I set the path for the configuration file in the script (full path) and set the path variables in the script. Finally, added the script in crontab:
 
-```
+```text
 * * * * * /home/teslacoil/bin/teslacoil.py
 ```
 

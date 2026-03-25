@@ -10,16 +10,16 @@ While working in a Threat Detection Engineering (TDE) team, I've observed a comm
 
 Is this an optimal approach? I contend it is *not*. Drawing parallels from my software engineering (SWE) classes, I aim to demonstrate how a more structured, engineering-first methodology can lead to the creation of superior and more rapidly deployed detection rules.
 
-
 ## Building Software: A Pre-Coding Imperative
+
 In the realm of software engineering, when an engineer receives a request for new software, the initial phase is dedicated to deeply understanding the problem. As highlighted in "Software Engineering, 10th Edition by Ian Sommerville," this involves specifying **requirements** to grasp *what* needs to be built, *why* it's necessary, and *who* will use it.
 
 Once functional and non-functional requirements are clearly defined, the engineer **assesses** their alignment with the team's overarching scope and strategy. If alignment is confirmed, the process transitions to the **design** phase. Here, architectural patterns, data models, interfaces, and algorithms are conceptualized and meticulously documented, serving as a comprehensive blueprint for subsequent implementation.
 
 A crucial aspect of the design phase is leveraging existing solutions. Engineers actively seek out and utilize design patterns, libraries, frameworks, and other pre-existing components. This strategic reuse not only accelerates development but also enhances safety, as these components are typically well-tested and validated, assuming adherence to good software practices.
 
-
 ## Building a Detection Rule: A Methodical Path
+
 Applying this same methodology to the creation of a detection rule, a TDE engineer would begin by scrutinizing the **requirements** specified in the incoming ticket. This involves clearly articulating the detection requirements, detailing precisely what is expected to be detected and identifying potential sources of false positives. This specification would also encompass any prerequisites for log ingestion or monitoring, such as the deployment of EDR agents, the integration of IDS/IPS devices into the network, or the centralization of logs within a SIEM.
 
 ::: {.callout-note}
@@ -71,65 +71,83 @@ flowchart TD
 ```
 
 ## Key Advantages of Structured Detection Engineering
+
 One might be tempted to believe that an MVP-like approach—starting immediate log analysis to construct queries—would be faster. While this might suffice for scenarios where the team is highly familiar with the data source and use case, ultimately, the documentation and validation of the new rule will still be necessary. Conversely, leveraging existing, tested rules based on early documentation significantly accelerates the testing phase and instills greater confidence in the outcome.
 
 Through such careful research and reuse in detection engineering, rules are inherently built upon solid references and robust documentation. This strong foundation grants incident response teams a enhanced level of confidence when handling alerts. Furthermore, when implemented consistently, this approach proactively identifies and mitigates false positives, thereby significantly reducing alert fatigue. 😎
 
-
 ## Conclusion
+
 Adopting a structured process that prioritizes engineering requirements, develops comprehensive documentation, and researches existing artifacts (rules and documents) can substantially reduce the time spent on data analysis (logs) and detection validation. The practice of reusing existing rules and leveraging established documentation is a hallmark of senior engineering and a demonstrably smart decision.
 
 While this approach might initially appear to introduce unnecessary overhead, especially for simpler rules or those with which the team is highly proficient, it's crucial to remember that every rule, before being moved to production, *must* be properly documented and thoroughly tested. Therefore, any time invested in documentation is inherently valuable. While researching artifacts might seem less critical for familiar logs and tools, it can still yield invaluable insights into novel telemetry or alternative monitoring approaches for a given data source. ✌️
 
-
 ## Appendix: Examples
+
 ### Use Case Example
+
 #### Problem Statement & Context
+
 We are concerned about our third-party BPO personnel potentially accessing our corporate systems from locations other than their designated and secured BPO premises. Our contract with the BPO explicitly states that access should only occur from their controlled facilities to ensure data security and compliance. We are worried that if BPO employees access our systems from unsecured personal networks (e.g., home Wi-Fi), it could expose sensitive customer data or violate our agreements.
+
 #### Expected Outcome
+
 We need a way to know if any BPO user accounts are accessing our applications or data from IP addresses that are not part of their approved BPO office networks. The goal is to detect and ideally alert on such unauthorized access attempts or successful logins.
 
 ### Requirements Elicitation Example
+
 #### Requirements for Unauthorized BPO Access Detection
+
 ##### I. Preparation
+
 1. **REQ1: Telemetry Availability & Dimensioning:** All necessary log sources and telemetry required for this detection use case (e.g., Okta System Logs, network flow data) must be confirmed as available and appropriately dimensioned (e.g., within SIEM license limits) in the central logging platform. This ensures all relevant data is accessible without unexpectedly exceeding license limits or requiring new ingestion pipelines.
 2. **REQ2: Log Enrichment & Normalization:** Ingested logs relevant to this use case must be enriched with essential contextual information (e.g., geographical data based on source IP) and normalized for consistent field names (e.g., `user`, `source_ip`, `event_type`, `outcome`) within our SIEM.
 3. **REQ3: Approved BPO IP Range Lookup List:** A lookup list must be created and maintained in SIEM containing all approved public IP ranges or CIDR blocks for the BPO's authorized premises.
 4. **REQ4: BPO User Identification Lookup List:** A lookup list must be created and maintained in SIEM to clearly identify user accounts belonging to the BPO (e.g., specific usernames, user groups, or naming conventions).
+
 ##### II. Detection Rule Creation & False Positive Analysis
+
 5. **REQ5: Rule 1 - Initial Unauthorized Access Alert:**
-  - A detection rule must be created to alert when a BPO user (from REQ4) successfully logs into the organization's Okta instance from an IP address that is *not* present in the Approved BPO IP Range Lookup List (from REQ3).
-  - *Expected Outcome: Alerts on direct unauthorized access.*
-  - **Potential False Positives:**
-    - **BPO Network Changes:** Unannounced or delayed updates to the BPO's approved public IP ranges (REQ3).
-    - **Authorized BPO Exception Access (if applicable):** While the use case implies strict premises-only access, any rare, pre-authorized exceptions for specific BPO personnel (e.g., a manager accessing from a pre-approved remote device for an emergency) would trigger this.
-  - **Mitigation Considerations (Design Phase):**
-    - Establish a clear communication protocol and process for timely updates of BPO IP ranges, potentially automating data sync.
-    - If exceptions are approved, design a separate, tightly controlled allowlist/policy specific to these limited scenarios, or ensure these generate high-priority alerts requiring manual review.
+
+- A detection rule must be created to alert when a BPO user (from REQ4) successfully logs into the organization's Okta instance from an IP address that is *not* present in the Approved BPO IP Range Lookup List (from REQ3).
+- *Expected Outcome: Alerts on direct unauthorized access.*
+- **Potential False Positives:**
+  - **BPO Network Changes:** Unannounced or delayed updates to the BPO's approved public IP ranges (REQ3).
+  - **Authorized BPO Exception Access (if applicable):** While the use case implies strict premises-only access, any rare, pre-authorized exceptions for specific BPO personnel (e.g., a manager accessing from a pre-approved remote device for an emergency) would trigger this.
+- **Mitigation Considerations (Design Phase):**
+  - Establish a clear communication protocol and process for timely updates of BPO IP ranges, potentially automating data sync.
+  - If exceptions are approved, design a separate, tightly controlled allowlist/policy specific to these limited scenarios, or ensure these generate high-priority alerts requiring manual review.
+
 6. **REQ6: Rule 2 - Anomalous Geographic Access Alert:**
-  - A secondary detection rule must be created to alert when a BPO user (from REQ4) successfully logs in from an approved BPO IP range (from REQ3), but the associated geographical location (from REQ2 enrichment) is significantly inconsistent with the known location of that specific BPO premise.
-  - Scenario for 2 rules: Rule 1 catches obvious external access. Rule 2 addresses a more sophisticated scenario, perhaps involving VPN egress point compromise or misconfigured proxies at the BPO, where the IP appears authorized but the actual location is anomalous (e.g., BPO office is in São Paulo, Brazil, but the geolocated IP is from Curitiba, Brazil, or even from another country entirely). This helps catch subtle deviations even from seemingly legitimate source IPs.
-  - **Potential False Positives:**
-    - **Geolocation Database Inaccuracies:** The inherent limitations of commercial GeoIP databases may incorrectly map a legitimate BPO IP to an inaccurate or unexpectedly different geographical location.
-    - **Legitimate BPO Network Routing Anomalies:** The BPO's internal network infrastructure or ISP routing could legitimately cause traffic to egress from a geographically distant point within their approved IP range.
-    - **Proxy/CDN/Cloud Service Legitimate Use:** If the BPO legitimately uses certain proxies, CDNs, or cloud services that cause their traffic to originate from a geographically diverse set of IPs, even if within an approved range.
-  - **Mitigation Considerations (Design Phase):**
-    - Test against known BPO IP addresses and their true locations to understand typical GeoIP discrepancies. Implement a threshold for "significant inconsistency" rather than a strict exact match.
-    - Conduct initial baseline analysis of BPO traffic patterns and GeoIP results for legitimate logins. Establish a baseline of expected geographical deviations for approved IPs.
-    - Requires careful allowlisting of specific services/IPs known to be legitimate, or close collaboration with the BPO's network team to understand their egress points.
+
+- A secondary detection rule must be created to alert when a BPO user (from REQ4) successfully logs in from an approved BPO IP range (from REQ3), but the associated geographical location (from REQ2 enrichment) is significantly inconsistent with the known location of that specific BPO premise.
+- Scenario for 2 rules: Rule 1 catches obvious external access. Rule 2 addresses a more sophisticated scenario, perhaps involving VPN egress point compromise or misconfigured proxies at the BPO, where the IP appears authorized but the actual location is anomalous (e.g., BPO office is in São Paulo, Brazil, but the geolocated IP is from Curitiba, Brazil, or even from another country entirely). This helps catch subtle deviations even from seemingly legitimate source IPs.
+- **Potential False Positives:**
+  - **Geolocation Database Inaccuracies:** The inherent limitations of commercial GeoIP databases may incorrectly map a legitimate BPO IP to an inaccurate or unexpectedly different geographical location.
+  - **Legitimate BPO Network Routing Anomalies:** The BPO's internal network infrastructure or ISP routing could legitimately cause traffic to egress from a geographically distant point within their approved IP range.
+  - **Proxy/CDN/Cloud Service Legitimate Use:** If the BPO legitimately uses certain proxies, CDNs, or cloud services that cause their traffic to originate from a geographically diverse set of IPs, even if within an approved range.
+- **Mitigation Considerations (Design Phase):**
+  - Test against known BPO IP addresses and their true locations to understand typical GeoIP discrepancies. Implement a threshold for "significant inconsistency" rather than a strict exact match.
+  - Conduct initial baseline analysis of BPO traffic patterns and GeoIP results for legitimate logins. Establish a baseline of expected geographical deviations for approved IPs.
+  - Requires careful allowlisting of specific services/IPs known to be legitimate, or close collaboration with the BPO's network team to understand their egress points.
+
 ##### III. Alerting & Documentation
+
 7. **REQ7: SOC Alert Integration:** Alerts generated by the detection rules must integrate with the SOC's existing case management system and provide sufficient context for immediate investigation.
 8. **REQ8: Rule Documentation:** Each created rule must be thoroughly documented in SIEM, including its purpose, logic, relevant MITRE ATT&CK mappings, known false positives, and recommended SOC response actions.
 
 ### Rule Context Example
+
 **Rule 1: Initial Unauthorized Access Alert**
 This rule serves as the primary line of defense against straightforward policy violations or potential account compromises. Its purpose is to immediately identify and alert on instances where a BPO user account successfully authenticates to the organization's systems, but the originating IP address for that authentication does not belong to the list of pre-approved and designated BPO network ranges. The context for this rule is the strict policy requiring BPO personnel to access corporate assets exclusively from their secure premises. By focusing on direct access from explicitly unapproved external locations, this rule aims to catch the most obvious deviations from policy, signaling either a direct attempt to bypass security controls or a compromised BPO user account being leveraged from an untrusted network.
+
 - `TA0001` Initial Access: `T1078.004` Valid Accounts: Cloud Accounts
 - `TA0003` Persistence: `T1078.004` Valid Accounts: Cloud Accounts
 - `TA0005` Defense Evasion: `T1078.004` Valid Accounts: Cloud Accounts
 
 **Rule 2: Anomalous Geographic Access Alert**
 This rule provides a more nuanced layer of detection, designed to catch more sophisticated or subtle forms of unauthorized access that might evade a simple IP allowlist. Even if a BPO user successfully authenticates from an IP address that appears to be within an approved BPO range, this rule examines the geographical context derived from that IP address. Its purpose is to alert if the actual geographical location associated with the originating IP is inconsistent with the known physical location of the specific BPO premise (e.g., an IP listed for the São Paulo office suddenly resolves to a city hundreds of kilometers away). This context is critical for identifying scenarios such as compromised VPN egress points, BPO internal network misconfigurations, or the use of sophisticated proxy services that route traffic through approved IP addresses but from an unexpected physical location, thus providing an additional security layer against more advanced policy breaches or potential compromises.
+
 - `TA0001` Initial Access: `T1078.004` Valid Accounts: Cloud Accounts, `T1133` External Remote Services
 - `TA0003` Persistence: `T1078.004` Valid Accounts: Cloud Accounts, `T1133` External Remote Services
 - `TA0005` Defense Evasion: `T1078.004` Valid Accounts: Cloud Accounts

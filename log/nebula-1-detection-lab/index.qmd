@@ -13,14 +13,15 @@ I searched for existing projects to use, but [DetectionLab](https://detectionlab
 I decided to build my own lab with a focus on simplicity and resource efficiency. This is the first of a four-part series detailing how I built it. In this post, I'll cover the lab's architecture, the tools I used, and basic configurations. The next two posts will delve into the monitoring tools (Wazuh and Elastic) and how to use them to detect specific actions. The final post will summarize my overall experience, provide a simple review of the tools, and suggest ideas for improving the lab. Let's get started! 👊🏻
 
 ::: {.callout-note}
+
 1. Detection Lab (you are here)
 2. [Detecting with Wazuh](/log/nebula-2-wazuh-detection/)
 3. [Detecting with Elastic](/log/nebula-3-elastic-detection/)
 4. [Debriefing](/log/nebula-4-debriefing/)
 :::
 
-
 ## *Mise en Place*
+
 The lab consists of two main components: the client and the server. The client side will be built with virtual machines (VMs) to allow more control over each host for testing purposes. The server side will be containerized for easier deployment and better resource utilization.
 
 For virtualization, I'll use VMware Fusion Pro, and for containerization, Docker. I built this lab under the following conditions, and it's important to note that different tools or versions may require different commands or approaches.
@@ -34,6 +35,7 @@ I'm running on an ARM-based machine. This is important because some software, li
 :::
 
 ### Naming
+
 Having a well-defined naming standard isn't mandatory, but it significantly helps with future tests as you need to refer to hosts or users. I've defined a convention based on [NASA space missions](https://www.nasa.gov/a-to-z-of-nasa-missions/), and the table below summarizes everything:
 
 | OS      | Hostname | User   | Password   | Notes                                                                                     |
@@ -44,8 +46,8 @@ Having a well-defined naming standard isn't mandatory, but it significantly help
 
 The name **Nebula** resembles the cloud where stars are born, making it a fitting analogy for a lab where ideas are born and tested.
 
-
 ## Lab Topology
+
 Before diving into the setup, I planned the lab topology to ensure that I could cover all the use cases I had in mind. The roles are as follows:
 
 - Windows and Ubuntu machines will act as **workstations** where users perform their daily tasks.
@@ -104,8 +106,8 @@ The host (macOS) will mediate all connections between VMware and Docker. [Docker
 It's important to note that this lab is intended for Detection Engineering purposes only. I'm not planning to run any malware ☠️ inside it. If I decide to do it in the future, I would carefully consider other options besides my own machine, as bugs and vulnerabilities in the hypervisor could potentially damage the host and expose my data, as seen [here](https://arstechnica.com/security/2024/03/vmware-issues-patches-for-critical-sandbox-escape-vulnerabilities/).
 :::
 
-
 ## Workstations
+
 With the lab topology in mind, I began setting up the VMs. VMware Fusion offers a convenient feature that allowed me to download **Windows** 11 ARM 🪟 directly from its interface. I simply clicked the "Get Windows from Microsoft" button on the "New VM" page, and everything went smoothly. I used the [evaluation version](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-11-enterprise) of Windows Pro, which automatically detected that I was on an ARM machine and downloaded the correct version.
 
 For **Ubuntu** 🐧, I initially intended to test Ubuntu Desktop, but unfortunately, it does not currently support ARM 😔. This wasn't a major issue, as I substituted it with Ubuntu Server 24.04 for ARM, available [here](https://cdimage.ubuntu.com/releases/24.04/release/). The installation was straightforward and encountered no notable issues. Finally, I installed **Kali** 2024.2 ⚔️ for Apple Silicon (ARM64) from [here](https://www.kali.org/get-kali/#kali-installer-images). In all three cases, I used the credentials and names as previously outlined.
@@ -120,8 +122,8 @@ By default, the hypervisor sets the VM's NICs to NAT mode using DHCP, so setting
 At this stage, it's worth creating snapshots of all VMs to avoid having to reinstall them in the future.
 :::
 
-
 ## To Be Continued
+
 In this post, I covered the motivation behind building a simple Detection Engineering lab, the topology I designed, and the tools I selected. I've also installed the VMs and taken snapshots of them to easily roll back changes. I haven't delved into the specifics of installing the VMs, as I assume you are familiar with the process.
 
 At this point, the "workstations" are up and running but remain unmonitored. In the next post, I'll set up Wazuh to start monitoring. Stay tuned! 🚀

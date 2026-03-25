@@ -10,8 +10,8 @@ Lists are a fundamental component of any SIEM, providing more context to the rul
 
 In this post, I'll present a solution I developed using Chronicle SIEM and a pair of Google Cloud Platform services to remove expired entries automatically and keep my Reference Lists sanitized.
 
-
 ## The Challenge
+
 An enterprise environment is like a living creature, with many things happening that might negatively affect Security Operations (SecOps). In some situations, we must create exceptions in our detections to avoid false positives or to make a rule work properly. Some examples include:
 
 - Adding pentesters' addresses to allowlists
@@ -23,8 +23,8 @@ In all these cases, we must remember to remove these items after a certain perio
 
 Since it's a simple task, I designed a solution to automate it some time ago but only now had the opportunity to implement it. 🤖🚀
 
-
 ## The Solution
+
 I designed **a simple database-less** solution, leveraging Chronicle SIEM's ability to allow comments in the lists. The big picture can be found in the next diagram:
 
 ```{mermaid}
@@ -45,6 +45,7 @@ The central point of this solution is the function triggered by a scheduled job.
 You can find the [code of this function here](https://gist.github.com/lopes/51ff4951c988c5d63f96384c7aef43fe) 👾🔗, but I'll explain some parts of it in the next section.
 
 ### Python Code
+
 This function 🐍 handles all Reference Lists in Chronicle SIEM and acts only on lines with the following format: `<value>  // expires:YYYY-MM-DD`. The regular expression ensures that the line is not commented yet and that the expiration date is present. Extra spaces and appended information are allowed:
 
 ```python
@@ -81,11 +82,12 @@ The `command` key must be `cleanup` and the `list` key must be the name of the l
 Check [this documentation](https://cloud.google.com/chronicle/docs/reference/reference-lists-api) to learn about Reference Lists and their types in Chronicle SIEM: `CONTENT_TYPE_DEFAULT_STRING`, `REGEX`, and `CIDR`.
 :::
 
-
 ## The Deployment
+
 To deploy this solution, you must have a [Google Cloud Platform (GCP)](https://console.cloud.google.com) account and a project with the necessary permissions to create and manage Cloud Functions, Cloud Scheduler, and the necessary APIs. You'll also need a service account with the necessary permissions to access Chronicle SIEM.
 
 ### Chronicle SIEM Service Account
+
 I won't cover the details of creating a service account and granting the necessary permissions, but you can find more information in the [official documentation](https://cloud.google.com/iam/docs/service-account-overview). After creating the service account and granting the necessary permissions, create a key for it and download it in JSON format. This key will be used to authenticate the function to access Chronicle SIEM and will look like this:
 
 ```json
@@ -105,6 +107,7 @@ I won't cover the details of creating a service account and granting the necessa
 ```
 
 ### Google Cloud Function
+
 After downloading the key (a JSON file), keep it safe locally until you finish the deployment. ⚠️  Now, go to Google Cloud Console and create a new Cloud Function with the following settings:
 
 1. Environment: `2nd gen`
@@ -112,10 +115,12 @@ After downloading the key (a JSON file), keep it safe locally until you finish t
 3. Region: `us-central1` (or another of your preference)
 4. Trigger type: `HTTPS` (will setup Cloud Scheduler later but copy the URL now)
 5. Set the runtime environment with the following minimum requirements:
-  - Memory: `256` MiB
-  - CPU: `1`
-  - Timeout: `300` seconds
-  - Add the `CHRONICLE_KEY` environment variable with the JSON access key
+
+- Memory: `256` MiB
+- CPU: `1`
+- Timeout: `300` seconds
+- Add the `CHRONICLE_KEY` environment variable with the JSON access key
+
 6. Click `Next`
 
 ::: {.callout-caution}
@@ -128,7 +133,7 @@ I built this script using the default region but with slight modifications, you 
 
 In the code section, set the Python runtime (tested in 3.12) and set the entry point to `main`. Paste [the code](https://gist.github.com/lopes/51ff4951c988c5d63f96384c7aef43fe) 👾 into the `main.py` file using the inline editor. In the `requirements.txt` file, paste the following:
 
-```
+```text
 functions-framework==3.*
 google-auth
 requests
@@ -141,6 +146,7 @@ At this point, you can delete the Chronicle key from your local machine. The key
 :::
 
 ### Google Cloud Scheduler
+
 In GCP, go to Cloud Scheduler and create a new job with the following parameters:
 
 1. Name: `chronicle-list-cleaner`
@@ -152,9 +158,12 @@ In GCP, go to Cloud Scheduler and create a new job with the following parameters
 7. URL: Paste the URL 🔗 from the Cloud Function created before
 8. HTTP method: `POST`
 9. Add an HTTP header to identify the request and its content:
-  - `Content-Type`: `application/json`
-  - `User-Agent`: `Google Cloud Scheduler`
+
+- `Content-Type`: `application/json`
+- `User-Agent`: `Google Cloud Scheduler`
+
 10. Add the following body:
+
 ```json
 {
   "command": "cleanup",
@@ -162,6 +171,7 @@ In GCP, go to Cloud Scheduler and create a new job with the following parameters
   "list_type":  ""
 }
 ```
+
 11. Configure the authentication method according to your environment
 12. Click to proceed and finish the job creation
 
@@ -171,8 +181,8 @@ Before running the function against all lists, test it with a single list to avo
 
 If everything is correct, the job will run daily at the specified time and clean up the lists with lines set to expire. ⏰  Check the **logs in the Cloud Function** to see the execution details and any errors that may occur. 👉🏻 I added `print` statements in the code to help you debug any issues in the crucial parts. You can find this information in the Cloud Function logs. 🐞
 
-
 ## The Conclusion
+
 If you did everything correctly, you'll have a daily job that cleans up all lists in Chronicle SIEM with expired lines. This solution can be improved in many ways, such as adding more options to the payload, like a list of lists to clean up or a list of lists to ignore. You can also add more logging and error handling to the function to make it more robust.
 
 Keeping your lists sanitized is a good security practice 🔒 to avoid false positives and false negatives in your detections. If you have any questions or suggestions, please let me know in the comments below. Also, if you improve this solution in any way, let me know so I can update the code here. 👊🏻

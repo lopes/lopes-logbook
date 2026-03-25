@@ -12,8 +12,8 @@ A couple of months ago, I decided to learn Rust and started with *The Rust Progr
 I'm not an AI expert, so these are just my impressions of **using** it.
 :::
 
-
 ## From Books and Peers to the Internet
+
 Years ago, when I started learning [Pascal](https://en.wikipedia.org/wiki/Pascal_(programming_language)) 📜 in college, I used the [Borland Turbo Pascal 7.0 IDE](https://winworldpc.com/product/turbo-pascal/7x) and a book. Not much changed when I later learned [C](https://en.wikipedia.org/wiki/C,_The_Complete_Reference) 🅲 and [Java](https://deitel.com/java-how-to-program-11-e-early-objects-version/) ☕: it was basically just the compiler, the book, and me. Occasionally, I'd have a colleague who was also learning the language, and we'd exchange knowledge. This was great, especially when the other person had more experience, because I could learn not only from the book and my own attempts at solving exercises, but also from those peer interactions.
 
 The learning process isn't just about reading, doing exercises, and successfully compiling programs; it's also about analyzing what you're learning, making connections to other topics, and reflecting on the subject itself. That includes thinking about the pros and cons of a feature, how it was designed, how it's meant to be used, and how it interacts with other features. It's important to remember: a programming language is not the end; it's the means. The goal is to solve real problems.
@@ -22,8 +22,8 @@ A few years after college, I began learning [Python](https://docs.python.org/3/)
 
 With the proliferation of Web 2.0, forums and communities started to flourish, providing new ways to share experiences with others. Most of these communities were English-based, which was a challenge for me as a non-native speaker. But eventually, one of them became a game-changer for anyone learning a new programming language: [Stack Overflow](https://stackoverflow.com/). More often than not, someone had already encountered the same problem, asked about it, and received an answer. While it sometimes took effort to map your own problem to those existing answers, when it worked, it felt like a huge achievement.
 
-
 ## The New Era: Learning with an LLM
+
 So now, in 2025, I've started learning a new language: Rust 🦀. I often find myself with the book open, the editor/compiler ready, and an LLM chat running in parallel. Intuitively, instead of turning to Google or Stack Overflow, I ask the LLM my questions. Like a helpful peer, it replies. Not with a generic, pre-made answer like you'd find on Stack Overflow  or a blog, but with something tailored to my specific context. No more searching, scanning, and adapting answers to fit my situation.
 
 I've noticed the LLM can take on different roles depending on how I use it. So far, I've identified at least two distinct personas: the **assistant** and the **programmer**.
@@ -44,8 +44,8 @@ Having access to an assistant or programmer like this would've been unimaginable
 
 LLMs also shine as debuggers. For example, while implementing base64 encoding/decoding, I accidentally used a padded engine for encoding and an unpadded one for decoding, a classic error. Once I narrowed it down to those two functions, I asked the LLM to investigate. It immediately spotted the mismatch and offered the correct fix. That alone saved me 30–60 minutes—recall I'm still new to Rust.
 
-
 ## The Pitfalls and Limitations of LLMs
+
 While LLMs can be incredibly helpful, they can also pull you away from the learning process, depending on how you use them. At first glance, they might seem perfect. But no, there are real drawbacks, **hallucinations** 🤪 being one of the biggest. Eventually, the model might suggest a feature, module, or behavior that simply doesn't exist. While better prompts can reduce this issue, it's serious and the main reason why every LLM output must be reviewed carefully.
 
 Sometimes, you even need to restart the chat because the model seems stuck, unable to follow a coherent line of thinking. It's like you have to refresh its memory. I've noticed moments where the LLM becomes lazy, offering shallow or repetitive answers, like suggesting dozens of irrelevant modules instead of focusing on fixing an actual error. Interestingly, being a bit more assertive or even harsh with the model often gets it back on track. Fabio Akita [mentioned this](https://www.youtube.com/watch?v=sf4Gxf0LiKo&ab_channel=FlowPodcast) in the Flow podcast: since the model is designed to please, clearly expressing dissatisfaction can cause it to "rethink" and improve its responses.
@@ -56,8 +56,8 @@ I've also seen organization issues. The LLM sometimes adds unused variables or m
 
 Ultimately, accelerated learning with LLMs comes with a tradeoff: if you rely too heavily on them, you risk weakening your own reflection and critical thinking. It's like depending on a knowledgeable peer who might suddenly disappear: if you lose access to the LLM, you could be stuck. That's why it's crucial to keep your learning process active. Use the LLM as a tool, but always question the answers and stay engaged with the underlying concepts 💡.
 
-
 ## Conclusion
+
 I'm very positive about the advantages of using LLMs for learning. However, you need a clear direction, like a solid book or structured guide, and the LLM should serve as an **assistant** along that path. Since LLMs are often embedded in code editors, it's worth disabling them while practicing. These models have already consumed most available programming books and Git repositories, so when you're working through exercises, they can end up autofilling the entire solution, which defeats the purpose.
 
 You also need to be mindful that LLMs can't replace your own experience—especially when it comes to making mistakes. At one point, I noticed my brain getting lazy; instead of trying something out and learning from the results, I kept asking the LLM whether it would work. That's not ideal, because a big part of the learning process involves running into errors, reading error messages, interpreting them, and working through the solutions yourself.

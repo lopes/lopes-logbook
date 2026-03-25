@@ -12,8 +12,8 @@ image: "og-password-mfa-management.webp"
 
 Keeping credentials secure is key for good security architecture, but since there are lots of technologies to help users achieving that, most people do not know how to correctly use them. In this text, I am going to expose my way of managing passwords and [Multi-factor Authentication (MFA)](https://en.wikipedia.org/wiki/Multi-factor_authentication) tools to keep my access both secure and easy to use, while maintaining a certain level of resilience in case of losing a key device or password.
 
-
 ## Passwords
+
 The most basic level of authentication is the tuple username and password (something you know), but although it always worked, it is impossible for a human being to use passwords **securely** without support tools. A secure password must:
 
 - not repeat between services
@@ -46,8 +46,8 @@ Use absurd thoughts and characters combinations to create secure passphrases, li
 
 Since everyone has many accounts with passwords spread over the internet, none of them tracked by a PM, to start using a PM, they should first create an account and harden the access to the PM using a secure password and enabling MFA. Only after that, they should start storing their credentials in the PM. The best PMs offer tools to analyze what passwords are weak and what passwords repeat across accounts. The user should start changing those passwords for the (random) ones the PM generates.
 
-
 ## MFA
+
 MFA should be enabled for every critical service to provide a better level of security. In a perfect world, all accounts would have the MFA enabled, but this requires a lot of effort and since the PM is generating and managing secure passwords (strong and unrepeated), the risk is mitigated for non-critical services.
 
 ::: {.callout-note}
@@ -85,8 +85,8 @@ To backup GAuth data, the user must trick the application like he wanted to expo
 
 The photo must be kept secure like the PM's database backup, preferably using encryption in the process. To make sense, the MFA's backup password should be not kept in the PM because it has the potential to compromise the MFA security in its essence.
 
-
 ## Backups
+
 At this point, the user has two backups: the PM and the MFA's. But how to perform it in a secure and usable fashion? A few things should be considered:
 
 - Frequency of backups
@@ -101,8 +101,8 @@ To make it easier for me to keep the backups secure, I wrote the [bookepr](https
 
 After having the backup data, I move it to cloud storage keeping two copies, one local and the other remote. The backup password is kept in my "cold" password book, which I keep in a safe and accessible physical place for me (it must not be digitally stored). Then, periodically, I test the backup recovery to ensure that I will be able to restore all of my access credentials when needed.
 
-
 ## Bottom Line
+
 - Passwords are better managed with a PM, but users must grant the security of such tool.
 - Every critical service must have MFA enabled, especially the PM and the cloud storage (backups).
 - The "cold" book must be in a secure place, but easy to access and it should only contain the necessary passwords.
@@ -110,8 +110,8 @@ After having the backup data, I move it to cloud storage keeping two copies, one
 - All accesses to the PM and backups must be done in trusted devices in trusted networks.
 - No password repetition is allowed.
 
-
 ## Last Words
+
 Although passwords are used daily by many people for many decades, it is hard to keep them secure against the modern world's challenges and threats. Users should use specialized tools and technologies to harden the access security of the services they use or else they will be easy prey for threat agents.
 
 Even knowing that there is no perfect security, the key is to mitigate the risk and rise the security to a level that makes the user uninteresting for threat agents. In other words: the evil guys will find it so hard to hack the user, they will give up and find another target.
@@ -120,8 +120,8 @@ Users also should notice that rising security levels could be disastrous if tech
 
 Finally, **security is better applied in more than one level**, so having good and manageable passwords and MFA is just the tip of the iceberg. Users must ensure to make them available using some sort of backup and remember to keep the security of every system where they use them. The "[defense in-depth](https://en.wikipedia.org/wiki/Defense_in_depth_(computing))" concept fits well here and even social engineering attacks such as shoulder surfing must be considered to keep security.
 
-
 ## Update 2021-11-01: Enabling Copy and Paste in Some Websites
+
 For some unknown reason, some sites block copy and paste functions. For me, it's nonsense because password managers are reality and it is impossible to keep all passwords in mind in a secure fashion. Fortunately, [this post](https://www.cyberciti.biz/linux-news/google-chrome-extension-to-removes-password-paste-blocking-on-website/) shows some hacks to re-enable such functions. I tested the "paste hack" and it is very easy: in Chrome, open the console (`option-command-j`) and paste there the snippet below.  Pasting should be enabled right after pressing `enter`.
 
 ```js

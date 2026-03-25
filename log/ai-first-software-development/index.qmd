@@ -12,12 +12,12 @@ Recently, however, after exploring new paradigms in AI-assisted programming, I d
 
 This post is a deep dive into my personal evolution: from traditional scripting, to awkwardly forcing AI into old habits, to fully embracing the new paradigm of *agentic* development.
 
-
 ## Motivation: The Need for a New Modus Operandi
+
 For a long time, my workflow was functional, albeit traditional. I would write scripts or small programs, test them empirically, document them, and push them to production. But watching the rapid evolution of AI coding tools, I realized that simply bolting a chatbot onto my existing workflow wasn't enough. I needed to rethink my entire process from the ground up to actually leverage these tools as autonomous agents rather than glorified search engines.
 
-
 ## The Pre-LLM Era: Scripts, Ad-Hoc Fixes, and Stack Overflow
+
 Before the rise of LLMs, my development process looked exactly like this:
 
 1. Create a folder, bootstrap Git, and initialize the programming language environment.
@@ -32,8 +32,8 @@ However, looking back with a critical eye, my process was fundamentally flawed. 
 
 I came to realize that adopting core engineering best practices, like test coverage, would make my deliverables significantly safer and more reliable. Under my old manual process, achieving this meant heavy reliance on Google, Stack Overflow, and official documentation to unblock myself. It worked, but it was incredibly tedious.
 
-
 ## Method + LLM: The Friction and Fatigue of Early Adoption
+
 I started riding the LLM wave early, diving into AI-assisted development around mid-2025 while [learning Rust](https://lopes.id/log/rust-for-security-engineers/) programming language and building [Cordyceps](https://github.com/lopes/cordyceps), an educational Proof-of-Concept (PoC) ransomware.
 
 At that stage, the AI tooling landscape was evolving at breakneck speed, but my workflow remained stagnant. Instead of taking the time to learn how to orchestrate *agentic* features, I simply took my flawed pre-LLM workflow and slapped AI on top of it.
@@ -48,8 +48,8 @@ While the AI provided direct, tailored answers, this ad-hoc approach introduced 
 
 I was still the developer doing all the heavy lifting; the AI was just a smarter, occasionally frustrating textbook. It was like copy-pasting from Stack Overflow, just generated on the fly. The solution wasn't to "prompt harder." The solution was to step back, review my entire workflow, and integrate AI much earlier in the software lifecycle, using its capabilities in a structured, deterministic way.
 
-
 ## The New Way with LLM: Designing Antlion to Learn the Paradigm
+
 Entering 2026, I realized the only way out of this frustrating cycle was to stop forcing the AI into my old habits. I decided to actually *study* the new way of working. I researched *agentic* workflows, structured AI tooling, and LLM orchestration.
 
 Only *after* internalizing this new paradigm did I design the [Antlion](https://github.com/lopes/antlion) project. Antlion wasn't just another script; it was deliberately conceived as a sandbox to practice an AI-native methodology.
@@ -59,11 +59,13 @@ This was a profound mindset shift. I finally understood that modern AI tools are
 I installed Claude Code directly on my machine, integrated the necessary editor plugins, and completely overhauled my approach:
 
 ### 1. Setting the Stage (Context Engineering)
+
 Instead of jumping into the code, I started with documentation. I outlined goals, premises, constraints, and the tech stack in `README.md`. Then, using the Claude plugin, I executed `/init` to parse the greenfield project and build `CLAUDE.md`.
 
 This file acts as the AI's system prompt and rulebook. I tailored it to dictate exactly how Claude should behave, applying best practices like enforcing Test-Driven Development (TDD) and functional programming, inspired by [Paul Hammond's approach](https://github.com/citypaul/.dotfiles/blob/main/claude/.claude/agents/tdd-guardian.md). I kept it highly concise: `CLAUDE.md` contained all my architectural guardrails in exactly 99 lines.
 
 ### 2. The AI Interview
+
 Once the environment was set, my first prompt wasn't a request to write code. Instead, I asked the AI to interview *me*:
 
 ```text
@@ -75,11 +77,13 @@ Adapted from [Anthropic's documentation](https://code.claude.com/docs/en/best-pr
 We iterated until we reached a consensus. It felt like collaborating with a highly skilled peer to finalize system design before writing a single line of code. Only then did the AI update `CLAUDE.md` and generate a formal `DESIGN.md` specification.
 
 ### 3. Planning and Commitment
+
 I switched Claude Code to plan mode (`shift`-`tab`) and requested an implementation plan. I reviewed it meticulously, added my constraints, and instructed the agent to proceed only when we were perfectly aligned.
 
 Crucially, I forced the AI to commit the plan and TODO list to documentation *before* touching the codebase. Given my past struggles with contaminated chat contexts, I needed these specs committed as an immutable source of truth. It generated both files under the `docs/` folder, and development began.
 
 ### 4. Test-Driven Development (TDD) in Action
+
 With my coffee in hand, I instructed Claude to initiate Phase 0. What followed was mesmerizing. I watched the AI execute a flawless TDD loop:
 
 1. **Write:** It wrote a test in `tests` for the data models (e.g., validating supported file formats).
@@ -90,23 +94,27 @@ With my coffee in hand, I instructed Claude to initiate Phase 0. What followed w
 I used this loop to finally familiarize myself with TDD. I was learning to implement it simply by observing an autonomous agent execute the framework perfectly.
 
 ### 5. Shifting from Coder to Product Manager
+
 To ensure I was monitoring the model closely and actually learning the codebase, I reviewed and approved every new command and file edit. It was tedious, but necessary to remain in the driver's seat.
 
 At the end of Phase 2, Claude autonomously ran a comprehensive test suite before proceeding. I found myself acting as a Technical Product Manager: *Are all tests green? Yes. Mark tasks as done in the TODO. Commit. Move on.*
 
 ### 6. Enforcing Strict Boundaries (Pylance/Pyright)
+
 During Phase 4, I configured my Python type-checking to "strict" mode. By Phase 7, Pylance warnings were accumulating. I initiated a strategic halt: I instructed Claude to resolve all warnings and added a new strict-typing enforcement rule to `CLAUDE.md`. Claude surgically fixed the warnings and re-ran the tests successfully. From that point forward, the codebase looked as though it were written by a senior Python engineer, complete with modern, rigorous type annotations.
 
 ### 7. Bottom-Up Architecture and Debugging
+
 Unlike my traditional top-down scripting approach, Claude naturally adopted a bottom-up architecture. It built and tested specific, isolated components before wiring them into the main dispatcher.
 
 When things inevitably broke (such as a proxy issue with [LiteLLM](https://www.litellm.ai/) or a bug where the program bypassed the `--dry-run` flag to create a folder) Claude troubleshot, reasoned about the execution flow, and deployed rapid fixes immediately after I fed it the terminal output.
 
 ### 8. The Final Polish
+
 The code under `antlion/src` eventually felt a bit cluttered, so I prompted Claude to refactor it applying enterprise Python best practices. It modularized the project instantly. The resulting architecture was clean, professional, and highly maintainable.
 
-
 ## Takeaways: The Paradigm Shift
+
 Looking back, my 2025 endeavor was basically my legacy workflow with an AI bot duct-taped to it. The 2026 approach is a true *AI-first* workflow.
 
 1. **Change the process, not just the tool.** You cannot simply bolt AI onto your existing stack. You have to step back, study *agentic* methodologies, and fundamentally restructure how you build software.

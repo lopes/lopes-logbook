@@ -14,18 +14,18 @@ Google Authenticator (GAuth) is a simple and useful app to deal with 2FA, but it
 
 GAuth does not provide easy ways to backup its contents, on the contrary: It makes difficult to export data, but it can be accomplished and this text explains how to do it instead of having to enroll the 2FA for those accounts again.
 
-
 ## GAuth
+
 The first thing to do here is to access the GAuth app and extract the accounts enrolled. Start by exporting the accounts through: `Options > Transfer Accounts > Export Accounts`. GAuth will require the credentials, and after that, select all accounts and click on `Next`.
 
 As said previously, GAuth does not provide an easy way to migrate accounts, so here it's necessary to use a workaround: Using a **trusted** device, scan the QR code using any **trusted** app. This QR code has all credentials encoded, so after scanning it, copy the chunk of characters and paste them into a plain text file on your **trusted** machine—let's call it `dump.txt` for instance. This chunk will look like this:
 
-```
+```text
 otpauth-migration://offline?data=ijEK4ngAIPwDm0BZuqJk6Qvmbi2NpqyAkEgl...
 ```
 
-
 ## Decoding
+
 Having the encoded accounts, it's needed to decode them to retrieve the secret from each account. Download the [extract_otp_secrets](https://github.com/scito/extract_otp_secrets) script and follow the instructions to install it. The installation is quite easy and as per today, it goes like this:
 
 ```sh

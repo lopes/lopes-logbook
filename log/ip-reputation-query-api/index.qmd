@@ -16,8 +16,8 @@ It is common for Information Security Engineers to check if a given IP address i
 
 Since I was wishing to make a programming task, I decided to write a shell script to query all of those three services at once for me, saving some time during my day. I thought about doing it in Python first, but the three services I chose had straightforward examples in [curl](https://curl.se/), I did it in Shell Script.
 
-
 ## Scripting
+
 The script is available as a Gist in GitHub [here](https://gist.github.com/lopes/8bcb3294b3ede9a5e0da71ff64d8843a).
 
 What I've done was query each service using curl and parse the result (always in JSON format) to get the attributes I wanted to get from each one. To normalize the JSON, I send the output of curl to [tr](https://en.wikipedia.org/wiki/Tr_(Unix)) so newlines are removed and spaces are squeezed (I hate to pipe to the same command twice in a line (thanks to a former teacher), but `tr` does not allow to use more than one flag at a time). Parsing is done using regular expressions in [sed](https://www.gnu.org/software/sed/manual/sed.html). `sed` is a bit harder to use than [grep](https://man7.org/linux/man-pages/man1/grep.1.html) and [Awk](https://www.gnu.org/software/gawk/manual/gawk.html), but it has more features than the first and is faster than the second—Perl and Python were out of thought to me.
@@ -30,8 +30,8 @@ The script's internals is organized in comments, global variables, functions, an
 
 I split the request and parsing of data (thanks to a co-worker's idea) to facilitate future maintenance, thus there is one request function and three parsing functions, one for each service. Finally, the script will check which API key is available and will use those that were informed.
 
-
 ## Usage
+
 The usage is quite simple, thanks to the `argparse` function. Set the API keys in your environment under your `.zshev` for example or pass them through the CLI arguments or even use them both ways. For instance, to set the environment variables globally:
 
 ```sh

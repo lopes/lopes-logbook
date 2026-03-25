@@ -10,8 +10,8 @@ I am setting up my graphical environment in Arch Linux, but since the installati
 
 While searching the internet, I stumbled upon [Nerd Fonts](https://www.nerdfonts.com/), a curated collection of many fancy font families, focused on developers. All fonts are patched to provide support to popular glyphs, which makes them perfect for use throughout the system, mainly in terminals. That was all I needed.
 
-
 ## Installation
+
 The Nerd Fonts repository is **huge** and even the author does not recommend cloning it. That said, the best way is to select the ones that you want and install them manually. Since I am currently testing my Arch installation in VirtualBox, I decided to document this process so I can repeat it in the near future.
 
 The first thing here is to create a directory to house your downloaded fonts and either install all of them or select the ones you want and install them. The next listing shows how to do this, but you must know if you want to install the whole thing or just a part of it.
@@ -44,8 +44,8 @@ fc-cache -fv
 cd ..; rm -rf fonts
 ```
 
-
 ## Testing
+
 All fonts are currently installed on the system and ready for use. Now you can check their names using the next command—it will mix system-wide with local user fonts.
 
 ```sh

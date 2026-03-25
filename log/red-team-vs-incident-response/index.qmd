@@ -20,8 +20,8 @@ Analyzing past situations, I divide the RTs into three categories, based on the 
 
 In both scenarios, I, as part of the security team, had to deal with being advertised or not of such tests and this is the central point here.
 
-
 ## To Warn or Not To Warn, That's The Question
+
 Performing an RT exercise is dangerous for the environment, especially for Immature or Outsourced teams, but no matter the RT constitution, it's **always** stressful for IR Engineers. The problem here transcends technology: It's **psychological**. See, [occupational burnout](https://en.wikipedia.org/wiki/Occupational_burnout) is a common word in the cybersecurity area and many professionals are on the verge of it, as well as they're full of attributions, trying to solve problems beyond their field of expertise, which is also frustrating.
 
 When someone decides to run a cybersecurity exercise, usually those involved are calm and feel productive. It's exciting to do something you love, I know it. But the problem is that not every person feels the same and it should be considered that other teams have their agenda. Therefore the test should be disclosed to the teams directly involved in it: Security teams (IR, endpoint, DLP...), as well as IT teams, like server infrastructure.
@@ -32,8 +32,8 @@ The team's psychological stress **must** be justified, thus the more secret the 
 
 Without the information on the teams' performance and proper presentation of the results, the stress is not justified, then managers tend to lose reputation within the team, and the friction among RT and other security teams increases. Having an annual roadmap of tests is paramount here, but this roadmap should consider the results of each test before continuing. It's no use reassessing a system that was not fixed yet or to send more vulnerabilities to the team that couldn't fix all of the previous vulnerabilities found. In this case, an alternative should be found, like hiring more people or a consultancy or applying other types of controls—change the approach. The vulnerabilities should be fixed ASAP and if the team is not being able to do it, something is wrong and must be fixed.
 
-
 ## Beyond The Tests
+
 All tests must have concise reports at least with the vulnerabilities found, so other teams will read this report and define the best approach to fix each issue. Usually, the tools find lots of vulnerabilities and the RT is responsible to interpret this output and write reports appropriate for the organization, including language, systems/teams names, vulnerability aggregation, etc.
 
 The RT should also consider that many initiatives are on course to fix vulnerabilities found in other tests, so the new report should consider the context where the organization is inserted. As stated before, if some vulnerabilities are taking too long to fix, the approach should change, and the new report is a good place to state it. Preferably, this report should be presented at least in two forms: One for managers, with fewer details and more numbers, and the other for Engineers, with all details on how to fix the problems found.
@@ -54,8 +54,8 @@ With that in mind, it becomes clear that the assessments should follow a cycle l
 
 Finally, one word on **prioritization**. The first actions should consider not only the severity of the vulnerabilities (usually measured by [CVSS](https://nvd.nist.gov/vuln-metrics/cvss)), but also a link to the Business Continuity Process should be established, thus prioritizing the assets (no matter if it is people, process, or technology) with more impact on the business. Usually, bigger companies have a risk area with risks mapped, as well as assets directly related to core business and other quantitative and qualitative properties for them, like [RTO](https://www.kyndryl.com/us/en/learn/rto) and [MTTR](https://en.wikipedia.org/wiki/Mean_time_to_repair).
 
-
 ## Bottom Line
+
 For me, only in this scenario, the RT could operate without the other security teams' knowing. With that, the friction amongst the teams tends to be reduced, improving the synergy, and moving the security forward. Burnout, anxiety, and impostor syndrome are not only psychological issues but also cyber risks if they affect the security team.
 
 In this vanity war, the RT members always have a good advantage, because they choose the time (usually the best for them) no matter if they were blocked 99 times. If they succeed only once, that's enough for applause.

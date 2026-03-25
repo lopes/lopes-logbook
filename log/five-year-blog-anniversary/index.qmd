@@ -10,8 +10,8 @@ Five years ago, during the COVID-19 pandemic, I decided to start a new blog to s
 
 I had other blogs in the past (now deprecated), but this one is the most long-lived. So I decided to share some reflections on this journey. 💭
 
-
 ## Ownership and Stack
+
 One of the main reasons I started this blog was to work with different technologies and experiment with new things. Beyond the technical aspects, this decision also had a philosophical reason: **I want to be the owner of my data**.
 
 When you rely on platforms like Medium or LinkedIn, you abstract away the infrastructure, but it comes at the cost of not fully owning your content—and eventually, you might lose it. Keeping ownership of the content I create gives me peace of mind that it will always be available on my own terms.
@@ -29,8 +29,8 @@ In a nutshell, my current stack includes:
 
 I intentionally avoided complex blogging platforms like WordPress to make the final product safer and easier to maintain. With a static site, I can publish content similarly to how I used to work with [LaTeX](https://www.latex-project.org/) 🦖: write in Markdown and let the site generator handle the formatting based on the theme. Simple and effective.
 
-
 ## Reflections
+
 Over the years, this blog has helped me improve my writing skills, including writing in English, since my native language is Brazilian Portuguese. 🇧🇷 Writing is a skill that must be practiced, and I remember how difficult it was to write down a thought when I started compared to now—just check the older posts. I'm far from perfect, but today it's much easier for me to express myself in English. 🇺🇸
 
 Writing is something you improve through consistent reading and practice. At work, when I have to write reports or guidelines, my writing is often praised by teammates for its clarity. Thanks to this blog, I've learned to summarize content, impressions, and ideas into concise texts that communicate effectively.
@@ -47,8 +47,8 @@ Since the AI/LLM 🤖 hype began, [I've been experimenting with this technology]
 That said, all posts here are written by me, reviewed with the help of an LLM, and then re-reviewed by me. As I'm using this technology to enhance my skills, it wouldn't make sense to let it write content on my behalf. So rest assured—all the content here is human-made. 🙋🏻
 :::
 
-
 ## Future
+
 Blogging is a solitary and arguably old-school activity in a world dominated by streamers. 📺  I didn't start this blog to become famous—my experience has shown that I'm often the most frequent reader of my own posts. Still, once in a while, a post I wrote long ago ends up being helpful to someone else, and that's a nice **bonus**.
 
 Sharing my perspective (whether technical or philosophical) forces me to organize my thoughts. Since I mostly write for my future self, I aim to be direct and as clear as possible.

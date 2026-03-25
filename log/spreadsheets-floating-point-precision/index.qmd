@@ -16,8 +16,8 @@ While this alternative method enhances the reliability of the application, it al
 
 Floating-point numbers can be a weakness if handled carelessly. However, by employing the appropriate approach, it is possible to strike a balance between usability, maintainability, and the reliability of calculations. Just keep this in mind when developing your solutions, and you'll be on the right track. For more information about the floating-point problem or detailed explanations on this issue, please refer to the provided references.
 
-
 ## References
+
 - [When zero - zero is not equal to zero?](https://support.google.com/docs/thread/93822123/when-zero-zero-is-not-equal-to-zero?hl=en)
 - [Why does Google Spreadsheets says Zero is not equals Zero?](https://webapps.stackexchange.com/questions/80125/why-does-google-spreadsheets-says-zero-is-not-equals-zero)
 - [Overcoming Javascript Numeric Precision Issues](https://www.avioconsulting.com/blog/overcoming-javascript-numeric-precision-issues)

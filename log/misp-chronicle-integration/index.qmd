@@ -10,8 +10,8 @@ The [Malware Information Sharing Platform (MISP)](https://www.misp-project.org/)
 
 Let's get started!
 
-
 ## Definitions and Architecture
+
 MISP is a Cyber Threat Intelligence (CTI) tool used to manage events (aka Indicators of Compromise—IOCs) for further distribution (sharing). By definition, IOCs shouldn't be treated as ordinary logs in SIEMs because they don't represent actions taken in the environment. Instead, they carry data that can be used to **contextualize** such events. In Chronicle, while ordinary logs are stored in the Unified Data Model (UDM) format, supporting data can be stored either in Reference Lists (RL) or in Entity Graph (EG) formats for further use in allow lists or, in our case, to add context.
 
 Given the ephemeral nature of IOCs, we cannot assume that a value will always be marked as malicious because it's more of a transitory state. That said, if we choose to use RLs, we'll need to create additional middleware to automatically manage such lists, removing IOCs that are no longer malicious or relevant to our scope. An easier way to handle this in Chronicle is by using EGs because, although they are treated like regular UDM data, they are managed differently, with one significant change being that Chronicle **expires** them periodically.
@@ -84,8 +84,8 @@ With this in mind, I set the goal of ingesting MISP events into Chronicle as EGs
   CD->>CA: New alert with<br>related events
 ```
 
-
 ## Ingestion
+
 Ingestion starts by exporting events from MISP and ends when they're available in Chronicle as raw logs. As mentioned, there are plenty of ways to do this in MISP, but I designed an architecture where MISP exports events to an S3 bucket, and we use Chronicle's built-in feature to ingest data directly from there. At this point, it's also crucial to define the format for these events. In our case, we started with CSV but soon switched to JSON to take advantage of other features in Chronicle in the next phases. Fortunately, MISP's flexibility and this simple architecture made this transition smooth because, since we weren't implementing any fancy-complex RESTful API, there weren't many changes needed.
 
 ::: {.callout-warning}
@@ -101,8 +101,8 @@ Moving away from the technical details of ingestion, ensure your MISP shares eno
 
 In Chronicle, I found the MISP Threat Intelligence (`MISP_IOC`) to be the best data label for the tuple (MISP, JSON). Note that Chronicle has a built-in parser associated with this label, but it didn't work. So, after getting the raw logs in Chronicle, I had to write my own parser.
 
-
 ## Parsing
+
 Parsing in Chronicle means [Logstash](https://www.elastic.co/logstash), poor documentation, and a bad User Interface (UI). Logstash is a popular open-source tool to parse and normalize logs, and it is the "L" in the famous [ELK Stack](https://www.elastic.co/elastic-stack/). Despite its popularity, I couldn't find any concise documentation on it, like a "Logstash 101" book. Don't get me wrong: there's a community with forums and guides, but I missed something more didactic. I got very confused in many aspects while using Logstash, from the raw log entry to the output. Also, I couldn't find any official documentation from Google on it. 😕  It felt like they were saying: *"We use Logstash, figure it out yourself."* ✌🏻
 
 For those like me who are new to Logstash, it's a pipeline tool that can ingest data from multiple sources, transform it, and send it to multiple destinations. This way, a parser structure will follow the pattern below (considering the use in Chronicle):
@@ -171,8 +171,8 @@ In my experience, it seems that Chronicle considers the IOCs only when the times
 Hey Google! A better documentation, a reviewed UI, a public repository, and a trained AI (you're the Gemini owner, right?) might solve [almost] all these issues! 💡
 :::
 
-
 ## Detection
+
 Writing a parser is hard, but since you've written it, you understand where each piece of data is and how to use it. At this point, I had to leave MISP and look at the available data sources because we needed to correlate events. I approached this by grouping the IOC types into two categories, Network and Endpoint, because it would help me find the best log sources or log types to match these events.
 
 After some research, I noted that using the `metadata.event_type = "NETWORK_CONNECTION"` would let me cross-reference the IP addresses listed as IOCs with more than just the firewall logs. Similarly, when dealing with MISP, I want to use an Entity Type that matches that IOC type, like `graph.metadata.entity_type = "IP_ADDRESS"`. This initial filtering is important to make the rule faster by avoiding out-of-scope events. As a rule of thumb, a YARA-L rule of this kind will look like this:
@@ -226,8 +226,8 @@ Bottom line: Being aware of your tools' capabilities is challenging, mainly beca
 This is just a simplified view of the process. Ideally, after getting the logs parsed into Chronicle, you'll follow your formal process for new analytics, including all tests and documentation.
 :::
 
-
 ## Final Thoughts
+
 IOCs are at the base of the Pyramid of Pain, meaning it's quite easy for adversaries to bypass rules based on them. On the other hand, it's also easy for defenders to create such rules. When followed by an automated pipeline like the one presented here, your alerts will stay up to date with what your CTI team is monitoring, likely achieving the so-called **actionable intelligence**.
 
 Try to take small and consistent steps if you venture into this journey. Before moving to the next phase, assess your results and reevaluate your goals. Have in mind that it's much easier to change something like the event format in the ingestion phase than in the detection phase because you'll have to redo things like, probably, a whole parser. 😱
@@ -238,8 +238,8 @@ Another downside here is that such alerts may generate lots of false positives, 
 
 In the end, the main goal is to have a more proactive approach to security, and this is just one of the many ways to achieve it. I hope this article has helped you to understand how to integrate MISP with Chronicle SIEM and how to create rules based on IOCs! 👊🏻
 
-
 ## References
+
 - [How to Integrate MISP and Chronicle SIEM](https://medium.com/@thatsiemguy/how-to-integrate-misp-and-chronicle-siem-9e5fe5fde97c)
 - [Expiring IOCs in Entity Graph](https://medium.com/@thatsiemguy/expiring-iocs-in-entity-graph-373010554091)
 - [UDM Event Validation](https://medium.com/@thatsiemguy/udm-event-validation-fa0d6f8bd1d4)
