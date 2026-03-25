@@ -16,48 +16,48 @@ According to [this text](https://unix.stackexchange.com/questions/557894/what-is
 
 Fortunately, I noticed what I did wrong and followed some steps to recover the system without having to reinstall it. In the next few lines, I am going to describe how to do that.
 
-
 ## Boot from Installation Media
+
 First, insert Arch's installation media in the machine, set it to boot from that media, and run it. You will reach the very first screen to install Arch Linux.
 
-
 ## Configure Keyboard
+
 Just like a fresh install, [configure the keyboard](/log/arch-linux-hardened-install/) properly to avoid further problems.
 
 ```sh
 loadkeys us-acentos
 ```
 
-
 ## Decrypt the Data Partition
+
 Considering you are a good guy, you encrypted the data partition when installing Arch, so you must [decrypt it](/log/arch-linux-hardened-install/) to access its contents.
 
 ```sh
 cryptsetup luksOpen /dev/sda3 luks
 ```
 
-
 ## Mount the Partition
+
 After decrypting the data, [mount](/log/arch-linux-hardened-install/) the root partition in `/mnt`.
 
 ```sh
 mount /dev/mapper/vg0-root /mnt
 ```
 
-
 ## chroot
+
 With the data available, [chroot](/log/arch-linux-hardened-install/) to `/mnt` to fix the problem. This step could be performed without chrooting, but I prefer to include this step to make sure everything will work as expected.
 
 ```sh
 arch-chroot /mnt
 ```
 
-
 ## Maintenance
+
 At this point, the system should be mounted, and you should be logged in as root. Now it is time to solve the problem, and, in my case,  I just had to delete the tally2 line in the `/etc/pam.d/system-login` file.
 
-
 ## Exiting
+
 After fixing the problem, just exit from the chroot environment, umount the data partition, and reboot.
 
 ```sh

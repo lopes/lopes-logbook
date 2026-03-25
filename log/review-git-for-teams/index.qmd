@@ -10,8 +10,8 @@ Git is a popular tool and the *de facto* version control system (VCS) in the mar
 
 One of the sources mentioned in [The Missing Readme](/log/review-missing-readme/) is [**Git for Teams**](https://www.amazon.com/Git-Teams-User-Centered-Efficient-Workflows/dp/1491911182/). As someone who never took the time to seriously learn Git, I decided to give this book a try to bridge some knowledge gaps and improve my daily workflow. In this post, I share my review of the book along with some insights for those who are new to Git or, like me, use it regularly but lack a deep understanding of the tool.
 
-
 ## Git and the Book
+
 Git was developed by Linus Torvalds in 2005 to solve version control issues while maintaining Linux. It was designed as a set of small programs that work together to track changes in files. As the version control system for one of the most famous open-source projects, Git gained widespread adoption and grew in both quality and functionality to become the preferred VCS for many professionals today.
 
 Git's simplicity is one of its greatest strengths. As a distributed VCS, Git eliminates the complexity found in older tools like Subversion (SVN). I remember years ago using Microsoft SharePoint to manage team documentation, which had *a kind* of centralized VCS under the hood. Back then, before editing a file, I had to check it out, and after finishing, I had to check it back in to "release" it. If someone forgot to release a file, we either had to contact the SharePoint admin or wait for the person to become available. It was a huge waste of time.
@@ -26,8 +26,8 @@ Concepts like branching, committing, and pull requests are explained with clear 
 
 Overall, it's a straightforward yet comprehensive book, offering a fast and informative read.
 
-
 ## Impressions
+
 Emma has a light and conversational writing style, making the book feel like a friendly discussion. She gets straight to the point, so don't expect extensive references or footnotes. The examples she uses are drawn from real-world scenarios she encountered during her career, many of which are based on open-source tool development. These cases are robust and relatable.
 
 ::: {.callout-tip}
@@ -42,8 +42,8 @@ The book hasn't been updated since its release. As a result, some commands and t
 
 For me, the second half of Part II felt too command-heavy, focusing more on examples than best practices. I would have preferred more discussion on strategies, such as when to use rebase versus merge, rather than an exhaustive list of rebase examples. Defining general guidelines for such scenarios would have been more helpful.
 
-
 ## Bottom-line
+
 I started using Git many years ago because I was tired of using suffixes like `_final`, `_reviewed`, and others in my filenames. Despite this, I never took the time to truly understand how Git works under the hood. This superficial knowledge limited my ability to use Git effectively. For example, I used to think that a commit should be as comprehensive as possible, often bundling an entire day's work into a single commit. When I needed to revert a change, I did it manually, which defeated the purpose of using Git. Additionally, because I didn't use branches effectively, I sometimes found myself deleting and recloning entire repositories when changes needed to be discarded.
 
 In contrast, last year I started using branches for [this blog](https://lopes.id) 🌲 after learning the practice at work. For every new post, I create a new branch and work on it independently. This allows me to parallelize my writing and keep drafts organized. For instance, when writing the [Project Nebula](/log/nebula-1-detection-lab/) series 🚀, I created a branch for each post (four in total) and treated each as an individual feature. Publishing a post was as simple as merging the branch into the main branch.

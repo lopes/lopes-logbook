@@ -8,8 +8,8 @@ image: "og-threat-detection-dilemma.webp"
 
 In my role as a CSIRT Engineer, I raised many concerns and critics about low precision analytics. Now, as a member of the Threat Detection team, I am keenly focused on crafting rules that are both useful and precise, aiming to mitigate unnecessary stress in CSIRT caused by alert fatigue. However, the challenge arises when overly precise rules may inadvertently blind us to real malicious activities. This conundrum, which I term the "Threat Detection Fundamental Dilemma," will be the focal point of this post.
 
-
 ## Reviewing Terminology
+
 Before delving into the dilemma, let's establish a shared understanding of some terminology related to alert investigation. Any alert handled by CSIRT can be classified within a [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix), comprising the following categories:
 
 - **True Positive (TP):** An alert raised for a malicious activity, sparking investigation and satisfaction in CSIRT.
@@ -24,6 +24,7 @@ Maintaining a high level of confidence in CSIRT analysis is paramount. Thus, the
 :::
 
 ### Precision
+
 Precision, representing the ratio of FPs a rule generates, is calculated as follows:
 
 $$
@@ -33,6 +34,7 @@ $$
 This metric, using data from all raised alerts, aids in identifying analytics that may need fine-tuning (low-fidelity rules). The rationale is simple: lower Precision implies a higher probability of contributing to alert fatigue, requiring closer attention.
 
 ### Recall
+
 In contrast to Precision, which considers irrelevant events (FP), Recall encompasses all relevant events (TP and FN). As it accounts for undetected malicious events (FN), it is harder to calculate. This data may be sourced from various channels, such as manual reports, Purple Team exercises, Threat Huntings, etc. Once FN per rule is obtained, Recall can be calculated using this formula:
 
 $$
@@ -41,8 +43,8 @@ $$
 
 Analyzing the equation, it is evident that higher Recall is favorable, indicating the successful identification of numerous malicious events. Thus, rules with a high Recall rate are desired as they mean the detection of a greater proportion of relevant events.
 
-
 ## Navigating by Metrics
+
 Precision and Recall are complementary, each monitoring a distinct aspect of the scenario. As previously mentioned, Precision gauges the stress induced in operations due to FPs, while Recall evaluates the risk arising from the failure to detect malicious activities. Consider the following image, based on [this amazing example](https://en.wikipedia.org/wiki/File:Precisionrecall.svg) from Wikipedia.
 
 ![Precision and Recall metrics](chart-precision-recall.webp)
@@ -65,8 +67,8 @@ This adjustment, while reducing Precision, significantly improves Recall (100% i
 As [MITRE states](https://mad.mad20.io/ModuleDetail/19/24), *"it is almost impossible to write an analytic that has perfect Precision or perfect Recall, and improving one often comes at the cost of making the other one worse."*
 :::
 
-
 ## The Dilemma Unveiled
+
 Fine-tuning rules appears to be the logical path, doesn't it? As a former CSIRT Engineer, I subscribed to this belief until transitioning to Threat Detection. The crux lies in the fact that our networks typically experience far more benign events than malicious ones, as illustrated in the next image.
 
 ![Precision and Recall in two scenarios](chart-precision-recall-scenarios-bc.webp)
@@ -101,8 +103,8 @@ Each approach can be applied to a specific data dimension, as illustrated in the
 
 Note that there is no definitive answer as to whether a specific combination will work. In certain cases, a closed scope may be non-negotiable (demanded by audit, for instance), or after multiple attempts, a satisfactory solution may prove elusive. In such scenarios, finding an acceptable balance between Precision and Recall and implementing compensating controls to address gaps is the best course of action. Voila! This is what I refer to as "The Threat Detection Fundamental Dilemma!"
 
-
 ## Key Takeaways
+
 For Threat Detection teams, it is paramount to collect CSIRT analysis for each analytic they're responsible for and calculate Precision and Recall. These metrics aid in prioritizing tasks and identifying low and high-confidence analytics, highlighting strengths and weaknesses.
 
 As there's no perfect software, there's also no perfect analytic, so striving for 0% FP or 100% Recall is unrealistic. This means that achieving a balance between the two is essential for success -—this encapsulates the Threat Detection Dilemma. Employing compensating controls for rules with low Recall is a valid strategy. Creativity becomes our ally.

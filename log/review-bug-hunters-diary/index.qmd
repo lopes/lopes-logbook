@@ -8,16 +8,16 @@ image: "og-review-bug-hunters-diary.webp"
 
 A [Bug Hunter's Diary](https://www.amazon.com/Bug-Hunters-Diary-Software-Security/dp/1593273851) is one of the most recommended books among Information Security professionals. As someone eager to learn more about this field and its intersection with Offensive Security, I decided to give it a read. Here, I share my thoughts on the book.
 
-
 ## Plot
+
 **A Bug Hunter's Diary** is a compilation of bugs discovered by the author, Tobias Klein. Each chapter explains, in a light and engaging writing style, how Tobias discovered a vulnerability, created an exploit, remediated it, and the lessons he learned. He also includes final thoughts and references, which I found to be a great structure. Throughout the book, he shares code snippets and diagrams to help readers understand the technical details—helpful since he often works at the lower levels of computing, interacting with the kernel and CPU.
 
 By the end of the book, Tobias includes appendices that provide additional details on techniques and tools he used. One appendix even lists the commands he commonly uses in debuggers, which is incredibly helpful for beginners. As a nearly 15-year-old book, some tools and commands mentioned may have changed or become outdated. New tools, like [Ghidra](https://ghidra-sre.org/), have also emerged since its publication. However, the author does an excellent job of keeping the [BHD](https://www.trapkit.de/books/bhd/) page updated with additional content, such as videos and updates. This effort breathes fresh life into the book and enhances the learning experience.
 
 Overall, the book is straightforward and concise. It's a quick read, but if you want to dive deep into bug hunting, following the references mentioned by the author is essential.
 
-
 ## Impressions
+
 While the book is highly technical, it has a storytelling quality thanks to the author's approach of presenting each case as it unfolded. Tobias's intention to make the content accessible is evident through his recaps and explanations. Reading this book gave me a glimpse into the bug hunting scene, and by the first chapter, I could clearly see the author's expertise in the field.
 
 Bug hunting can be divided into static and dynamic analysis (SAST and DAST) and categorized into low and high levels. Static analysis focuses on source code, while dynamic analysis examines processes running in memory. Low-level work involves direct manipulation of hardware resources, memory management, and system calls, whereas high-level work focuses on user-facing applications, managing complex software architectures, and leveraging APIs for increased abstraction from the underlying hardware.
@@ -28,8 +28,8 @@ I found it fascinating to learn more about the vulnerability disclosure process,
 
 For someone outside the bug hunting trenches, it's enlightening to understand attacks like buffer overflows and NULL pointer dereferences in greater detail. The references Tobias provides are particularly valuable. While some links are broken due to the book's age (published in 2011), the recommended books are gold ⭐ for anyone starting in this field. Despite the book's brevity and the author's ability to simplify complex topics, the subject matter is dense. Some references are lengthy and will require significant time to fully absorb.
 
-
 ## Last Thoughts
+
 Beyond the technical details and the author's knack for simplifying complex concepts, what I appreciated most about this book was learning the bug hunter's mindset. Tobias doesn't explicitly state it, but if you pay close attention to each case, you'll notice his process. His extensive background helps him select targets and form hypotheses. He then enumerates entry points where users input data, tracks that data, and looks for validation gaps or logic errors that could allow crafted data to disrupt the process and gain control over the CPU. Once he develops a working exploit, he notifies the company or a bug bounty program, along with remediation suggestions. This was exactly what I was looking for. 👀
 
 Another valuable lesson is that it's okay to specialize within a field, such as low-level static analysis. However, adding complementary skills, like dynamic analysis, even if you don't master them, can be beneficial in certain scenarios. For example, while you might rarely use a hammer, having one can make the occasional task easier. Similarly, expanding your skill set can open up new opportunities and make your work more efficient.

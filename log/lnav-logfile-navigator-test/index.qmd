@@ -8,8 +8,8 @@ image: "og-lnav-logfile-navigator-test.webp"
 
 The other day I stumbled upon a promising tool to analyze logs: [The Logfile Navigator](https://lnav.org/) (lnav), and as once in a while I have to analyze log files, I decided to give it a try. To make things more fun, I decided to test it using a challenge available on the internet, like a CTF one. Well, I found this "[Hammered](https://cyberdefenders.org/blueteam-ctf-challenges/42)" challenge and I had a tool to learn. Here I'm sharing my journey as well as some impressions and personal opinions over the tool. Let's go!
 
-
 ## Proof-of-Concept
+
 In the next subsections, I'm sharing commands and impressions for each question in the challenge, but avoiding unnecessary spoilers.
 
 **Q1, Q3: Service used to gain access and name of the compromised account**
@@ -69,9 +69,10 @@ Easy peazy with: `:filter-in Apr 26.*new user`
 **Q12: Proxy's user-agent used by the adversary**
 Listed all distinct user-agents that hit Apache: `;select distinct cs_user_agent from logline order by cs_user_agent` Then analyzed the output to possible proxies. If I knew about the pattern before (`p.*`), I could use this command: `;select cs_user_agent from logline where cs_user_agent like "p%"`
 
-
 ## Wrap Up
+
 ### Useful hotkeys
+
 [This hotkey map](https://docs.lnav.org/en/latest/hotkeys.html) is gold, but here's my list.
 
 - `/`: to type a search query
@@ -82,16 +83,18 @@ Listed all distinct user-agents that hit Apache: `;select distinct cs_user_agent
 - `space`: next page
 
 ### Pros
+
 - lnav saves sessions, so if you're in the middle of an investigation and you closed the program involuntarily, reopening the file will take you to the same point where you were.
 - Command autocompletion resembles Cisco: Typing `:filing` for example will autocomplete to `:filter-in`.
 
 ### Cons
+
 - Few users, few help, few documentation.
 - A very strange bug preventing some lines to be shown in one Apache log file (maybe a problem in parser? 🤔)
 - The interface confused me sometimes as it was not clear if a filter was applied or not.
 
-
 ## Opinions
+
 lnav is the kind of tool that makes you wonder why nobody did that before. Log analysis is not just useful for Infosec Analysts but also to System and Network Administrators, and a plethora of IT professionals. **It's past time to have decent tools to help us troubleshoot environments and perform forensic investigations.**
 
 My overall feeling is that lnav is a tool in maturation, so it presents a couple of bugs and lacks some features and documentation. I think it follows the idea of applying filters over filters, like piping in CLI, but it's not clear through the interface or documentation. With more users and developers, it certainly can grow up to become a standard tool in many Unix systems. For sure **I added this to my toolbelt**.
@@ -100,8 +103,8 @@ My overall feeling is that lnav is a tool in maturation, so it presents a couple
 [Here's](https://www.youtube.com/watch?v=RurEIYFZyZI) another good lnav review.
 :::
 
-
 ## Bonus: The Challenge
+
 Just some thoughts to help you tackle the challenge (and other log analysis tasks). First, understand the scenario: List the logs available and based on the tools, make a mental map of the adversary's exploit path.
 
 In the Apache logs, learn what IP addresses tried to exploit the services and what resources were targeted. Write down any suspicious IP and targeted resources. Then, move to the auth logs to check remote access and take note of suspicious IPs.

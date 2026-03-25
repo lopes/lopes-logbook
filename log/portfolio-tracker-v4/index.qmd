@@ -10,8 +10,8 @@ Last year I published my portfolio tracker spreadsheet along with [a blog post o
 
 **tl;dr:** Link to the spreadsheet [here](https://docs.google.com/spreadsheets/d/1t74zQb31tufTZNpCdS2CkfEboHgqzjcXPSthOC8HA_M/edit?usp=sharing). Donation [here](https://www.paypal.com/donate/?hosted_button_id=2W2ALYSGHTDTU).
 
-
 ## Requisites
+
 In addition to the requisites described in the previous post, this spreadsheet should be capable of managing multiple wallets. With it, one can manage multiple funds (up to five) like "Retirement" and "House Purchase". Other requisites, such as performance and acceptance of multiple currencies, are here, and most of the previous formulas and ideas were reused.
 
 To avoid past mistakes, I revamped the asset taxonomy so that each asset now has these properties:
@@ -33,8 +33,8 @@ The core structure of the spreadsheet was maintained, with four tabs:
 As this spreadsheet is limited to tracking assets over five years, the user is invited to use multiple files for tracking assets over larger periods of time. My recommendation is to keep these files in the same folder with the date range in the file name, like `Portfolio Tracker 2019-2023`. When starting a new file, you can drop deprecated assets and summarize transactions to make it even faster. I do this using separate code that summarizes transactions in the Ledger tab, then I copy-and-paste the values into the new sheet. As a reference, I use the date of December 31st of the previous year in the summarized transactions.
 :::
 
-
 ## Allocation
+
 I've shifted the focus from asset taxonomy to asset allocation here, making it more user-friendly and visually guiding the user to define their targets properly, what's more important. The first step is to define the allocation between wallets and how each wallet will be divided between core and satellite. With this setup, all assets must be cataloged with their respective weights.
 
 The weights make sense locally (Wallet/Type), considering both the target allocation from the wallet and the type (core-satellite). I chose to use weights here to make it easier for me to define target allocations for assets. With the weights (which may vary between 0 and 20), the spreadsheet will calculate their percentages in the same Wallet/Type and then figure out how it reflects in the previously defined targets.
@@ -45,8 +45,8 @@ The weights make sense locally (Wallet/Type), considering both the target alloca
 As the core-satellite strategy uses ETFs and each ETF can diversify between assets, usually there are just a few assets in portfolios like this. So I limited the spreadsheet to "only" 50 assets. It's more than enough for an investor who knows what she's doing, even considering a time span of five years. If you need more space, I think you should review your strategy.
 :::
 
-
 ## Implementation
+
 It was a fast track for me since this is the fourth time I've rewritten this spreadsheet, but here I want to highlight some important formulas I implemented along with important project decisions. I found a bug in the formula to get the last transaction of an asset in the Ledger tab when the first and second assets (rows 4 and 5) are the same. That happens because they end up calling `ArrayFormula()` with just one row. I fixed it manually by evaluating row 5 using an `If()`:
 
 ```swift
@@ -79,6 +79,7 @@ As previously mentioned, the weighted targets were a good challenge as I had to 
 One of the biggest changes in this version was the addition of automatic portfolio evolution by year. I've limited this to a five-year range to maintain performance and added new hidden columns as pivots to the end of the Allocation tab. Thanks to the limits, like the number of Assets and Wallets, and the time span, even though these formulas are complex, I've noticed no downgrade in overall performance.
 
 ### Crypto and Deprecated Assets
+
 As [I showed in another post](/log/google-sheets-crypto-prices/), Google Finance is able to fetch quotes for some major cryptocurrencies, but for most it just can't. It's possible to implement it using another source, but as I'm avoiding third-party scripts here, there's no easy way to implement fallbacks like *"if `GoogleFinance()` yields an error, try to get the quote here"*. This way, I leave it to the user's discretion to implement it or not if she's investing in such assets.
 
 The same concern applies to deprecated assets. As Google Finance terminates the asset/ticker when a security is no longer being traded, it'll yield an error. For one specific case, to get the normalized asset value on December 31st of a given year, if this function returns an error, the spreadsheet will consider the average price of that asset instead. The formula goes like this:
@@ -97,8 +98,8 @@ The same concern applies to deprecated assets. As Google Finance terminates the 
 )
 ```
 
-
 ## Download, Donation, and Last Words
+
 You can **get the spreadsheet** [here](https://docs.google.com/spreadsheets/d/1t74zQb31tufTZNpCdS2CkfEboHgqzjcXPSthOC8HA_M/edit?usp=sharing). It'll require a Google account with Google Drive access. Make a copy of the document to your account and start working. I recommend starting with the Setup tab and moving left: Add your transactions and incomes in Ledger (if any), define your asset allocation in the Allocation tab, and track your evolution in the Summary tab. Again, **if this spreadsheet helped you in any way and you're able and comfortable to donate any value**, you can do it [in this link](https://www.paypal.com/donate/?hosted_button_id=2W2ALYSGHTDTU). Minor changes, like little improvements and bug fixes, will happen silently and the document will reflect them, as usual.
 
 This new version fixes some conceptual problems from the last one, tightens up the limits for assets, and implements long-desired features. The Summary is filled only with relevant information (learned from previous versions) and allows the user to automatically track her portfolio evolution. The Allocation is more friendly and visually guides the user on the portfolio distribution: Wallet allocation, Type (Core-Satellite) allocation, Asset allocation. The ledger is almost the same, but slightly simpler and as things are less complex here, the setup offers fewer options.

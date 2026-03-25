@@ -8,8 +8,8 @@ image: "og-arch-hardened-testing-env.webp"
 
 In my job, we needed to perform some networking tests in an unsafe network segment, so I decided to make a machine for that purpose, granting that the risks were mitigated by hardening the operating system. In this post, I describe the steps to create this environment.
 
-
 ## Installation and Hardening
+
 The first thing was to install Arch and it is documented [in this post](/log/arch-linux-hardened-install/), including full disk encryption. After installing Arch, I [put my dotfiles](https://github.com/lopes/dotfiles) so the next steps would be easier to implement. Note that I use Zsh as the default shell and Arch comes with Bash by default, so I had to change the default shell, logoff, and login so the dotfiles would be applied.
 
 ```sh
@@ -23,9 +23,10 @@ The hardening steps are described in more depth [in this post](/log/arch-linux-c
 ```
 
 ## Automatic Updates
+
 I wanted to grant that the system would be frequently updated, so I created a service only for that purpose and made it be executed at boot time. It consists of a configuration file that is invoked by systemd, so create the proper file into systemd's path (`sudo vim /etc/systemd/system/updater.service`) and insert the following content into the file:
 
-```
+```ini
 [Unit]
 Description=System Updater
 [Service]

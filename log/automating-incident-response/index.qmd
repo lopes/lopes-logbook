@@ -8,8 +8,8 @@ image: "og-automating-incident-response.webp"
 
 Automating tasks in Incident Response (IR) is key to reduce the impact of incidents. Although it seems as easy as start writing scripts, in my experience, this objective must be tackled in a more scalable and robust way that encompasses security, data science, and software development.
 
-
 ## Stone Age: Path to SIEM
+>
 > In the beginning, was the logs, and the logs were inside the systems, and the systems were decentralized.
 
 When a company hasn't yet defined an approach to deal with logs, this quote should be the reality. But when the necessity for log management arises, it usually involves log centralization, and the team rapidly discovers that it is neither an easy nor cheap task.
@@ -22,8 +22,8 @@ It's not a cheap task because the software designed for that purpose (Security I
 
 The last reason (compliance) is the easiest to justify budget because it usually implies penalties for the company if it's not compliant. The second (security) is harder to justify, especially if the company had no prior major security incident. Despite that, security, in my opinion, will be the one that will win the most when the solution is up and running—consequently, security teams tend to be the heavy users of such a tool.
 
-
 ## Bronze Age: Strengthening the Foundations
+
 Having a SIEM running and receiving logs is far from the end of the road because although it's a huge step, the work is only beginning—as affirmed by [MITRE](https://www.mitre.org/news-insights/publication/11-strategies-world-class-cybersecurity-operations-center), "SIEM takes a day to install and a year to operationalize". After the team understands the technical parts of the tool, Engineers should realize that they have to better understand the logs that are being sent to SIEM and define a baseline, like what are the systems that MUST send data to SIEM and those that should NEVER send data.
 
 Eventually, this task will advance in granularity, so the team will start to filter logs in the sources to avoid garbage in SIEM, thus making better usage of resources. This refinement not only keeps the budget under control but also tends to improve the performance of SIEM because the more data is ingested, the more resources (hardware) searches will require. As the number of data feeds increases, the team will have to find ways to manage them, like grouping or tagging them, creating patterns for naming each log source, and then writing alerts for log sources that stopped sending data. Finally, log sources will get cataloged with enough metadata to manage them.
@@ -42,8 +42,8 @@ To advance in all of these topics, electing a SIEM champion is key to success be
 
 > Although the SIEM champion will manage the playbooks related to the correlation rules, every CSIRT member should be responsible for keeping them up-to-date. A good strategy here is to create unique identifiers for the correlation rules and name the playbooks with those IDs, making the association straightforward.
 
-
 ## Iron Age: Implementing SOAR
+
 With the SIEM implemented, receiving data from important sources, transforming data into information, and with Engineers knowing how to handle each alert raised, the team will reach a good level of maturity, ready to move consistently forward. With this foundation, the team will advance in automation to make the IR faster and easier with a Security Orchestration, Automation, and Response (SOAR).
 
 ::: {.callout-note}

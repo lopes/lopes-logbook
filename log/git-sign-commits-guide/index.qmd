@@ -10,8 +10,8 @@ Recently, I had to set up another GPG key in my workstation to send signed commi
 
 In this scenario, the main objective is to have a GPG key pair configured in your local Git (either globally or just inside a repository) that signs commits. After being pushed to GitHub, they should be evaluated as "verified" there. To achieve this, (spoiler) the email address set locally in your Git, in your GPG key pair, and in GitHub's public key must match. In the following lines, I'll show how to implement it.
 
-
 ## Key Pair Generation
+
 Start by generating a new key pair (if you already have one, you'll have to import it into your GPG instance). Run the command `gpg --full-generate-key` and follow the instructions to generate it.
 
 ::: {.callout-note}
@@ -40,8 +40,8 @@ You'll be asked to type the passphrase previously used, and it'll print the secr
 gpg --armor --export KEYID
 ```
 
-
 ## GitHub and Git Setup
+
 After running the previous command, copy the public key, then go to your GitHub profile under Settings > Access > SSH and GPG keys, and in the "GPG keys" section, choose to create a new GPG key. In the text field, paste the output of the last command and save. With this, you're telling GitHub that the key pair linked to that public key is trusted by you, so any commit signed with it will be shown as "verified".
 
 Now, configure Git to use this key in your commits. As previously mentioned, you can do it locally for the repository or globally, such as using your personal key pair globally and setting up your professional repositories with your work key pair. It's up to you.
@@ -60,6 +60,6 @@ git log --show-signature
 
 When you push it to GitHub, it'll check the signed commit data and evaluate if the signing key is trusted. If it is, you'll see a green "verified" tag, but if not, it'll show a yellow "unverified" tag, indicating that despite the signature, the key is not recognized. Note that in the later case, the signature is valid but not trusted.
 
-
 ## Final Words
+
 Signing commits is completely optional for personal projects but may be required for professional purposes. Nonetheless, considering the ease of configuration, the low friction added to the commit procedure, and the level of security and professionalism it adds to your repositories, I think it's a must or at least highly-recommended.

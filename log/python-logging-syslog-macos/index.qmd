@@ -21,7 +21,7 @@ log stream --info --debug --predicate "process == 'Python'"
 
 And that's it! Logging like a boss! :)
 
-
 ## References
+
 - [Stack Exchange](https://unix.stackexchange.com/questions/68059/daemontools-multilog-loses-log-line-time-information-how-to-fix-it)
 - [Python: Syslog](https://docs.python.org/3/library/syslog.html)

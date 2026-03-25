@@ -8,8 +8,8 @@ image: "og-email-hardening-dkim-spf-dmarc.webp"
 
 Email is a communication tool whose history is intertwined with that of the internet itself. Being an age-old network service, emails are susceptible to various threats, most of which are inherent to the stack of protocols that make up the solution. Over the years, several means to mitigate such issues have been developed and in this article, I will focus on three specific methods directly related to DNS configurations, which are highly effective in bolstering the service and completely avoiding the most common threats: **DKIM**, **SPF**, and **DMARC**.
 
-
 ## DKIM
+
 DomainKeys Identified Mail (DKIM, [RFC 6376](https://datatracker.ietf.org/doc/html/rfc6376)) is a security standard that safeguards email messages against tampering while in transit. If you have ever examined an email header, you are aware that messages traverse multiple mail servers before reaching the final mailbox. During this journey, there is a potential for a man-in-the-middle attack, where the message can be altered before reaching its intended destination.
 
 DKIM utilizes public-key cryptography to sign the message, ensuring its integrity. The DKIM configuration is done through a DNS TXT record with a specialized name based on the domain. This record has a selector component that enables the email server to perform the necessary DKIM lookup in the DNS, usually in the format `selector._domainkey`.
@@ -20,8 +20,8 @@ The DKIM record in the DNS comprises various fields, including:
 - `k=`: Key type
 - `p=`: Public key content
 
-
 ## SPF
+
 Sender Policy Framework (SPF, [RFC 7208](https://datatracker.ietf.org/doc/html/rfc7208)) is a specialized DNS record designed to identify authorized mail servers and domains that are allowed to send email on behalf of a domain. Similar to DKIM, SPF is set up using a TXT record. The name typically points to the root domain (`@`), and the content consists of key-value pairs:
 
 - `v=`: SPF version
@@ -34,8 +34,8 @@ A `softfail` here can be considered a middle ground between failure and neutrali
 It is not allowed to have multiple SPF records as the receiving mail server won't know which SPF rules to follow.
 :::
 
-
 ## DMARC
+
 Domain-based Message Authentication, Reporting, and Conformance (DMARC, [RFC 7489](https://datatracker.ietf.org/doc/html/rfc7489)) is an email authentication and validation system that aids in protecting against spam, phishing, and spoofing. DMARC provides two types of reports:
 
 - **RUA:** Reporting URIs for Aggregate Data—which consists of combined data in XML format without personally identifiable information
@@ -60,8 +60,8 @@ During my tenure as the leader of the SOC, we faced a situation where we stopped
 
 As configuration changes vary for each service/server and detailed guides are readily accessible online, I won't delve into the specifics of the implementation process in this article. The key takeaway is that all three methods effectively ensure email **integrity**, safeguarding senders and recipients from tampering, spoofing, and related attacks. Enhancing **confidentiality** and **availability** requires implementing additional methods, but that's another story.
 
-
 ## References
+
 - CloudFlare: [What are DMARC, DKIM, and SPF?](https://www.cloudflare.com/learning/email-security/dmarc-dkim-spf/)
 - CloudFlare: [What is a DNS DKIM Record?](https://www.cloudflare.com/learning/dns/dns-records/dns-dkim-record/)
 - Antispam.br: [SPF](https://antispam.br/admin/spf/)
