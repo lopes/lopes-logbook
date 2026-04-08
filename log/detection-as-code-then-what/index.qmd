@@ -150,7 +150,7 @@ In more advanced scenarios, teams can build their own linters to validate the co
 
 As an Infosec engineer, I'd be remiss not to address the security posture of the DaC repository itself. **The ruleset is a crown jewel.** If an attacker can read it, they can tailor their TTPs to avoid triggering alerts. If they can write to it, they can tamper with or disable rules and impair your defenses entirely.
 
-Since Git itself offers few access controls, the hosting platform must be hardened. In GitHub, the `CODEOWNERS` file ensures senior engineers must approve PRs before merge. Repository visibility is separately controlled through team-level access settings, restricting who can see the repo at all.
+Since Git itself offers few access controls, the hosting platform must be hardened. In GitHub, the `CODEOWNERS` file ensures senior engineers must approve PRs before merge. Repository visibility is separately controlled through team-level access settings, restricting who can see the repo at all. Requiring merges from signed commits only adds non-repudiation. You can prove who authored each change and that it wasn't tampered with.
 
 Governance is a security concern too. In past implementations, I've seen DaC repositories shared across multiple teams, the idea being a single platform for all monitoring rules. In practice, what I saw was unapproved teams creating rules whose alerts landed in the SOC queue, and offensive teams using the ruleset to identify blind spots.
 
