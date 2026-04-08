@@ -1,0 +1,186 @@
+---
+title: "Detection-as-Code, Then What?"
+date: 2026-04-08
+description: "Real gains from a Detection-as-Code project."
+categories: ["detection"]
+image: "og-detection-as-code-then-what.webp"
+---
+
+Detection-as-Code (DaC) is a common trending topic among Threat Detection teams. It's fancy, it's modern, it's nice. But what about the real gains? What should you actually expect from a system like this? Last year, I started a project to share my view on good DaC, but [NVISO Labs (Stamatis Chatzimangou)](https://blog.nviso.eu/series/detection-engineering-practicing-detection-as-code/) beat me to it and wrote something far better than I was planning. Even with that great resource, I still felt the "then what?" was missing. How do you make good use of it?
+
+Thanks to NVISO, I don't need to cover the basics; they're well written. Instead, I want to add some thoughts and ideas on top. I'll start with the "why": should your team go for a DaC project? Then, for teams that already have it, I'll dig into how to make better use of it: that's the core, built around concrete use cases to justify the investment. Finally, I'll cover AI and DaC, and close with some final thoughts. Let's go.
+
+## The "Why" and the Trade-offs
+
+I define a *Detection Engine* as any platform capable of receiving raw telemetry and outputting alerts. In this sense, SIEMs and EDRs are two common tools that meet this criterion. In complex environments, it's common to have multiple engines running in parallel, each monitoring a specific slice of the stack: endpoints, cloud, SaaS, etc. Each new engine added greatly impacts Threat Detection due to its idiosyncrasies: different query languages and, most importantly, different logic.
+
+Although many refer to the logic alone as "the rule," I don't think that's accurate. As Google's dictionary states:
+
+> A rule is a principle that operates within a particular sphere of knowledge, describing or prescribing what is possible or allowable.
+
+In this sense, logic is just one part of a rule—and I acknowledge it's the most important part. But a rule also requires context: a name, description, classification, and deployment parameters.
+
+Since I joined Detection Engineering, I've noticed many parallels between a detection rule and regular software, and like any software, a rule needs a runbook for handling the alerts it generates. That runbook should be part of the rule itself. This encapsulates the rule in an envelope that handles different kinds of logic across different engines.
+
+Doing so, engineers work against a normalized structure (the rule) despite having multiple platforms underneath. It doesn't remove the complexity of learning each engine's query language, but it greatly helps the team scale.
+
+That envelope can be implemented in multiple ways, but the most effective rely on declarative languages like YAML and TOML. They're easy to read and maintain. As plaintext, they're also a natural fit for Git, providing solid version control. When you layer on a collaboration platform like GitHub or GitLab, you get peer review and CI/CD automation on top. These are the biggest selling points for leadership when pitching DaC. What's less discussed are the trade-offs.
+
+This workflow generates friction. Before, a Detection Engineer would log into the engine, write their logic, save, and move on. Now they must use the engine as a starting point for the use case they're building, and once they have an MVP:
+
+1. Create a new branch in DaC
+2. Drop the MVP
+3. Add context to the logic: fill the envelope
+4. Commit
+5. Run additional tests, adjust, commit again, request peer review
+6. Once everything looks good, merge to the mainline and monitor the pipeline output
+7. If all is fine, the job is done. If not, fix the automation scripts and redeploy.
+
+This new environment requires SRE skills from Detection Engineers, and not everyone is comfortable with Git workflows. Some engineers feel awkward reviewing a colleague's work, which often leads to rubber-stamp approvals. On the flip side, some people start nitpicking small typos and delivering feedback without empathy, which creates friction of a different kind.
+
+This extra friction must be justified. Based on the gains I described above, not all teams will benefit equally. The rule of thumb is: the larger the team and the more engines it operates, the more the friction is justified.
+
+Does that mean small teams shouldn't go for DaC? It depends. As an engineer, even working on a small team with a single detection engine, I'd still want to implement it just to build good skills. But that's optional, a side project for periods of low demand, not something to enforce on all engineers from day one. To be direct: smaller teams in low-complexity environments can live without DaC and still be effective.
+
+Large-scale teams running complex environments will greatly benefit from DaC, and the friction is more than justified when the project is properly designed. DaC increases the team's maturity and consistency, helping it scale more reliably.
+
+## The Core Use Cases
+
+To get real value from DaC, the team must invest time architecting the rule format—the envelop. This is crucial and non-negotiable. All features will be built on top of it, so any future change can be extremely disruptive. Looking around, you'll find varied structures. That's because each team has its own needs and context. There's no one-size-fits-all. That said, I believe a good rule structure should cover these four blocks:
+
+1. **Metadata:** Fields like description, author, and categorization—MITRE ATT&CK mappings live here.
+2. **Logic:** The rule logic itself, as expected by the Detection Engine, stored as a text block.
+3. **Deployment:** Runtime parameters for that rule: on/off, run frequency, schedule, etc.
+4. **Guide:** How to handle alerts from that rule: a high-level overview to inform IR playbooks and ease future maintenance.
+
+I like to think like a data scientist when designing this structure. Ideally, fields are complementary with minimal or no overlap. For example, since the rule name can be the filename, I avoid a `metadata.name` field inside the rule. If a piece of data is already tracked automatically by another tool in the stack (like Git tracking authorship and timestamps), I don't manually replicate it.
+
+In YAML, my proto-rule looks like this:
+
+```yaml
+metadata:
+    authors:
+        - "Joe Lopes"
+    description: "Direct, clear, and short description"
+    mitre:
+        T0000: [TA0000]
+    references:
+        - "http://lopes.id"
+
+logic: |
+    events:
+        $e.principal.ip...
+    match:
+        $e over 10m
+    outcome:
+        $ip = array_distinct(...
+    condition:
+        $e
+
+deployment:
+    live: true
+    alerting: true
+    frequency: "LIVE"
+
+guide:
+    context: |
+        A more detailed description, including why the rule exists and how it fits our strategy. One or two paragraphs.
+    triage: |
+        - Steps to triage alerts from that rule
+        - Known false positive cases
+    response: |
+        - High-level steps for incident response
+```
+
+::: {.callout-note}
+The central element in MITRE ATT&CK is the Technique. Since one Technique can belong to multiple Tactics, mapping `Technique: [Tactic(s)]` keeps the relationship explicit and avoids duplicating entries. Also, it's best to refer to IDs rather than names: they're easier to normalize, and other layers can enrich them with names and descriptions pulled directly from MITRE via STIX.
+:::
+
+With this structure in place, several use cases become achievable. Let's walk through them.
+
+### Visibility
+
+Managing a detection ruleset requires attention to detail and correlation across many fields. Even though rules are in plaintext, tracking them file by file quickly becomes unmanageable. It's incredibly simple to write a Python script that processes all rules and outputs a CSV with their metadata.
+
+CSV can be consumed by almost any tool, including spreadsheets, letting you explore the data freely and easily. Visualizations like this help identify gaps and define next steps.
+
+::: {.callout-tip}
+Don't limit the export to metadata fields. Enrich it with other useful context. For example, who last committed to that rule and when? This can be pulled from Git and added to the output, significantly improving the result.
+:::
+
+In my experience, this feature alone reduces the need to share the entire repository with auditors and makes ruleset management much easier. It's far more efficient to have all rule data on one screen and work from there.
+
+What about those MITRE ATT&CK mappings? In my experience, when a team stops actively using them, the mappings quietly go stale. MITRE Navigator is a great tool to put those mappings to work—I've written about it in [Gap Analysis with MITRE Navigator](/log/gap-analysis-mitre-navigator/). A DaC project can include a supporting script, similar to the CSV generator, that reads the rules, extracts MITRE mappings, and generates Navigator layer files (JSON) per engine. When overlaid, they give a clear ATT&CK coverage picture.
+
+::: {.callout-tip}
+As discussed in that post, any MITRE ATT&CK coverage analysis must go beyond a colored matrix. Environment context matters, as do the multiple Procedures under each Technique.
+:::
+
+These scripts can run automatically on every merge to main, creating single sources of truth for the whole team. GitHub Actions is one straightforward way to set this up.
+
+### Compliance
+
+Few things are certain in corporate life, and audits are one of them for Threat Detection teams. Auditors routinely ask about the list of active rules, last update timestamps, review history, and similar questions.
+
+Providing read-only access to engines is one option, but it often conflicts with the principle of least privilege—and auditors are trained to find problems. Giving them more information than necessary usually creates another headache.
+
+With DaC in place, you can point auditors at the repository and let the platform do the heavy lifting. GitHub and GitLab have intuitive UIs that many people already know, making self-service straightforward. If you operate multiple engines, the benefit compounds: instead of granting access to several platforms, you grant access to only one.
+
+In my experience, auditors love this approach. A self-service audit signals the team has nothing to hide. When it runs in a familiar tool, the need for follow-up requests drops significantly. Auditors can explore the ruleset, CI/CD pipelines, revision history, and every other feature DaC provides. Version control and peer review are also audit controls in their own right—auditors recognize them immediately.
+
+In the end, the YAML proves the rule exists, and the PR history proves it was reviewed and tested before deployment.
+
+### Maintainability
+
+As with any software repository, DaC lets the team put guardrails in place to enforce standards. Engineers can misspell field names, forget required fields, or leave a MITRE tag blank.
+
+The first line of defense is schema validation. Once your rule structure is defined, it's worth codifying the rules for filling it. I'm a stickler for consistency, so I treat all fields as required, even if the value is an empty string or `false`. This pays dividends in future automation. Adding string length limits and pattern constraints helps keep garbage data out.
+
+Once basic validation is solid, you can layer on more advanced checks: for instance, validating ATT&CK TTPs against the STIX schema to ensure referenced techniques actually exist.
+
+::: {.callout-tip}
+Split the validation to the code. Use tools or libraries that allow you to create schema files separated from the source-code. With this approach, it'll be easier for engineers to check constraints and even update them.
+:::
+
+Linters can also be wired into the CI/CD pipeline to enforce formatting standards: no tabs, consistent blank lines between blocks, and so on. The goal is to normalize rules as much as possible to reduce maintenance burden.
+
+In more advanced scenarios, teams can build their own linters to validate the content inside the logic block, taking quality to another level. Only merges with valid data will succeed.
+
+### Security
+
+As an Infosec engineer, I'd be remiss not to address the security posture of the DaC repository itself. **The ruleset is a crown jewel.** If an attacker can read it, they can tailor their TTPs to avoid triggering alerts. If they can write to it, they can tamper with or disable rules and impair your defenses entirely.
+
+Since Git itself offers few access controls, the hosting platform must be hardened. In GitHub, the `CODEOWNERS` file ensures senior engineers must approve PRs before merge. Repository visibility is separately controlled through team-level access settings, restricting who can see the repo at all. Requiring merges from signed commits only adds non-repudiation. You can prove who authored each change and that it wasn't tampered with.
+
+Governance is a security concern too. In past implementations, I've seen DaC repositories shared across multiple teams, the idea being a single platform for all monitoring rules. In practice, what I saw was unapproved teams creating rules whose alerts landed in the SOC queue, and offensive teams using the ruleset to identify blind spots.
+
+DaC should be a Threat Detection project, not a shared platform. Blue teams can have read access though—it's useful for incident responders to understand the rules behind alerts. Write access beyond Detection Engineering should be limited to a platform team that maintains the tooling itself.
+
+::: {.callout-tip}
+Not all Detection Engineers have coding skills, so they can't be treated equally in this repository. Structure this repository to clearly separate ruleset, schemas, documentation, tests, and code. Split the team between developers, maintainers, and users. Configure `CODEOWNERS` to give permissions accordingly.
+:::
+
+Beyond access control, a solid Git workflow is foundational for features like peer review. Trunk-based development works best in my experience:
+
+1. Engineer pulls the latest mainline
+2. Creates a working branch
+3. Works, commits, pushes, opens a PR
+4. Once approved and validated, merges to the mainline
+
+Detection engineers are usually not Git experts the way developers are. Complex workflows like GitFlow add unnecessary friction.
+
+## DaC and AI
+
+You can't discuss technology these days without touching on AI, and I'm no different. LLMs are excellent at parsing structured formats like YAML, TOML, and JSON, which makes them a natural fit for DaC. With the repository cloned locally, any AI agent can work directly with the rules, providing insights, helping write scripts, or refining logic.
+
+This approach avoids the overhead of standing up an MCP server to mediate access to the ruleset, saving tokens and money. More broadly, I find it a good reminder against over-engineering: avoid an MCP server when a local file read would work just as well, sometimes just to say "it's AI-first."
+
+The only limit here is your creativity. Ask the AI to find overlapping rules, suggest missing MITRE tags, or draft investigation guides. Ask it to help you code a new feature. DaC is AI-friendly although not AI-first (yet 👀).
+
+## Conclusion
+
+Detection-as-Code is an architectural choice. It can help Threat Detection teams mature and scale faster, but it comes with trade-offs that deserve honest evaluation before committing.
+
+Larger teams in complex environments will see real gains. Smaller teams can benefit too, at a smaller scale. The best strategy is to start simple, plan the work before writing a single line of code, and deliver the project in phases, adding features as they're needed, not before.
+
+The use cases must be super clear from the beginning. You should not implement DaC just because it's nice, but because it'll help you scale, make audits easier, and improve your management capabilities. Remember: DaC is the way, not the end. 🍀
