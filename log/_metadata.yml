@@ -4,7 +4,7 @@
 freeze: true
 
 # enable banner style title blocks
-title-block-banner: "#eeeeee"
+title-block-banner: true
 
 # enable CC licence appendix
 license: "CC BY-SA 4.0"
