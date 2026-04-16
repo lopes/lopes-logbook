@@ -2,221 +2,511 @@
 
 // =============================================================================
 // 1. Theme Setup
-//
-// Defines the base Bootstrap theme.
 // =============================================================================
 $theme: "cosmo" !default;
 
 // =============================================================================
-// 2. Typography
-//
-// Imports fonts and defines the primary font stacks.
+// 2. Typography — same four typefaces, same four jobs
 // =============================================================================
-@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap");
 
-// NOTE: $font-family-sans-serif is Bootstrap's body font variable.
-// We intentionally assign a serif font here for long-form reading.
-$font-family-sans-serif:
-  "Source Serif 4",
-  "Georgia",
-  "Times New Roman",
-  serif,
-  "Apple Color Emoji",
-  "Segoe UI Emoji",
-  "Noto Color Emoji";
+$font-family-display:    "Playfair Display", "Georgia", "Times New Roman", serif;
+$font-family-sans-serif: "Lora", "Georgia", "Times New Roman", serif;
+$font-family-heading:    "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace:  "JetBrains Mono", "SF Mono", "Consolas", "Menlo", monospace;
 
-$font-family-heading:
-  "Source Sans 3",
-  "Helvetica Neue",
-  Arial,
-  sans-serif;
-
-$font-family-monospace:
-  "JetBrains Mono",
-  "SF Mono",
-  "Consolas",
-  "Menlo",
-  monospace;
-
-// Body text tuning
-$font-size-base: 1.125rem;   // 18px for comfortable serif reading
-$line-height-base: 1.65;     // Generous line height for long-form prose
+$font-size-base:          1.125rem;
+$line-height-base:        1.5;
 $paragraph-margin-bottom: 1.3rem;
 
-// =============================================================================
-// 3. Color Palette
-//
-// Defines a systematic and cohesive color palette. This is the single
-// source of truth for colors, adapted for the GitHub Dark Dimmed theme.
-// =============================================================================
+$h1-font-size:  2.75rem;
+$h2-font-size:  1.625rem;
+$h3-font-size:  1.25rem;
+$h4-font-size:  1.0625rem;
+$h5-font-size:  1rem;
+$h6-font-size:  0.875rem;
 
-// A. Core Palette
-$gh-text: #adbac7; // Main text color
-$gh-muted: #768390; // Subtle text, borders
-$gh-border: #444c56; // Borders
-$gh-surface: #2d333b; // Component backgrounds, code blocks
-$gh-canvas: #1c2128; // Navbar, darker component background
-$gh-bg: #22272e; // Body background
+$border-radius:        0;
+$border-radius-sm:     0;
+$border-radius-lg:     0;
+$btn-border-radius:    0;
+$btn-border-radius-sm: 0;
+$btn-border-radius-lg: 0;
+$input-border-radius:  0;
+$card-border-radius:   0;
 
-// Blue is the primary accent color for links and interactions.
-$gh-blue-hover: #79c0ff; // Lighter, for hover states
-$gh-blue: #539bf5; // Primary link color
-$gh-blue-code: #6cb6ff; // High-contrast, for code
-
-// B. Semantic Palette
-$cyan: #39c5cf; // Note
-$green: #57ab5a; // Tip
-$orange: #daaa3f; // Caution
-$yellow: #c69026; // Warning
-$red: #f47067; // Important
+$transition-base: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
 
 // =============================================================================
-// 4. Quarto Variable Assignments
-//
-// Maps the color palette to Quarto's specific SCSS variables.
+// 3. Dark Palette — editorial restraint on a dark ground
 // =============================================================================
 
-// Core Surfaces
-$navbar-bg: $gh-canvas;
-$body-bg: $gh-bg;
-$body-color: $gh-text;
+$w-bg:      #111111; // Page canvas
+$w-surface: #1a1a1a; // Code blocks, raised surfaces
+$w-navbar:  #000000; // Pure black navbar
+$w-border:  #2a2a2a; // Hairline equivalent
+$w-text:    #e0e0e0; // Near-white body text
+$w-muted:   #888888; // Caption gray
+$w-white:   #ffffff;
 
-// Accent & Links
-$link-color: $gh-blue;
-$link-hover-color: $gh-blue-hover;
+$w-blue:    #4db8e0; // Lightened blue for dark bg
+$w-blue-hv: #7ccfed;
 
-// Code
-$code-block-bg: $gh-surface;
-$code-bg: $gh-surface;
-$code-color: $gh-blue-code;
+// Semantic — desaturated
+$w-note:      #4db8e0;
+$w-tip:       #6ab187;
+$w-caution:   #d4956a;
+$w-warning:   #c9a84c;
+$w-important: #e07878;
 
-// Forms / Inputs
-$input-bg: $gh-surface;
+// =============================================================================
+// 4. Bootstrap/Quarto Variable Assignments
+// =============================================================================
 
-// UI Interactions
-$nav-link-hover-color: $link-hover-color;
-$pagination-hover-color: $link-hover-color;
-$pagination-disabled-bg: $gh-canvas;
-$pagination-disabled-border-color: $gh-border;
+$body-bg:    $w-bg;
+$body-color: $w-text;
+$navbar-bg:  $w-navbar;
 
-// Callouts
-$callout-color-note: $cyan;
-$callout-color-tip: $green;
-$callout-color-caution: $orange;
-$callout-color-warning: $yellow;
-$callout-color-important: $red;
+$link-color:            $w-blue;
+$link-hover-color:      $w-blue-hv;
+$link-decoration:       none;
+$link-hover-decoration: none;
+
+$code-block-bg: $w-surface;
+$code-bg:       $w-surface;
+$code-color:    $w-blue-hv;
+
+$input-bg: $w-surface;
+
+$nav-link-hover-color:          $w-blue;
+$pagination-hover-color:        $w-blue;
+$pagination-disabled-bg:        $w-surface;
+$pagination-disabled-color:     $w-muted;
+$pagination-disabled-border-color: $w-border;
+
+$callout-color-note:      $w-note;
+$callout-color-tip:       $w-tip;
+$callout-color-caution:   $w-caution;
+$callout-color-warning:   $w-warning;
+$callout-color-important: $w-important;
 
 /*-- scss:rules --*/
 
 // =============================================================================
-// 5. Custom Component Styling
-//
-// Custom rules to style specific components and elements.
+// 5. Typeface Assignments
 // =============================================================================
 
-// Sans-serif for all structural, navigational, and UI elements.
-// Serif is reserved exclusively for long-form prose (paragraphs).
-h1, h2, h3, h4, h5, h6,
-.navbar-brand, .nav-link, .sidebar-title,
-.quarto-title-meta-heading, .quarto-title-meta-contents,
-.quarto-listing-category-title,
-.callout-title-container,
-.category, .listing-category, .quarto-categories, .quarto-category, .quarto-category-count,
-.input-group-text, .form-select, .search.form-control,
-.listing-no-matching,
-.card-attribution, .listing-author, .listing-date,
-.card-title.listing-title,
-.quarto-appendix-heading, .quarto-appendix-secondary-label,
-.toc-action, .pagination,
-.subtitle, .description,
-.sidebar-navigation, .sidebar-item,
-.blockquote-footer,
-figcaption,
-footer, .nav-footer {
-  font-family: $font-family-heading;
+h1, h2 {
+  font-family: $font-family-display;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: $w-white;
 }
 
-// Tighter tracking on headings only.
-h1, h2, h3, h4, h5, h6 {
+h3, h4, h5, h6 {
+  font-family: $font-family-heading;
+  font-weight: 700;
+  line-height: 1.25;
   letter-spacing: -0.015em;
 }
 
-// Citation-as text in monospace, sized to match the BibTeX pre block.
-// Quarto sets .quarto-appendix-bibtex to 0.7em — match it exactly.
+.sidebar-title, .sidebar-navigation, .sidebar-item,
+.quarto-title-meta-contents,
+.callout-title-container,
+.category,
+.input-group-text, .form-select, .search.form-control,
+.listing-no-matching,
+.quarto-appendix-heading, .quarto-appendix-secondary-label,
+.toc-action, .pagination,
+.subtitle, .description,
+.blockquote-footer {
+  font-family: $font-family-heading;
+}
+
+.quarto-category, .quarto-category-count,
+.listing-category, .quarto-listing-category-title,
+.quarto-title-meta-heading,
+.listing-date, .listing-author, .quarto-date,
+.quarto-categories {
+  font-family: $font-family-monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: $w-muted;
+  opacity: 1;
+}
+
 .quarto-appendix-citeas {
   font-family: $font-family-monospace;
   font-size: 0.7em !important;
 }
 
-// Pull Author and Published fields into a compact row.
+// =============================================================================
+// 6. Navbar — Dark Masthead
+// =============================================================================
+
+.navbar {
+  border-bottom: 1px solid $w-border;
+  box-shadow: none !important;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.navbar-brand {
+  font-family: $font-family-display !important;
+  font-size: 1.5rem !important;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: $w-white !important;
+
+  &:hover {
+    color: $w-white !important;
+  }
+}
+
+.navbar .nav-link {
+  font-family: $font-family-monospace !important;
+  font-size: 0.7rem !important;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: $w-text !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+
+  &:hover {
+    color: $w-blue !important;
+  }
+}
+
+.nav-link.active {
+  color: $w-text !important;
+}
+
+.navbar .bi {
+  font-size: 1rem;
+  color: $w-muted;
+}
+.navbar .navbar-nav-scroll .nav-link:hover .bi,
+.navbar .nav-link:hover .bi {
+  color: $w-blue;
+}
+
+// =============================================================================
+// 7. Homepage — Hide Title Block
+// =============================================================================
+
+.page-layout-full > .quarto-title-block,
+.page-layout-full > header#title-block-header {
+  display: none;
+}
+
+// =============================================================================
+// 8. Default Listing — Editorial Article Index
+// =============================================================================
+
+.quarto-listing {
+  margin-top: 1rem;
+}
+
+.quarto-listing-default .quarto-post {
+  border-bottom: 1px solid $w-border;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.quarto-listing-default h3.listing-title,
+.quarto-listing-default .listing-title {
+  font-family: $font-family-display;
+  font-weight: 400;
+  font-size: 1.375rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+
+  a {
+    color: $w-white;
+    text-decoration: none;
+
+    &:hover {
+      color: $w-blue;
+    }
+  }
+}
+
+.quarto-listing-default .listing-description {
+  font-family: $font-family-sans-serif;
+  color: $w-muted;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  margin-top: 0.25rem;
+}
+
+.quarto-listing-default .metadata {
+  font-family: $font-family-monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: $w-muted;
+}
+
+.quarto-listing-default .thumbnail img,
+.quarto-listing img {
+  border-radius: 0 !important;
+}
+
+// Sort/Filter — editorial controls
+.listing-actions-group {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $w-border;
+}
+
+.quarto-listing-filter .form-control,
+.quarto-listing-sort .form-select {
+  border: 2px solid $w-muted !important;
+  border-radius: 0 !important;
+  font-family: $font-family-monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: $w-surface;
+  color: $w-text;
+  box-shadow: none !important;
+
+  &:focus {
+    border-color: $w-blue !important;
+    box-shadow: none !important;
+  }
+}
+
+.input-group-text {
+  border: 2px solid $w-muted !important;
+  border-radius: 0 !important;
+  background: $w-surface;
+  color: $w-text;
+}
+
+// Categories sidebar — inherits mono kicker styling from §5, adds structure
+.quarto-listing-category-title {
+  font-weight: 700;
+  color: $w-white;
+  border-bottom: 2px solid $w-white;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.quarto-listing-category .category {
+  font-size: 0.7rem;
+  border-bottom: 1px solid $w-border;
+  padding: 0.35rem 0;
+
+  &:hover {
+    color: $w-blue;
+  }
+
+  &.active {
+    color: $w-white;
+    font-weight: 700;
+  }
+}
+
+// =============================================================================
+// 9. Post Title Block — Editorial Header
+// =============================================================================
+
+.quarto-title .quarto-categories {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0;
+}
+
+.quarto-title .description {
+  font-family: $font-family-sans-serif;
+  font-style: italic;
+  color: $w-muted;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  margin-top: 0.5rem;
+}
+
 .quarto-title-meta {
   display: flex !important;
   gap: 0 2.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid $w-border;
 }
 
-// Use semibold (600) instead of bold (700) for refined emphasis.
-strong, b {
-  font-weight: 600;
-}
-
-// Scale down code to match serif body visually (monospace renders larger).
-code {
-  font-size: 0.85em;
-}
-// Prevent double-shrinking inside code blocks (pre > code).
-pre code {
-  font-size: 1em;
-}
-
-// Ensure code blocks use the monospace font and consistent colors.
-pre {
-  background: $code-block-bg;
-  color: $gh-text;
-}
-
-// Style the title banner for a subtle, clean look.
 .quarto-title-block .quarto-title-banner {
-  background: $gh-canvas !important;
+  background: $w-bg !important;
 }
 
-// Listing cards (e.g., on index page).
-.listing-category {
-  background: $gh-surface;
-  color: $gh-text !important;
-  border-color: $gh-border !important;
+// =============================================================================
+// 10. Code
+// =============================================================================
+
+code { font-size: 0.85em; }
+pre code { font-size: 1em; }
+
+pre {
+  background: $w-surface;
+  color: $w-text;
+  border: 1px solid $w-border;
 }
 
-// Grid items (used for card layouts).
-.quarto-grid-item {
-  border-color: $gh-border !important;
+// =============================================================================
+// 11. Body Content
+// =============================================================================
+
+strong, b { font-weight: 600; }
+
+// Links — underline on hover in article body
+#quarto-document-content a:not(.nav-link):not(.navbar-brand) {
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-// Active navigation link.
-.nav-link.active {
-  color: $gh-text !important;
-}
-
-// Subtitle links (e.g., author name).
-.subtitle > a {
-  color: $gh-muted;
-  font-weight: 600;
-}
-
-// Figure and caption styling for readability.
-figcaption {
-  color: $gh-muted;
+blockquote, .blockquote {
+  border-left: 2px solid $w-white !important;
+  padding-left: 1.25rem;
+  margin-left: 0;
   font-style: italic;
+  color: $w-text;
+}
+
+figcaption {
+  color: $w-muted;
+  font-style: italic;
+  font-size: 0.85rem;
   margin-top: 0.5rem;
   text-align: center;
 }
 
-// Footer styling for a clear visual separation.
-footer {
-  font-size: 0.85rem;
-  color: $gh-muted;
-  border-top: 1px solid $gh-border;
-  padding-top: 1rem;
+hr {
+  border: none;
+  border-top: 1px solid $w-border;
+  opacity: 1;
 }
 
+// =============================================================================
+// 12. Footer
+// =============================================================================
+
+footer, .nav-footer {
+  font-family: $font-family-heading;
+  font-size: 0.85rem;
+  color: $w-muted;
+  border-top: 1px solid $w-border;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+  a, .nav-link {
+    color: $w-muted;
+    &:hover { color: $w-blue; }
+  }
+
+  p {
+    color: $w-muted;
+    margin-bottom: 0;
+  }
+}
+
+// =============================================================================
+// 13. Table of Contents
+// =============================================================================
+
+#TOC {
+  font-family: $font-family-heading;
+  font-size: 0.85rem;
+}
+
+#toc-title {
+  font-family: $font-family-monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $w-white;
+  border-bottom: 2px solid $w-white;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.sidebar .nav-link {
+  font-family: $font-family-heading;
+  font-size: 0.85rem;
+  color: $w-muted;
+  padding: 0.25rem 0.5rem;
+
+  &.active {
+    color: $w-white;
+    font-weight: 600;
+    border-left: 2px solid $w-white;
+  }
+}
+
+// =============================================================================
+// 14. Callouts
+// =============================================================================
+
+.callout {
+  border-radius: 0 !important;
+  border-left-width: 2px;
+}
+
+// =============================================================================
+// 15. Pagination
+// =============================================================================
+
+.page-link {
+  border-radius: 0 !important;
+  font-family: $font-family-monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-color: $w-border;
+  background-color: $w-surface;
+  color: $w-text;
+
+  &:hover {
+    color: $w-blue;
+    background-color: $w-bg;
+    border-color: $w-blue;
+  }
+}
+
+// =============================================================================
+// 16. Images
+// =============================================================================
+
+img {
+  border-radius: 0 !important;
+}
+
+// =============================================================================
+// 17. Focus Ring
+// =============================================================================
+
+:focus-visible {
+  outline: 2px solid $w-blue;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+// =============================================================================
+// 18. Misc
+// =============================================================================
+
+.quarto-color-scheme-toggle {
+  color: $w-muted;
+
+  &:hover {
+    color: $w-white;
+  }
+}
