@@ -13,11 +13,11 @@ website:
   open-graph: true
   twitter-card: true
   navbar:
-    title: false
+    title: "lopes.log"
     left:
-      - text: home
+      - text: "HOME"
         href: index.qmd
-      - text: about
+      - text: "ABOUT"
         href: about.qmd
     right:
       - icon: github
@@ -29,9 +29,7 @@ website:
       - icon: rss
         href: index.xml
   page-footer:
-    center:
-      - href: "https://lopes.id"
-        text: "© 2020—2026 Joe Lopes"
+    center: "© 2020—2026 Joe Lopes — where others see logs, I see stories."
 
 format:
   html:
