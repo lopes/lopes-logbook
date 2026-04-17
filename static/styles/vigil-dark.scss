@@ -198,8 +198,8 @@ h3, h4, h5, h6 {
 // 7. Homepage — Hide Title Block
 // =============================================================================
 
-.page-layout-full > .quarto-title-block,
-.page-layout-full > header#title-block-header {
+.page-layout-full .quarto-title-block,
+.page-layout-full header#title-block-header {
   display: none;
 }
 
@@ -218,6 +218,16 @@ h3, h4, h5, h6 {
 
   &:last-child {
     border-bottom: none;
+  }
+
+  // Reorder listing body: title → description → tags
+  .body {
+    display: flex;
+    flex-direction: column;
+
+    h3.listing-title  { order: 1; }
+    .listing-description { order: 2; }
+    .listing-categories  { order: 3; }
   }
 }
 
@@ -244,7 +254,12 @@ h3, h4, h5, h6 {
   color: $w-muted;
   font-size: 0.95rem;
   line-height: 1.45;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+// Listing categories — equal spacing after reorder
+.quarto-listing-default .listing-categories {
+  margin-top: 0.5rem;
 }
 
 .quarto-listing-default .metadata {
@@ -253,6 +268,11 @@ h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.9px;
   color: $w-muted;
+
+  // Single-author site — hide redundant author line
+  .listing-author {
+    display: none;
+  }
 }
 
 .quarto-listing-default .thumbnail img,
