@@ -215,8 +215,8 @@ h3, h4, h5, h6 {
 
 // When title-block-banner is off, Quarto still renders a title block.
 // Hide it on the full-width listing page (homepage).
-.page-layout-full > .quarto-title-block,
-.page-layout-full > header#title-block-header {
+.page-layout-full .quarto-title-block,
+.page-layout-full header#title-block-header {
   display: none;
 }
 
@@ -237,6 +237,16 @@ h3, h4, h5, h6 {
 
   &:last-child {
     border-bottom: none;
+  }
+
+  // Reorder listing body: title → description → tags
+  .body {
+    display: flex;
+    flex-direction: column;
+
+    h3.listing-title  { order: 1; }
+    .listing-description { order: 2; }
+    .listing-categories  { order: 3; }
   }
 }
 
@@ -265,7 +275,12 @@ h3, h4, h5, h6 {
   color: $w-caption;
   font-size: 0.95rem;
   line-height: 1.45;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+// Listing categories — equal spacing after reorder
+.quarto-listing-default .listing-categories {
+  margin-top: 0.5rem;
 }
 
 // Listing metadata (date, author)
@@ -275,6 +290,11 @@ h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.9px;
   color: $w-caption;
+
+  // Single-author site — hide redundant author line
+  .listing-author {
+    display: none;
+  }
 }
 
 // Listing images — square corners
