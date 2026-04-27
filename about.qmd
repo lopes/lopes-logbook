@@ -1,50 +1,57 @@
 ---
 title: "About"
-description: "Infosec engineer, threat detection, adversary engagement, and the story behind Vigil."
+description: "Detection engineer working on SIEM, deception, and detection-as-code."
 image: /static/images/og-about.webp
 toc: false
 repo-actions: false
 ---
 
-## 👋 Hi, I’m Joe Lopes
+## 👋 Hi, I'm Joe Lopes
 
-I’m an **Information Security Engineer** focused on **threat detection, SIEM, logs, and adversary engagement**. My work lives at the intersection of systems, data, and behavior: observing signals, correlating events, and extracting meaning from noise.
+I'm a **Lead Information Security Engineer** working on **threat detection, SIEM, and adversary engagement**: building the systems that turn raw events into decisions, and the deception infrastructure that catches what conventional detection misses.
+
+This site, **lopes.log**, is where I write about that work. Detection-as-code, deception engineering, log-pipeline economics, and the occasional reflection on the craft of running a SOC at scale. Long-form, written slowly, and published with intent. **No ads** ⛔. All opinions are my own. 🫡
 
 ::: {.callout-note}
-I’m Brazilian (Portuguese is my native language) and my given name is **José** (pronounced *djo-zeh*).
-In English it’s often mispronounced *ho-zay*, which is the Spanish form.
-Since José maps naturally to **Joseph**, I go by **Joe**: it’s simpler, clearer, and travels better.
+I'm Brazilian (Portuguese is my native language) and my given name is **José** (pronounced *djo-zeh*).
+In English it's often mispronounced *ho-zay*, which is the Spanish form.
+Since José maps naturally to **Joseph**, I go by **Joe** — simpler, clearer, and travels better.
 :::
-
-This site, **lopes.log**, is my working notebook: a place where I document investigations, ideas, tools, and the occasional lesson learned the hard way.
-
-There are **no ads** ⛔ here. Just long-form thinking, written slowly and published with intent.
-
-This is a **human-driven space** 👤. All opinions are my own and do not reflect those of my employer. Your privacy is respected. 🫡
 
 ![Joe Lopes](/static/images/photo-portrait-joe-lopes.webp "Joe Lopes in the field")
 
+## 🔧 What I work on
+
+A few threads run through most of what I write and build:
+
+- **Detection engineering as a discipline** — rules, testing, coverage, false-positive economics. See [Detection-as-Code, Then What?](/log/detection-as-code-then-what/) and [Engineering Detection Rules](/log/engineering-detection-rules/).
+- **Deception engineering** — honeypots, honeytokens, and adversary engagement as a first-class detection strategy. I maintain some open-source projects in this space:
+  - [Lantana](https://github.com/lopes/lantana) — honeypot-as-code platform (Ansible, Terraform, Suricata, Cowrie, Dionaea).
+  - [Datura](https://github.com/lopes/datura) — LLM honeypot that mimics an insecure assistant to catch prompt-injection and exfil attempts.
+- **SIEM and log architecture** — Chronicle, MISP integration, ingestion economics. See [Integrating MISP with Chronicle SIEM](/log/misp-chronicle-integration/) and the [Project Nebula](/log/project-nebula/) series.
+- **AI-native security practice** — using LLMs in detection and security engineering without losing the rigor. See [AI-First Software Development](/log/ai-first-software-development/).
+- **Rust for security tooling** — including [Cordyceps](https://github.com/lopes/cordyceps), a Rust ransomware proof-of-concept built to study the language and the threat.
+
 ## 🗣️ Talks
 
-- [Visibilidade de Rede](https://drive.google.com/file/d/1uSHQhehbeVP7ee8z2jSl479f08NL7jBA/view?usp=drive_link) (2021) Mind The Sec, remote `pt_BR`
-- [Práticas de NOC/SOC](https://drive.google.com/file/d/1tiuNM6K4HJ30icB9OtjQB79fE5F9W1qB/view?usp=drive_link) (2019) Itaipu, Paraná `pt_BR`
-- [Método para Uso do SIEM como Ferramenta de Inteligência e Automação](https://drive.google.com/file/d/1DBnrpqmzFqbnrTgSPOu6FUg0ADCYIZBx/view?usp=drive_link) (2019) CERT.br, São-Paulo `pt_BR`
-- [A Abordagem da Cemig na Segurança Cibernética](https://drive.google.com/file/d/1D554sRK0OTKq9UX860SOT78icQoRf4J8/view?usp=drive_link) (2018) CERT.br, São-Paulo `pt_BR`
-- [Blockchains: Muito Além do Bitcoin](https://drive.google.com/file/d/1KhE5Zktoz5dSdpKQxkzNJdv_0icShc_d/view?usp=drive_link) (2017) Cemig, Belo Horizonte `pt_BR`
-- [Estruturação de um Grupo de Resposta a Incidentes de Segurança Cibernética para o Contexto de Smart Grid na Cemig](https://drive.google.com/file/d/13Sfpsy2EhfUg4ku_iqCvl0RBgNrTwVZB/view?usp=drive_link) (2014) CERT.br, São-Paulo `pt_BR`
+- **Migrating to Google SecOps: A Tactical Playbook** (2026) — Google HQ, São Paulo `pt_BR` (private)
+- **[Visibilidade de Rede](https://drive.google.com/file/d/1uSHQhehbeVP7ee8z2jSl479f08NL7jBA/view?usp=drive_link)** (2021) — Mind The Sec, remote `pt_BR`
+- **[Práticas de NOC/SOC](https://drive.google.com/file/d/1tiuNM6K4HJ30icB9OtjQB79fE5F9W1qB/view?usp=drive_link)** (2019) — Itaipu, Paraná `pt_BR`
+- **[Método para Uso do SIEM como Ferramenta de Inteligência e Automação](https://drive.google.com/file/d/1DBnrpqmzFqbnrTgSPOu6FUg0ADCYIZBx/view?usp=drive_link)** (2019) — CERT.br, São Paulo `pt_BR`
+- **[A Abordagem da Cemig na Segurança Cibernética](https://drive.google.com/file/d/1D554sRK0OTKq9UX860SOT78icQoRf4J8/view?usp=drive_link)** (2018) — CERT.br, São Paulo `pt_BR`
+- **[Blockchains: Muito Além do Bitcoin](https://drive.google.com/file/d/1KhE5Zktoz5dSdpKQxkzNJdv_0icShc_d/view?usp=drive_link)** (2017) — Cemig, Belo Horizonte `pt_BR`
+- **[Estruturação de um CSIRT no Contexto de Smart Grid](https://drive.google.com/file/d/13Sfpsy2EhfUg4ku_iqCvl0RBgNrTwVZB/view?usp=drive_link)** (2014) — CERT.br, São Paulo `pt_BR`
+
+## 🔗 Elsewhere
+
+- **GitHub** — [/lopes](https://github.com/lopes)
+- **LinkedIn** — [/jlopesjr](https://www.linkedin.com/in/jlopesjr)
+- **RSS** — [/index.xml](/index.xml)
 
 ## 🦫 Vigil
 
 ![Vigil](/static/images/graphic-logo-vigil.png "Vigil, the engineer")
 
-**Vigil** is the beaver of *lopes.log*, and in many ways, my mirror.
+**Vigil** is the beaver of *lopes.log*. Not cute, not angry, not heroic — focused, neutral, intelligent. Vigil works the way I try to: quietly, observing flows, reading structures, building meaning from fragments.
 
-> Vigil is **not cute, not angry, not heroic**.
-> Vigil is **focused, neutral, and intelligent**.
-
-Like an engineer, Vigil works quietly: observing flows, reading structures, building meaning from fragments. Where others see raw logs, Vigil sees structures.
-
-Vigil represents the way I approach security and systems: with patience, precision, and respect for complexity.
-
-> *At lopes.log, I work with Vigil.*
-> *Where others see logs, we see stories.*
+> *At lopes.log, I work with Vigil. Where others see logs, we see stories.*
