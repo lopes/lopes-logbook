@@ -46,7 +46,7 @@ It's like DIY projects, but instead of plumbing, AI lets you handle software. If
 
 ## Voices Saying the Same Thing
 
-This matches what Steven Yegge said a few months ago during his appearance on [The Pragmatic Engineer podcast](https://www.youtube.com/watch?v=aFsAOu2bgFk): although it's strange and sometimes scary to realize AI can replace part of my work, I feel pumped to use it because it lets me work differently. Not just delivering faster, but also delivering things I'd otherwise judge infeasible given how little time I have to learn new skills and put them into practice.
+This matches what Steve Yegge said a few months ago during his appearance on [The Pragmatic Engineer podcast](https://www.youtube.com/watch?v=aFsAOu2bgFk): although it's strange and sometimes scary to realize AI can replace part of my work, I feel pumped to use it because it lets me work differently. Not just delivering faster, but also delivering things I'd otherwise judge infeasible given how little time I have to learn new skills and put them into practice.
 
 Fabio Akita made a similar point on [Flow Podcast](https://www.youtube.com/watch?v=4c7pbOxYn_A) last month: we should treat this AI transformation as the new typewriter — a tool that lets us work faster, in a different way. It's super exciting to think this change will free some of us from tedious, boring work and let us operate at another, more interesting and motivating layer.
 
