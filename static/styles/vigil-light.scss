@@ -172,6 +172,10 @@ h3, h4, h5, h6 {
   font-weight: 400;
   letter-spacing: -0.02em;
   color: $w-ink !important;
+  // Optical adjustment: serif descenders ("p", "g") visually drop the brand
+  // baseline below the all-caps mono nav links. Nudge up so cap-heights align.
+  position: relative;
+  top: -5px;
 
   &:hover {
     color: $w-ink !important;
