@@ -1,0 +1,55 @@
+---
+title: "Going YOLO With Claude Code"
+date: 2026-05-13
+description: "Two days of full-permission Claude Code, and a close call."
+categories: ["random", "dev"]
+image: "og-yolo-with-claude-code.webp"
+---
+
+I took advantage of a few days off work and decided to run a personal, useful project with AI. It's income tax season in Brazil, and well... I keep track of my investment portfolio, cash flow, and BRL > USD conversions in spreadsheets. I'd been postponing the adoption of [hledger](https://hledger.org/) for a few months, and I decided to give it a go: move everything to hledger, creating a single plain-text ledger of my financial transactions.
+
+Since LLMs are great for text processing, this move would make them my natural accountants, helping me analyze transactions and report future income taxes. Neat. Some will say LLMs can already read spreadsheets and even connect to cloud office suites like Google Sheets via MCP. Yes. But if I can do it more easily and burn fewer tokens, why not? [Token maxxing](https://en.wikipedia.org/wiki/Token_maxxing) is something I don't support.
+
+::: {.callout-note}
+**AI/LLM setup for this project:** Claude Opus 4.7, Claude Code, `xhigh` effort. Context was cleared around 50% usage per session (sometimes earlier, twice later); the highest context usage hit 76% — right when things broke, see in the next lines.
+:::
+
+## The Migration
+
+After two days of back and forth with Claude, I managed to move everything to the new system. hledger-powered, Git-versioned. Precise. Unified. By the end of the last session, after importing historical transactions from my personal spreadsheets, banks and credit cards (OFX), and brokers (CSV), everything was closing beautifully. Balances matched between my personal records and the apps. Scripts to help me import balances and bills on a monthly basis — maybe later I go for [OpenFinance](https://www.mastercard.com/us/en/news-and-trends/Insights/2026/what-is-open-finance-your-essential-guide.html) connectors, not now. By the end of that fateful session, Claude and I were re-sorting hledger journals. Since it had been extremely precise, I went YOLO and just asked it what to do, with full permissions.
+
+## When It All Went Wrong
+
+I asked it to re-sort year by year, since I'm keeping one `main.journal` file and one journal per year for traceability. The problem was that the context window was over 50% (I was about to finish that session and didn't want to clear context), and Claude executed a broken sort command, redirecting the output to my `2026.journal` file — the one with the most transactions.^[I can't prove context saturation was the actual cause; it's just my best guess.] The result? It wiped all the transactions we'd spent the last two days importing and reconciling.
+
+My heart stopped. I was listening to [Estranged](https://www.youtube.com/watch?v=dpmAY059TTY) (Guns N' Roses) on Spotify at that moment. The title fit the situation better than I'd have liked. The only thing I could do was pause the song and try to breathe so my heart would start beating again. Frightening. Claude was supportive: I hadn't committed that file at all, so there was no Git history, but it tried to find macOS backups, unsuccessfully. After almost 5 minutes of trying, it managed to find the file's contents in its own logs on my machine and restored everything. What a relief!
+
+## Takeaways
+
+1. **AI/LLMs don't need to be kept in the loop forever.** Sometimes they're just the tool that helps you build something. You don't need to develop products that will necessarily use AI; the result can be the same. In my case, moving to fully plain-text accounting made more sense than adding MCPs to my workflow so the LLM could interact with my spreadsheets. And in my experience, plain-text accounting consumes fewer tokens than feeding spreadsheet files to LLMs every time — no headers, no XLSX schema overhead, just lines of plain content. Your mileage will vary with how you query, though.
+
+2. **Smart agents still make mistakes.** LLMs are getting smarter every day, and agents like Claude Code are awesome. But just like a human, they're prone to error. It's not enough to control context and provide good prompts. Your project plan should have checkpoints that let you commit everything periodically (Git fits super well with LLMs), especially after important changes to critical files. Protecting the work you've done is more important than doing new work, particularly because the new work often depends on the previous one.
+
+3. **The AI's recovery skills surprised me.** Just seconds after noticing it had wiped the file, it started laying out strategies to recover it. Some would have taken me hours to figure out.
+
+4. **AI session logs are sensitive data.** They contain everything the agent saw: file contents, conversation history, secrets you didn't realize you exposed. Never commit them. Be especially careful with `CLAUDE_CONFIG_DIR` (default `~/.claude/`): the `projects/` subdirectory holds session transcripts that should never leave your machine, and `settings.json` often contains hooks or env vars you don't want public either. Other contents in the same directory (skills, custom agents, slash commands) can be worth sharing after a careful review.
+
+For a few hours now, I've been playing around with hledger commands to visualize my finances in different ways. Instead of multiple spreadsheets, I now have a single source of truth, and it's great. Next steps include vibe-coding data analysis tools to visualize my data and get better insights. Maybe I'll write about it in the future.
+
+## AI as DIY for Software
+
+I'm truly impressed by how nice it is to use AI (LLMs, agents) now. I put them in the roles of assistants and peers that help me understand a technology and even reason about what I just learned, speeding up the learning process. They also help me apply what I learned in projects that would otherwise take months and many back-and-forths. Without Claude in the loop, I'd have made accounting decisions on broken rationale and ended up redoing the transactions later. Instead, it flagged the future pain points, like a good chess player predicting next moves, and suggested cleaner approaches, letting me build a better solution from the start.
+
+AI is changing a lot of things. To pick one from my niche: software development is getting quietly democratized. Teams and individuals no longer need experts to develop and deploy non-critical stuff. They can do it themselves with LLM help. Think of an accounting team at a big company that needs a better system to track financial transactions, or someone like me who needs the same for their personal life. Instead of buying expensive software or waiting forever for their ticket to be picked up by the software development team, they just use AI to do it. They build the plan with AI, AI develops, they validate.
+
+It's like DIY projects, but instead of plumbing, AI lets you handle software. If it's not critical, it's super OK to do it yourself. Think of changing your kitchen faucet. It won't kill you to try. But plumbing your entire house and connecting it to the city's water main should be left to a professional. Same domain, different use cases, different approaches.
+
+## Voices Saying the Same Thing
+
+This matches what Steven Yegge said a few months ago during his appearance on [The Pragmatic Engineer podcast](https://www.youtube.com/watch?v=aFsAOu2bgFk): although it's strange and sometimes scary to realize AI can replace part of my work, I feel pumped to use it because it lets me work differently. Not just delivering faster, but also delivering things I'd otherwise judge infeasible given how little time I have to learn new skills and put them into practice.
+
+Fabio Akita made a similar point on [Flow Podcast](https://www.youtube.com/watch?v=4c7pbOxYn_A) last month: we should treat this AI transformation as the new typewriter — a tool that lets us work faster, in a different way. It's super exciting to think this change will free some of us from tedious, boring work and let us operate at another, more interesting and motivating layer.
+
+## Wrap-up
+
+AI is genuinely strange, and it can be scary at times. But on the whole, it's been great. The specialists I trust are landing on the same conclusion, and my own two days proved it: the agent wiped my journal, then recovered it. Net positive. I have my concerns. I'm pumped anyway. The sensible move is to adopt it and move forward. Just commit before you YOLO. ✌️
