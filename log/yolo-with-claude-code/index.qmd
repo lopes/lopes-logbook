@@ -1,6 +1,6 @@
 ---
 title: "Going YOLO With Claude Code"
-date: 2026-05-13
+date: 2026-05-12
 description: "Two days of full-permission Claude Code, and a close call."
 categories: ["random", "dev"]
 image: "og-yolo-with-claude-code.webp"
@@ -11,16 +11,16 @@ I took advantage of a few days off work and decided to run a personal, useful pr
 Since LLMs are great for text processing, this move would make them my natural accountants, helping me analyze transactions and report future income taxes. Neat. Some will say LLMs can already read spreadsheets and even connect to cloud office suites like Google Sheets via MCP. Yes. But if I can do it more easily and burn fewer tokens, why not? [Token maxxing](https://en.wikipedia.org/wiki/Token_maxxing) is something I don't support.
 
 ::: {.callout-note}
-**AI/LLM setup for this project:** Claude Opus 4.7, Claude Code, `xhigh` effort. Context was cleared around 50% usage per session (sometimes earlier, twice later); the highest context usage hit 76% — right when things broke, see in the next lines.
+**AI/LLM setup for this project:** Claude Opus 4.7, Claude Code, `xhigh` effort. Context was cleared around 50% usage per session (sometimes earlier, twice later); the highest context usage hit 76% — right when things broke, more on that below.
 :::
 
 ## The Migration
 
-After two days of back and forth with Claude, I managed to move everything to the new system. hledger-powered, Git-versioned. Precise. Unified. By the end of the last session, after importing historical transactions from my personal spreadsheets, banks and credit cards (OFX), and brokers (CSV), everything was closing beautifully. Balances matched between my personal records and the apps. Scripts to help me import balances and bills on a monthly basis — maybe later I go for [OpenFinance](https://www.mastercard.com/us/en/news-and-trends/Insights/2026/what-is-open-finance-your-essential-guide.html) connectors, not now. By the end of that fateful session, Claude and I were re-sorting hledger journals. Since it had been extremely precise, I went YOLO and just asked it what to do, with full permissions.
+After two days of back-and-forth with Claude, I managed to move everything to the new system. hledger-powered, Git-versioned. Precise. Unified. By the end of the last session, after importing historical transactions from my personal spreadsheets, banks and credit cards (OFX), and brokers (CSV), everything was closing beautifully. Balances matched between my personal records and the apps. Scripts to help me import balances and bills on a monthly basis (maybe later I'll go for [OpenFinance](https://www.mastercard.com/us/en/news-and-trends/Insights/2026/what-is-open-finance-your-essential-guide.html) connectors, not now) were alive and kicking. By the end of that fateful session, Claude and I were re-sorting hledger journals. Since it had been extremely precise, I went YOLO and just asked it what to do, with full permissions.
 
 ## When It All Went Wrong
 
-I asked it to re-sort year by year, since I'm keeping one `main.journal` file and one journal per year for traceability. The problem was that the context window was over 50% (I was about to finish that session and didn't want to clear context), and Claude executed a broken sort command, redirecting the output to my `2026.journal` file — the one with the most transactions.^[I can't prove context saturation was the actual cause; it's just my best guess.] The result? It wiped all the transactions we'd spent the last two days importing and reconciling.
+I asked it to re-sort year by year, since I'm keeping one `main.journal` file and one journal per year for traceability. The context window was over 50% (I was about to finish that session and didn't want to clear context), and Claude executed a broken sort command, redirecting the output to my `2026.journal` file — the one with the most transactions.^[I can't prove context saturation was the actual cause; it's just my best guess.] The result? It wiped all the transactions we'd spent the last two days importing and reconciling.
 
 My heart stopped. I was listening to [Estranged](https://www.youtube.com/watch?v=dpmAY059TTY) (Guns N' Roses) on Spotify at that moment. The title fit the situation better than I'd have liked. The only thing I could do was pause the song and try to breathe so my heart would start beating again. Frightening. Claude was supportive: I hadn't committed that file at all, so there was no Git history, but it tried to find macOS backups, unsuccessfully. After almost 5 minutes of trying, it managed to find the file's contents in its own logs on my machine and restored everything. What a relief!
 
@@ -28,11 +28,11 @@ My heart stopped. I was listening to [Estranged](https://www.youtube.com/watch?v
 
 1. **AI/LLMs don't need to be kept in the loop forever.** Sometimes they're just the tool that helps you build something. You don't need to develop products that will necessarily use AI; the result can be the same. In my case, moving to fully plain-text accounting made more sense than adding MCPs to my workflow so the LLM could interact with my spreadsheets. And in my experience, plain-text accounting consumes fewer tokens than feeding spreadsheet files to LLMs every time — no headers, no schema overhead, just lines of plain content.
 
-2. **Smart agents still make mistakes.** LLMs are getting smarter every day, and agents like Claude Code are awesome. But just like a human, they're prone to error. It's not enough to control context and provide good prompts. Your project plan should have checkpoints that let you commit everything periodically (Git fits super well with LLMs), especially after important changes to critical files. Protecting the work you've done is more important than doing new work, particularly because the new work often depends on the previous one.
+2. **Smart agents still make mistakes.** LLMs are getting smarter every day, and agents like Claude Code are awesome. But just like a human, they're prone to error. It's not enough to control context and provide good prompts. Your project plan should have checkpoints that let you commit everything periodically (Git fits super well with LLMs), especially before important changes to critical files. Protecting the work you've done is more important than doing new work, particularly because the new work often depends on the previous one.
 
-3. **The AI's recovery skills surprised me.** Just seconds after noticing it had wiped the file, it started laying out strategies to recover it. Some would have taken me hours to figure out, especially the definitive one, recovering the original data from it's own logs. Brilliant.
+3. **The AI's recovery skills surprised me.** Just seconds after noticing it had wiped the file, Claude started laying out strategies to recover it. Some would have taken me hours to figure out, especially the definitive one, recovering the original data from its own logs. Brilliant.
 
-4. **AI session logs are sensitive data.** They contain everything the agent saw: file contents, conversation history, secrets you didn't realize you exposed. Never commit them. Be especially careful with `CLAUDE_CONFIG_DIR` (default `~/.claude/`): the `projects/` subdirectory holds session transcripts that should never leave your machine, and `settings.json` often contains hooks or env vars you don't want public either. Other contents in the same directory (skills, custom agents, slash commands) can be worth sharing after a careful review.
+4. **AI session logs are sensitive data.** They contain everything the agent saw: file contents, conversation history, secrets you didn't realize you exposed. Never expose them. Be especially careful with `CLAUDE_CONFIG_DIR` (default `~/.claude/`): the `projects/` subdirectory holds session transcripts that should never leave your machine, and `settings.json` often contains hooks or env vars you don't want public either. Other contents in the same directory (skills, custom agents, slash commands) can be worth sharing after a careful review.
 
 For a few hours now, I've been playing around with hledger commands to visualize my finances in different ways. Instead of multiple spreadsheets, I now have a single source of truth, and it's great. Next steps include vibe-coding data analysis tools to visualize my data and get better insights. Maybe I'll write about it in the future.
 
@@ -52,4 +52,4 @@ Fabio Akita made a similar point on [Flow Podcast](https://www.youtube.com/watch
 
 ## Wrap-up
 
-AI is genuinely strange, and it can be scary at times. But on the whole, it's been great. The specialists I trust are landing on the same conclusion, and my own two days proved it: the agent wiped my journal, then recovered it. Net positive. I have my concerns. I'm pumped anyway. The sensible move is to adopt it and move forward. Just commit before you YOLO. ✌️
+AI is genuinely strange, and it can be scary at times. But on the whole, it's been great. The specialists I trust are landing on the same conclusion, and my own two days proved it: the agent wiped my journal, then recovered it. Net positive. I have my concerns, but I'm pumped anyway. The sensible move is to adopt it and move forward. Just commit before you YOLO. ✌️
